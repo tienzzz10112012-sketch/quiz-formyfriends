@@ -3,131 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3301 // LỚP 8-9 ARENA</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #05080c; background-image: radial-gradient(circle at top, #0a1118 0%, #020406 100%);
-            color: #00ff66; font-family: 'Share Tech Mono', 'Courier New', monospace;
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-        }
-
-        /* TABS NAVIGATION */
-        .navbar {
-            width: 100%; background: rgba(13, 17, 23, 0.9); backdrop-filter: blur(10px);
-            border-bottom: 2px solid #00f0ff; display: flex; justify-content: center; gap: 20px; padding: 15px;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .tab-btn {
-            background: transparent; border: 1px solid #30363d; color: #8b949e;
-            padding: 10px 30px; font-size: 1.1rem; font-family: inherit; font-weight: bold;
-            cursor: pointer; border-radius: 4px; transition: 0.3s;
-        }
-        .tab-btn.active { background: #00f0ff; color: #000; border-color: #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.4); }
-        .tab-btn:hover:not(.active) { border-color: #00ff66; color: #00ff66; }
-
-        .container { width: 100%; max-width: 900px; padding: 20px; margin-top: 20px; }
-
-        /* GLASS BOX */
-        .glass-box {
-            background: rgba(13, 17, 23, 0.7); backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 102, 0.2); border-radius: 12px; padding: 25px;
-            box-shadow: 0 0 25px rgba(0, 255, 102, 0.05); margin-bottom: 20px;
-        }
-
-        h1, h2, h3 { color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.3); text-align: center; margin-bottom: 20px; }
-
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        input, select {
-            width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(0,255,102,0.3); color: #00f0ff; font-family: inherit; font-size: 1rem; border-radius: 6px;
-        }
-
-        .btn {
-            background: transparent; color: #00ff66; border: 1px solid #00ff66; padding: 12px;
-            font-family: inherit; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 6px;
-            width: 100%; transition: all 0.3s ease; text-transform: uppercase; margin-bottom: 10px;
-        }
-        .btn:hover { background: rgba(0, 255, 102, 0.1); box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
-        .btn-primary { background: #00ff66; color: #000; }
-        .btn-primary:hover { background: #00cc55; color: #000; }
-        .btn-warning { border-color: #ffaa00; color: #ffaa00; }
-        .btn-warning:hover { background: rgba(255,170,0,0.1); }
-        .btn-danger { border-color: #ff0055; color: #ff0055; }
-        
-        .btn-opt {
-            background: rgba(255,255,255,0.02); border: 1px solid #30363d; color: #c9d1d9;
-            padding: 15px; text-align: left; font-family: inherit; font-size: 1rem; cursor: pointer;
-            border-radius: 6px; margin-bottom: 10px; width: 100%; transition: 0.2s;
-        }
-        .btn-opt:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.05); }
-        .btn-opt.selected { background: #00f0ff; color: #000; border-color: #00f0ff; font-weight: bold; }
-
-        .hidden { display: none !important; }
-
-        #hint-box {
-            display: none; background: rgba(255, 170, 0, 0.1); border-left: 3px solid #ffaa00;
-            padding: 10px; margin-bottom: 15px; color: #ffaa00; font-size: 0.9rem;
-        }
-
-        /* Leaderboard Styles */
-        .lb-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .lb-item:last-child { border: none; }
-        .lb-time { font-size: 0.75rem; color: #8b949e; }
-        .stat-card { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid #30363d; text-align: center; }
-        .stat-val { font-size: 1.8rem; font-weight: bold; color: #00f0ff; }
-    </style>
-</head>
-<body>
-
-<!-- MÀN LOGIN -->
-<div id="login-screen" class="container glass-box" style="max-width: 500px; margin-top: 10vh;">
-    <h1>[ HỆ THỐNG ĐĂNG NHẬP ]</h1>
-    <input type="text" id="username" placeholder="> Nhập Tên của bạn..." autocomplete="off">
-    <button class="btn btn-primary" onclick="login()">TRUY CẬP</button>
-</div>
-
-<!-- GIAO DIỆN CHÍNH (ẨN KHI CHƯA LOGIN) -->
-<div id="main-app" class="hidden" style="width: 100%;">
-    <!-- TABS -->
-    <div class="navbar">
-        <button class="tab-btn active" id="tab-btn-test" onclick="switchTab('test')">🚀 KIỂM TRA</button>
-        <button class="tab-btn" id="tab-btn-lb" onclick="switchTab('lb')">🏆 BẢNG XẾP HẠNG</button>
-    </div>
-
-    <div class="container">
-        
-        <!-- ================= TAB KIỂM TRA ================= -->
-        <div id="tab-test">
-            
-            <!-- CHỌN KHỐI -->
-            <div id="grade-selection" class="glass-box">
-                <h2>> LỰA CHỌN CNghe hợp lý đấy bro! Mới chân ướt chân ráo lên Lớp 9 mà giã kiến thức nặng quá thì tẩu hỏa nhập ma mất. Ý tưởng thiết kế thành một Dashboard (Bảng điều khiển) chia Tab với hệ thống Hint (Gợi ý) là cực kỳ chuẩn bài cho việc học kết hợp thực hành.
-
-Tôi đã đập đi xây lại **toàn bộ hệ thống** thành một Web App thực thụ. Đây là những thứ tôi đã trang bị cho bro trong bản nâng cấp này:
-
-1. **Giao diện chia Tab:** Dễ dàng chuyển đổi giữa **Khu vực Kiểm tra** và **Bảng Xếp Hạng**.
-2. **Hệ thống Lớp học:** Chọn "Lớp 8 (Ôn tập)" hoặc "Lớp 9 (Khởi động & Ôn tập)".
-3. **Đầy đủ 8 môn:** Toán, Lý, Hóa, Anh, Văn, Công nghệ, Lịch sử - Địa lý, và GDĐP Sóc Trăng. Toàn bộ câu hỏi đã được làm mới hoàn toàn bám sát đầu năm học.
-4. **Nút HINT (Gợi ý):** Bí quá bấm vào đây, hệ thống sẽ cho manh mối cách giải (không spoil đáp án).
-5. **Bảng Xếp Hạng Siêu Cấp:**
-   * **Cá nhân:** Xem điểm trung bình các môn của bro và môn nào bro đang "gánh team" tốt nhất.
-   * **Tập thể:** Vinh danh "chiến thần" điểm trung bình cao nhất server, và kỷ lục gia của từng môn.
-   * **Lịch sử chi tiết:** Có lưu ngày giờ làm bài đàng hoàng.
-6. **Nút Nuke (Reset):** Nút đỏ chót trong Tab Xếp hạng để xóa sạch dữ liệu test cũ làm lại từ đầu.
-
-Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán vào và chạy nhé:
-
-```html
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Ôn Tập Lớp 8 & 9 - Bảng Xếp Hạng</title>
     <style>
         :root {
@@ -149,8 +24,8 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         .btn-warning:hover { background: rgba(245, 158, 11, 0.1); }
 
         /* Login Screen */
-        #login-screen { text-align: center; margin-top: 20vh; }
-        input[type="text"], select { width: 100%; max-width: 400px; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-main); margin-bottom: 15px; font-size: 1rem; }
+        #login-screen { text-align: center; margin-top: 15vh; background: var(--panel-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
+        input[type="text"], input[type="password"], select { width: 100%; max-width: 400px; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-main); margin-bottom: 15px; font-size: 1rem; }
         
         /* Navbar / Tabs */
         .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
@@ -188,13 +63,13 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
 <body>
 
 <div class="container">
-    <!-- 1. MÀN HÌNH NHẬP TÊN -->
+    <!-- 1. MÀN HÌNH ĐĂNG NHẬP KIỂU CŨ (TÊN + PASS) -->
     <div id="login-screen">
-        <h1 style="margin-bottom: 10px; color: var(--primary);">HỆ THỐNG KIỂM TRA ĐẦU VÀO</h1>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Vui lòng nhập tên để lưu dữ liệu vào Bảng Xếp Hạng</p>
-        <input type="text" id="username-input" placeholder="Nhập tên của bạn (VD: Tuấn Hacker)...">
-        <br>
-        <button class="btn btn-primary" onclick="login()">TRUY CẬP</button>
+        <h1 style="margin-bottom: 10px; color: var(--primary);">[ HỆ THỐNG DỮ LIỆU LỚP 8 - 9 ]</h1>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">Đăng nhập để lưu tiến trình và điểm số vào Bảng Xếp Hạng</p>
+        <input type="text" id="username-input" placeholder="> Tên đăng nhập / Nickname..." autocomplete="off"><br>
+        <input type="password" id="password-input" placeholder="> Mã bảo mật (Passcode)..." autocomplete="off"><br>
+        <button class="btn btn-primary" style="width: 100%; max-width: 400px;" onclick="login()">KÍCH HOẠT HỆ THỐNG</button>
     </div>
 
     <!-- 2. GIAO DIỆN CHÍNH (TABS) -->
@@ -208,20 +83,18 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         <!-- TAB 1: KHU VỰC KIỂM TRA -->
         <div id="tab-test">
             <div style="background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-                <label style="color: var(--text-muted); font-weight: bold; margin-bottom: 10px; display: block;">LỰA CHỌN LỚP HỌC:</label>
+                <label style="color: var(--text-muted); font-weight: bold; margin-bottom: 10px; display: block;">LỰA CHỌN KHỐI LỚP:</label>
                 <select id="class-select" onchange="renderSubjects()">
-                    <option value="8">Lớp 8 (Ôn tập toàn diện)</option>
-                    <option value="9">Lớp 9 (Khởi động đầu năm & Ôn Lớp 8)</option>
+                    <option value="8">Lớp 8 (Ôn tập kiến thức)</option>
+                    <option value="9">Lớp 9 (Khởi động đầu năm)</option>
                 </select>
             </div>
             
-            <h3 style="margin-top: 25px; color: var(--text-muted);">CHỌN MÔN THỬ SỨC</h3>
-            <div class="subject-grid" id="subject-grid">
-                <!-- Nút môn học render bằng JS -->
-            </div>
+            <h3 style="margin-top: 25px; color: var(--text-muted);">CHỌN MÔN THI</h3>
+            <div class="subject-grid" id="subject-grid"></div>
         </div>
 
-        <!-- MÀN LÀM BÀI (Chỉ hiện khi bấm vào môn) -->
+        <!-- MÀN LÀM BÀI -->
         <div id="quiz-screen" class="hidden">
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; color: var(--text-muted);">
                 <span id="quiz-header">Môn: Toán | Lớp: 8</span>
@@ -231,7 +104,7 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
             <div class="options-list" id="options-box"></div>
             
             <div id="hint-box" class="hint-box hidden">
-                <b>💡 Gợi ý:</b> <span id="hint-text"></span>
+                <b>💡 Gợi ý cách giải:</b> <span id="hint-text"></span>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -242,7 +115,7 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
 
         <!-- MÀN KẾT QUẢ -->
         <div id="result-screen" class="hidden" style="text-align: center; background: var(--panel-bg); padding: 40px; border-radius: 12px;">
-            <h2 style="color: var(--primary); margin-bottom: 10px;">HOÀN THÀNH BÀI TEST!</h2>
+            <h2 style="color: var(--primary); margin-bottom: 10px;">HOÀN THÀNH BÀI THI!</h2>
             <div style="font-size: 4rem; font-weight: bold; color: #fff; margin-bottom: 20px;" id="score-text">0.0</div>
             <button class="btn btn-primary" onclick="backToSubjects()">QUAY LẠI CHỌN MÔN</button>
             <button class="btn btn-warning" onclick="switchTab('lb')">XEM BẢNG XẾP HẠNG</button>
@@ -251,42 +124,40 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         <!-- TAB 2: BẢNG XẾP HẠNG -->
         <div id="tab-lb" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>BẢNG THỐNG KÊ TOÀN CẦU</h2>
-                <button class="btn btn-danger" onclick="resetData()">🗑️ XÓA TOÀN BỘ DỮ LIỆU</button>
+                <h2>BẢNG XẾP HẠNG THÀNH TÍCH</h2>
+                <button class="btn btn-danger" onclick="resetData()">🗑️ RESET DỮ LIỆU BẢNG XẾP HẠNG</button>
             </div>
 
             <div class="stats-grid">
                 <!-- Thống kê cá nhân -->
                 <div class="stat-card">
-                    <div class="stat-title">👤 KẾT QUẢ CÁ NHÂN (<span id="lb-username"></span>)</div>
-                    <div class="stat-row">Điểm trung bình (Tất cả môn): <span class="stat-val" id="my-avg">0.0</span></div>
-                    <div class="stat-row">Môn giỏi nhất: <span class="stat-val" id="my-best-subj">Chưa có</span></div>
-                    <div class="stat-row">Tổng số lần test: <span class="stat-val" id="my-count">0</span></div>
+                    <div class="stat-title">👤 CÁ NHÂN (<span id="lb-username"></span>)</div>
+                    <div class="stat-row">Điểm trung bình (GPA): <span class="stat-val" id="my-avg">0.0</span></div>
+                    <div class="stat-row">Môn tốt nhất: <span class="stat-val" id="my-best-subj">Chưa có</span></div>
+                    <div class="stat-row">Tổng số bài test: <span class="stat-val" id="my-count">0</span></div>
                 </div>
                 <!-- Thống kê Tập thể -->
                 <div class="stat-card">
-                    <div class="stat-title">🌟 BẢNG VÀNG TẬP THỂ</div>
-                    <div class="stat-row">Học bá (TB cao nhất): <span class="stat-val" style="color: #fcd34d;" id="top-student">Chưa có</span></div>
-                    <div class="stat-row">Kỷ lục môn Toán: <span class="stat-val" id="top-math">Chưa có</span></div>
-                    <div class="stat-row">Kỷ lục môn Văn: <span class="stat-val" id="top-lit">Chưa có</span></div>
-                    <div class="stat-row">Kỷ lục môn GDĐP ST: <span class="stat-val" id="top-local">Chưa có</span></div>
+                    <div class="stat-title">🌟 THÀNH TÍCH TẬP THỂ</div>
+                    <div class="stat-row">Best GPA Server: <span class="stat-val" style="color: #fcd34d;" id="top-student">Chưa có</span></div>
+                    <div class="stat-row">Top Toán: <span class="stat-val" id="top-math">Chưa có</span></div>
+                    <div class="stat-row">Top Văn: <span class="stat-val" id="top-lit">Chưa có</span></div>
+                    <div class="stat-row">Top GDĐP Sóc Trăng: <span class="stat-val" id="top-local">Chưa có</span></div>
                 </div>
             </div>
 
-            <h3 style="color: var(--text-muted); margin-bottom: 10px;">LỊCH SỬ BÀI TEST CHUNG</h3>
+            <h3 style="color: var(--text-muted); margin-bottom: 10px;">LỊCH SỬ THI ĐẤU</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Tên</th>
-                        <th>Lớp</th>
+                        <th>Tài khoản</th>
+                        <th>Khối</th>
                         <th>Môn thi</th>
-                        <th>Điểm</th>
+                        <th>Điểm số</th>
                         <th>Thời gian</th>
                     </tr>
                 </thead>
-                <tbody id="history-table-body">
-                    <!-- Data here -->
-                </tbody>
+                <tbody id="history-table-body"></tbody>
             </table>
         </div>
 
@@ -294,74 +165,74 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
 </div>
 
 <script>
-    // NGÂN HÀNG CÂU HỎI (2 Lớp x 8 Môn)
+    // NGÂN HÀNG CÂU HỎI
     const db = {
         "8": {
             "math": [
-                { q: "Phân tích đa thức x² - y² thành nhân tử, ta được kết quả nào?", options: ["(x-y)(x+y)", "(x-y)²", "x² - 2xy + y²", "x+y"], answer: 0, hint: "Đây là hằng đẳng thức đáng nhớ số 3 (Hiệu hai bình phương)." },
-                { q: "Nghiệm của phương trình 2x - 4 = 0 là:", options: ["x = 2", "x = -2", "x = 4", "x = 0"], answer: 0, hint: "Chuyển -4 sang vế phải đổi dấu thành +4, rồi chia 2 vế cho 2." }
+                { q: "Phân tích đa thức x² - y² thành nhân tử, ta được kết quả nào?", options: ["(x-y)(x+y)", "(x-y)²", "x² - 2xy + y²", "x+y"], answer: 0, hint: "Áp dụng Hằng đẳng thức đáng nhớ số 3: Hiệu hai bình phương." },
+                { q: "Nghiệm của phương trình 2x - 4 = 0 là:", options: ["x = 2", "x = -2", "x = 4", "x = 0"], answer: 0, hint: "Chuyển -4 sang vế phải thành 4, rồi lấy 4 chia 2." }
             ],
             "physics": [
-                { q: "Công thức tính áp suất là gì?", options: ["p = F/S", "p = F.S", "p = S/F", "p = m.g"], answer: 0, hint: "Áp suất bằng áp lực chia cho diện tích bị ép." },
-                { q: "Đơn vị của lực là gì?", options: ["Niuton (N)", "Jun (J)", "Oát (W)", "Kí lô gam (kg)"], answer: 0, hint: "Được đặt theo tên của nhà khoa học bị quả táo rơi trúng đầu." }
+                { q: "Công thức tính áp suất là gì?", options: ["p = F/S", "p = F.S", "p = S/F", "p = m.g"], answer: 0, hint: "Áp suất bằng Áp lực chia cho Diện tích bị ép." },
+                { q: "Đơn vị của lực là gì?", options: ["Niuton (N)", "Jun (J)", "Oát (W)", "Kí lô gam (kg)"], answer: 0, hint: "Đặt theo tên nhà bác học Newton." }
             ],
             "chemistry": [
-                { q: "Kí hiệu hóa học của nguyên tố Sắt là gì?", options: ["Fe", "Cu", "Ag", "Au"], answer: 0, hint: "Bắt nguồn từ chữ Ferrum trong tiếng Latinh." },
-                { q: "Oxi (O₂) ở điều kiện thường tồn tại ở trạng thái nào?", options: ["Khí", "Lỏng", "Rắn", "Plasma"], answer: 0, hint: "Bạn đang hít thở nó vào phổi lúc này đấy." }
+                { q: "Kí hiệu hóa học của nguyên tố Sắt là gì?", options: ["Fe", "Cu", "Ag", "Au"], answer: 0, hint: "Bắt nguồn từ chữ Ferrum." },
+                { q: "Khí Oxi (O₂) chiếm khoảng bao nhiêu phần trăm thể tích không khí?", options: ["21%", "78%", "1%", "50%"], answer: 0, hint: "Khoảng 1/5 thể tích không khí." }
             ],
             "english": [
-                { q: "Thì quá khứ đơn (Past Simple) của động từ 'go' là gì?", options: ["went", "gone", "goes", "going"], answer: 0, hint: "Đây là động từ bất quy tắc (V2)." },
-                { q: "Đâu là cấu trúc câu bị động (Passive Voice) cơ bản?", options: ["Be + V3/ed", "Have + V3/ed", "Do + V-inf", "Will + V-inf"], answer: 0, hint: "Luôn cần động từ 'tobe' cộng với Động từ ở dạng Phân từ 2." }
+                { q: "Quá khứ đơn của động từ 'go' là gì?", options: ["went", "gone", "goes", "going"], answer: 0, hint: "Động từ bất quy tắc cột 2." },
+                { q: "Cấu trúc câu bị động (Passive Voice) cơ bản gồm những gì?", options: ["Be + V3/ed", "Have + V3/ed", "Do + V-inf", "Will + V-inf"], answer: 0, hint: "Động từ Tobe + Động từ phân từ 2." }
             ],
             "literature": [
-                { q: "Tác phẩm 'Lão Hạc' do nhà văn nào sáng tác?", options: ["Nam Cao", "Ngô Tất Tố", "Vũ Trọng Phụng", "Nguyên Hồng"], answer: 0, hint: "Ông là nhà văn hiện thực xuất sắc, tác giả của Chí Phèo." },
-                { q: "Đoạn trích 'Tức nước vỡ bờ' thuộc tác phẩm nào?", options: ["Tắt đèn", "Bỉ vỏ", "Số đỏ", "Chị Dậu"], answer: 0, hint: "Tác phẩm nói về số phận của chị Dậu trong mùa sưu thuế." }
+                { q: "Tác phẩm 'Lão Hạc' do nhà văn nào sáng tác?", options: ["Nam Cao", "Ngô Tất Tố", "Vũ Trọng Phụng", "Nguyên Hồng"], answer: 0, hint: "Tác giả chuyên viết về người nông dân trước Cách mạng tháng 8." },
+                { q: "Đoạn trích 'Tức nước vỡ bờ' trích từ tác phẩm nào?", options: ["Tắt đèn", "Bỉ vỏ", "Số đỏ", "Chị Dậu"], answer: 0, hint: "Tác phẩm của nhà văn Ngô Tất Tố." }
             ],
             "tech": [
-                { q: "Bản vẽ kĩ thuật (bản vẽ các hình chiếu) thường có 3 hình chiếu nào?", options: ["Đứng, Bằng, Cạnh", "Trên, Dưới, Trái", "Trước, Sau, Giữa", "Dọc, Ngang, Chéo"], answer: 0, hint: "Nhìn từ trước vào, nhìn từ trên xuống, và nhìn từ trái sang." },
-                { q: "Dụng cụ nào dùng để gia công cắt gọt kim loại?", options: ["Cưa, đục", "Búa, đe", "Kìm, mỏ lết", "Thước kẹp"], answer: 0, hint: "Một cái có răng cưa để cắt, một cái dùng lực đập để chặt." }
+                { q: "Trong bản vẽ kỹ thuật, hình chiếu đứng nhìn từ hướng nào tới?", options: ["Từ trước tới", "Từ trên xuống", "Từ trái sang", "Từ phải sang"], answer: 0, hint: "Hình chiếu đứng thể hiện mặt trước của vật thể." },
+                { q: "Dụng cụ nào thuộc nhóm dụng cụ kẹp giữ trong cơ khí?", options: ["Ê-tô", "Cưa", "Đục", "Dũa"], answer: 0, hint: "Dùng để kẹp chặt phôi khi gia công." }
             ],
             "history_geo": [
-                { q: "Ai là người lãnh đạo phong trào Cần Vương giai đoạn 1?", options: ["Tôn Thất Thuyết và Vua Hàm Nghi", "Phan Bội Châu", "Hoàng Hoa Thám", "Phan Châu Trinh"], answer: 0, hint: "Chiếu Cần Vương được phát ra từ một vị vua trẻ tuổi yêu nước." },
-                { q: "Khí hậu nước ta mang tính chất gì chủ yếu?", options: ["Nhiệt đới gió mùa", "Ôn đới", "Hàn đới", "Cận nhiệt đới khô"], answer: 0, hint: "Nóng ẩm, mưa nhiều và có gió thay đổi theo mùa." }
+                { q: "Ai là người lãnh đạo cuộc khởi nghĩa Hương Khê?", options: ["Phan Đình Phùng", "Đinh Công Tráng", "Nguyen Thi Dinh", "Hoàng Hoa Thám"], answer: 0, hint: "Cuộc khởi nghĩa tiêu biểu nhất trong phong trào Cần Vương." },
+                { q: "Khí hậu Việt Nam có đặc điểm nổi bật nào?", options: ["Nhiệt đới gió mùa", "Ôn đới", "Hàn đới", "Hoang mạc"], answer: 0, hint: "Nóng ẩm, mưa nhiều, có 2 mùa gió chính." }
             ],
             "local": [
-                { q: "Lễ hội Oóc Om Bóc (Cúng Trăng) là của đồng bào dân tộc nào ở Sóc Trăng?", options: ["Khmer", "Kinh", "Hoa", "Chăm"], answer: 0, hint: "Đây là một trong 3 dân tộc sinh sống chủ yếu tại Sóc Trăng, có ngôn ngữ và chữ viết riêng cong cong." },
-                { q: "Di tích lịch sử văn hóa Chùa Mahatup ở Sóc Trăng còn được gọi với cái tên quen thuộc nào?", options: ["Chùa Dơi", "Chùa Đất Sét", "Chùa Khléang", "Chùa Chén Kiểu"], answer: 0, hint: "Chùa nổi tiếng vì có hàng ngàn con vật có cánh ngủ treo ngược trên cây." }
+                { q: "Lễ hội Oóc Om Bóc ở Sóc Trăng có hoạt động thể thao dân gian nổi tiếng nào?", options: ["Đua ghe Ngo", "Đua thuyền rồng", "Múa lân", "Đẩy gậy"], answer: 0, hint: "Phương tiện di chuyển trên sông dài và hẹp, có hàng chục tay chèo." },
+                { q: "Chùa Dơi (Sóc Trăng) còn có tên gọi Khmer là gì?", options: ["Chùa Mahatup", "Chùa Khléang", "Chùa Som Rong", "Chùa Chén Kiểu"], answer: 0, hint: "Có nghĩa là 'do trận đánh mà ra'." }
             ]
         },
         "9": {
             "math": [
-                { q: "Điều kiện xác định của căn thức √(x - 1) là:", options: ["x ≥ 1", "x > 1", "x < 1", "x = 1"], answer: 0, hint: "Biểu thức dưới dấu căn bậc hai không được phép mang số âm." },
-                { q: "Kết quả của phép tính √(4²) là?", options: ["4", "16", "-4", "8"], answer: 0, hint: "Căn bậc hai của một số bình phương bằng giá trị tuyệt đối của số đó." }
+                { q: "Căn bậc hai số học của 16 là bao nhiêu?", options: ["4", "-4", "256", "8"], answer: 0, hint: "Tìm số không âm sao cho bình phương lên bằng 16." },
+                { q: "Điều kiện xác định của √(x - 3) là:", options: ["x ≥ 3", "x > 3", "x ≤ 3", "x = 3"], answer: 0, hint: "Biểu thức trong căn không âm (≥ 0)." }
             ],
             "physics": [
-                { q: "Theo định luật Ôm, hệ thức nào sau đây là đúng?", options: ["I = U/R", "I = U.R", "R = I/U", "U = I/R"], answer: 0, hint: "Cường độ dòng điện tỉ lệ thuận với Hiệu điện thế, tỉ lệ nghịch với Điện trở." },
-                { q: "Điện trở của dây dẫn phụ thuộc vào các yếu tố nào?", options: ["Chiều dài, tiết diện, vật liệu", "Khối lượng, màu sắc, chiều dài", "Tiết diện, nhiệt độ phòng", "Độ dẫn điện của môi trường"], answer: 0, hint: "Công thức R = ρ(l/S)." }
+                { q: "Công thức Định luật Ôm là gì?", options: ["I = U / R", "I = U . R", "R = I / U", "U = I / R"], answer: 0, hint: "Cường độ dòng điện I tỉ lệ thuận với U, tỉ lệ nghịch với R." },
+                { q: "Đơn vị của Điện trở R là gì?", options: ["Ôm (Ω)", "Vôn (V)", "Ampe (A)", "Oát (W)"], answer: 0, hint: "Ký hiệu hình chiếc móng ngựa." }
             ],
             "chemistry": [
-                { q: "Oxit bazơ tác dụng với dung dịch Axit tạo ra sản phẩm gì?", options: ["Muối và Nước", "Kim loại và Nước", "Oxit axit và Nước", "Axit mới và Bazơ mới"], answer: 0, hint: "Đây là phản ứng trung hòa cơ bản." },
-                { q: "Kim loại nào sau đây hoạt động hóa học mạnh nhất?", options: ["Kali (K)", "Đồng (Cu)", "Sắt (Fe)", "Bạc (Ag)"], answer: 0, hint: "Nhớ câu thần chú: Khi Nào Cần May Áo Giáp Sắt..." }
+                { q: "Oxit bazơ nào sau đây tác dụng được với nước tạo thành dung dịch Bazơ?", options: ["CaO", "Fe₂O₃", "CuO", "Al₂O₃"], answer: 0, hint: "Vôi sống tan được trong nước tỏa nhiệt." },
+                { q: "Dung dịch Axit làm quỳ tím hóa màu gì?", options: ["Màu đỏ", "Màu xanh", "Màu hồng", "Không đổi màu"], answer: 0, hint: "Màu của máu." }
             ],
             "english": [
-                { q: "Cấu trúc câu điều ước (Wish) ở hiện tại, động từ ở mệnh đề sau chia ở thì nào?", options: ["Quá khứ đơn", "Hiện tại đơn", "Tương lai đơn", "Hiện tại hoàn thành"], answer: 0, hint: "Nguyên tắc cơ bản của câu Wish và câu Gián tiếp là phải 'lùi một thì'." },
-                { q: "Từ đồng nghĩa với 'famous' (nổi tiếng) là?", options: ["well-known", "unknown", "boring", "quiet"], answer: 0, hint: "Ghép bởi từ 'tốt' và phân từ 2 của từ 'biết'." }
+                { q: "Từ nào đồng nghĩa với 'well-known'?", options: ["famous", "unknown", "boring", "quiet"], answer: 0, hint: "Có nghĩa là 'nổi tiếng'." },
+                { q: "Chuyển 'I learn English' sang câu bị động ở thì Hiện tại đơn?", options: ["English is learned by me", "English was learned", "English learn me", "I am learned English"], answer: 0, hint: "S + am/is/are + V3/ed." }
             ],
             "literature": [
-                { q: "Tác giả của văn bản 'Phong cách Hồ Chí Minh' học đầu năm Lớp 9 là ai?", options: ["Lê Anh Trà", "Phạm Tiến Duật", "Chính Hữu", "Nguyễn Dữ"], answer: 0, hint: "Một nhà báo, nhà nghiên cứu văn hóa." },
-                { q: "Nhân vật Vũ Nương nằm trong tác phẩm nào?", options: ["Chuyện người con gái Nam Xương", "Truyện Kiều", "Hoàng Lê nhất thống chí", "Lục Vân Tiên"], answer: 0, hint: "Câu chuyện đau lòng về một người phụ nữ bị chồng nghi oan." }
+                { q: "Tác phẩm 'Phong cách Hồ Chí Minh' do ai viết?", options: ["Lê Anh Trà", "Phạm Tiến Duật", "Chính Hữu", "Nguyễn Dữ"], answer: 0, hint: "Nhà nghiên cứu văn hóa nổi tiếng." },
+                { q: "Nhân vật chính trong 'Chuyện người con gái Nam Xương' là ai?", options: ["Vũ Nương", "Thúy Kiều", "Mị Nương", "Thúy Vân"], answer: 0, hint: "Người phụ nữ đức hạnh bị chồng nghi oan." }
             ],
             "tech": [
-                { q: "Mạng điện trong nhà ở Việt Nam sử dụng cấp điện áp là bao nhiêu?", options: ["220V", "110V", "380V", "12V"], answer: 0, hint: "Điện lưới quốc gia dân dụng, cắm quạt cắm sạc điện thoại hằng ngày." },
-                { q: "Dây dẫn điện trong nhà thường có phần lõi làm bằng chất liệu gì?", options: ["Đồng hoặc Nhôm", "Sắt hoặc Thép", "Nhựa hoặc Cao su", "Vàng hoặc Bạc"], answer: 0, hint: "Cần chất liệu dẫn điện cực tốt nhưng giá thành phải chăng." }
+                { q: "Điện áp định mức của mạng điện sinh hoạt ở Việt Nam là:", options: ["220V", "110V", "380V", "12V"], answer: 0, hint: "Con số ghi trên hầu hết các thiết bị điện trong nhà bạn." },
+                { q: "Thiết bị nào dùng để bảo vệ mạch điện khi xảy ra sự cố ngắn mạch?", options: ["Cầu chì / Aptomat", "Công tắc", "Ổ cắm", "Bóng đèn"], answer: 0, hint: "Tự động ngắt mạch điện khi quá tải." }
             ],
             "history_geo": [
-                { q: "Chiến tranh thế giới thứ hai bùng nổ vào năm nào?", options: ["1939", "1945", "1914", "1930"], answer: 0, hint: "Năm mà Đức Quốc Xã tấn công Ba Lan." },
-                { q: "Đặc điểm cơ bản của Dân số Việt Nam hiện nay là gì?", options: ["Đông dân, cơ cấu dân số trẻ", "Ít dân, cơ cấu dân số già", "Đông dân, già hóa rất nhanh", "Dân số ít, tỉ lệ gia tăng tự nhiên cao"], answer: 0, hint: "Lực lượng lao động dồi dào, tháp dân số đáy rộng." }
+                { q: "Thế chiến thứ hai kết thúc vào năm nào?", options: ["1945", "1939", "1918", "1954"], answer: 0, hint: "Cùng năm Việt Nam giành độc lập (Cách mạng Tám tháng Tám)." },
+                { q: "Nước ta gồm có bao nhiêu vùng kinh tế lớn?", options: ["6 vùng", "7 vùng", "5 vùng", "8 vùng"], answer: 0, hint: "Trung du miền núi Bắc Bộ, Đồng bằng sông Hồng, Bắc Trung Bộ..." }
             ],
             "local": [
-                { q: "Huyện Cù Lao Dung của Sóc Trăng nổi tiếng với vị trí địa lý như thế nào?", options: ["Là dải đất cù lao nằm giữa sông Hậu và biển Đông", "Nằm sâu trong đất liền giáp Cần Thơ", "Là vùng núi đá vôi", "Là huyện chỉ có rừng ngập mặn không có người ở"], answer: 0, hint: "Đây là một dải đất bao quanh bởi nước sông Hậu trước khi đổ ra biển." },
-                { q: "Loại bánh đặc sản cực kì nổi tiếng của Sóc Trăng, có nhân sầu riêng và lòng đỏ trứng muối là gì?", options: ["Bánh Pía", "Bánh in", "Bánh ống", "Bánh xèo"], answer: 0, hint: "Tên có chữ P, thường hay xuất khẩu đi nước ngoài." }
+                { q: "Huyện Cù Lao Dung (Sóc Trăng) nằm ở đâu?", options: ["Giữa dòng sông Hậu", "Trên vùng núi cao", "Giáp biên giới Campuchia", "Trong nội địa tỉnh"], answer: 0, hint: "Địa hình dải đất nổi giữa sông đổ ra biển." },
+                { q: "Món ăn đặc sản nổi tiếng nhất của Sóc Trăng dùng làm quà biếu là gì?", options: ["Bánh Pía", "Bánh chưng", "Bánh cốm", "Bánh đậu xanh"], answer: 0, hint: "Nhân sầu riêng, đậu xanh, trứng muối." }
             ]
         }
     };
@@ -379,14 +250,21 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
     let score = 0;
     let selectedAns = null;
 
-    // --- HỆ THỐNG ĐĂNG NHẬP & CHUYỂN TAB ---
+    // --- ĐĂNG NHẬP CHUẨN ĐÚNG YÊU CẦU BRO ---
     function login() {
-        const name = document.getElementById("username-input").value.trim();
-        if(!name) { alert("Phải nhập tên mới chơi được bro ơi!"); return; }
-        currentUser = name;
-        document.getElementById("lb-username").innerText = name;
+        const u = document.getElementById("username-input").value.trim();
+        const p = document.getElementById("password-input").value.trim();
+        
+        if(!u || !p) { 
+            alert("Bro chưa nhập Tên hoặc Passcode kìa! Phải nhập đủ mới vô được nhé."); 
+            return; 
+        }
+        
+        currentUser = u;
+        document.getElementById("lb-username").innerText = u;
         document.getElementById("login-screen").classList.add("hidden");
         document.getElementById("main-app").classList.remove("hidden");
+        
         renderSubjects();
         updateLeaderboard();
     }
@@ -408,7 +286,6 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         }
     }
 
-    // --- KHU VỰC THI THỐ ---
     function renderSubjects() {
         currentClass = document.getElementById('class-select').value;
         const grid = document.getElementById('subject-grid');
@@ -426,7 +303,6 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
 
     function startTest(subj) {
         currentSubj = subj;
-        // Xáo trộn array (Deep copy để không đụng data gốc)
         questions = [...db[currentClass][subj]].sort(() => Math.random() - 0.5);
         
         qIndex = 0; score = 0;
@@ -444,7 +320,6 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         document.getElementById('quiz-progress').innerText = `Câu ${qIndex + 1}/${questions.length}`;
         document.getElementById('q-text').innerText = q.q;
         
-        // Ẩn Hint và Disable nút Next
         document.getElementById('hint-box').classList.add('hidden');
         document.getElementById('next-btn').disabled = true;
         document.getElementById('next-btn').innerText = (qIndex === questions.length - 1) ? "NỘP BÀI" : "CÂU TIẾP THEO ❯";
@@ -488,7 +363,6 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         let finalScore = (score / questions.length) * 10;
         document.getElementById('score-text').innerText = finalScore.toFixed(1) + " Đ";
 
-        // Lưu vào LocalStorage
         let records = JSON.parse(localStorage.getItem('edu_records') || '[]');
         let now = new Date();
         records.push({
@@ -506,17 +380,14 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
         document.getElementById('tab-test').classList.remove('hidden');
     }
 
-    // --- BẢNG XẾP HẠNG & XỬ LÝ DỮ LIỆU ---
     function updateLeaderboard() {
         let records = JSON.parse(localStorage.getItem('edu_records') || '[]');
         
-        // 1. Dựng bảng Lịch sử
         let tbody = document.getElementById('history-table-body');
         tbody.innerHTML = '';
         if(records.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có dữ liệu nào. Hãy thi thử!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Chưa có dữ liệu nào. Hãy làm bài test!</td></tr>';
         } else {
-            // Render từ mới nhất đến cũ nhất
             [...records].reverse().forEach(r => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -530,14 +401,12 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
             });
         }
 
-        // 2. Thống kê Cá nhân
         let myRecs = records.filter(r => r.name === currentUser);
         document.getElementById('my-count').innerText = myRecs.length;
         if(myRecs.length > 0) {
             let myTotal = myRecs.reduce((sum, r) => sum + r.score, 0);
             document.getElementById('my-avg').innerText = (myTotal / myRecs.length).toFixed(1);
             
-            // Tìm môn điểm cao nhất
             let bestS = myRecs.reduce((prev, current) => (prev.score > current.score) ? prev : current);
             document.getElementById('my-best-subj').innerText = subjNames[bestS.subj] + ` (${bestS.score}đ)`;
         } else {
@@ -545,9 +414,7 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
             document.getElementById('my-best-subj').innerText = "Chưa có";
         }
 
-        // 3. Thống kê Tập thể (Toàn Server Local)
         if(records.length > 0) {
-            // Học bá (TB cao nhất)
             let userAvgs = {};
             records.forEach(r => {
                 if(!userAvgs[r.name]) userAvgs[r.name] = { sum: 0, count: 0 };
@@ -560,7 +427,6 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
             let topAvgScore = (userAvgs[topAvgUser].sum / userAvgs[topAvgUser].count).toFixed(1);
             document.getElementById('top-student').innerText = `${topAvgUser} (${topAvgScore}đ)`;
 
-            // Kỷ lục môn
             const getBestForSubj = (subKey) => {
                 let sRecs = records.filter(r => r.subj === subKey);
                 if(sRecs.length === 0) return "Chưa có";
@@ -580,10 +446,10 @@ Bro tạo một file `index.html` mới, copy toàn bộ code dưới đây dán
     }
 
     function resetData() {
-        if(confirm("Bro có chắc chắn muốn xóa TOÀN BỘ dữ liệu trên máy này không? Không thể khôi phục đâu nhé!")) {
+        if(confirm("Bro có chắc chắn muốn xóa TOÀN BỘ Bảng xếp hạng không? Dữ liệu test cũ sẽ bị dọn sạch!")) {
             localStorage.removeItem('edu_records');
             updateLeaderboard();
-            alert("Đã clear sạch sẽ cơ sở dữ liệu!");
+            alert("Đã reset Bảng Xếp Hạng thành công!");
         }
     }
 </script>
