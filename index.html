@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Ôn Tập Lớp 8 & 9 - Tài Khoản Chuẩn</title>
+    <title>Hệ Thống Ôn Tập Lớp 8 & 9 - Kho 30 Câu Hỏi</title>
     <style>
         :root {
             --bg-color: #0f172a; --panel-bg: #1e293b; --primary: #38bdf8; --primary-hover: #0284c7;
@@ -61,17 +61,17 @@
 <body>
 
 <div class="container">
-    <!-- 1. MÀN HÌNH ĐĂNG NHẬP -->
+    <!-- MÀN HÌNH ĐĂNG NHẬP -->
     <div id="login-screen" class="auth-box">
         <h1 style="margin-bottom: 10px; color: var(--primary);">[ ĐĂNG NHẬP HỆ THỐNG ]</h1>
-        <p style="color: var(--text-muted); margin-bottom: 25px;">Nhập tài khoản để tiếp tục ôn tập</p>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">Kho 240 câu hỏi ôn tập Lớp 8 & 9</p>
         <input type="text" id="login-user" placeholder="Tên tài khoản..." autocomplete="off"><br>
         <input type="password" id="login-pass" placeholder="Mật khẩu..."><br>
         <button class="btn btn-primary" style="width: 100%; max-width: 400px;" onclick="handleLogin()">ĐĂNG NHẬP</button><br>
         <span class="auth-switch-link" onclick="toggleAuth('register')">Chưa có tài khoản? Đăng ký ngay</span>
     </div>
 
-    <!-- 2. MÀN HÌNH ĐĂNG KÝ -->
+    <!-- MÀN HÌNH ĐĂNG KÝ -->
     <div id="register-screen" class="auth-box hidden">
         <h1 style="margin-bottom: 10px; color: var(--primary);">[ ĐĂNG KÝ TÀI KHOẢN ]</h1>
         <p style="color: var(--text-muted); margin-bottom: 25px;">Tạo tài khoản mới để bắt đầu lưu điểm số</p>
@@ -82,7 +82,7 @@
         <span class="auth-switch-link" onclick="toggleAuth('login')">Đã có tài khoản? Quay lại Đăng nhập</span>
     </div>
 
-    <!-- 3. GIAO DIỆN CHÍNH (SAU KHI ĐĂNG NHẬP THÀNH CÔNG) -->
+    <!-- GIAO DIỆN CHÍNH -->
     <div id="main-app" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <span style="color: var(--text-muted);">Xin chào, <b id="display-user" style="color: var(--primary);">User</b>!</span>
@@ -104,7 +104,7 @@
                 </select>
             </div>
             
-            <h3 style="margin-top: 25px; color: var(--text-muted);">CHỌN MÔN THI</h3>
+            <h3 style="margin-top: 25px; color: var(--text-muted);">CHỌN MÔN THI (30 câu/môn, lấy ngẫu nhiên 10 câu)</h3>
             <div class="subject-grid" id="subject-grid"></div>
         </div>
 
@@ -176,27 +176,523 @@
 </div>
 
 <script>
-    // BANK CÂU HỎI FULL 8 MÔN
+    // HỆ THỐNG KHO 30 CÂU HỎI MỖI MÔN (TỔNG 240 CÂU CHO 8 MÔN)
     const db = {
         "8": {
-            "math": [{ q: "Phân tích đa thức x² - y² thành nhân tử:", options: ["(x-y)(x+y)", "(x-y)²", "x² - 2xy + y²", "x+y"], answer: 0, hint: "Hằng đẳng thức số 3." }],
-            "physics": [{ q: "Công thức tính áp suất là gì?", options: ["p = F/S", "p = F.S", "p = S/F", "p = m.g"], answer: 0, hint: "Áp lực chia diện tích bị ép." }],
-            "chemistry": [{ q: "Kí hiệu hóa học của Sắt là:", options: ["Fe", "Cu", "Ag", "Au"], answer: 0, hint: "Chữ viết tắt từ Ferrum." }],
-            "english": [{ q: "Quá khứ đơn của 'go' là:", options: ["went", "gone", "goes", "going"], answer: 0, hint: "Động từ bất quy tắc." }],
-            "literature": [{ q: "Tác phẩm 'Lão Hạc' của ai?", options: ["Nam Cao", "Ngô Tất Tố", "Vũ Trọng Phụng", "Nguyên Hồng"], answer: 0, hint: "Nhà văn chuyên viết về nông dân." }],
-            "tech": [{ q: "Hình chiếu đứng nhìn từ hướng nào?", options: ["Từ trước tới", "Từ trên xuống", "Từ trái sang", "Từ phải sang"], answer: 0, hint: "Mặt trước vật thể." }],
-            "history_geo": [{ q: "Lãnh đạo khởi nghĩa Hương Khê là ai?", options: ["Phan Đình Phùng", "Đinh Công Tráng", "Nguyễn Thi Định", "Hoàng Hoa Thám"], answer: 0, hint: "Cuộc khởi nghĩa Cần Vương tiêu biểu." }],
-            "local": [{ q: "Môn thể thao đặc trưng lễ hội Oóc Om Bóc?", options: ["Đua ghe Ngo", "Đua thuyền rồng", "Múa lân", "Đẩy gậy"], answer: 0, hint: "Ghe dài trên sông." }]
+            "math": [
+                { q: "Phân tích đa thức x² - y² thành nhân tử:", options: ["(x-y)(x+y)", "(x-y)²", "x² - 2xy + y²", "x+y"], correct: "(x-y)(x+y)", hint: "Hằng đẳng thức số 3." },
+                { q: "Nghiệm của phương trình 2x - 4 = 0 là:", options: ["x = 2", "x = -2", "x = 4", "x = 0"], correct: "x = 2", hint: "Chuyển vế đổi dấu." },
+                { q: "Hằng đẳng thức (a + b)² bằng:", options: ["a² + 2ab + b²", "a² + b²", "a² - 2ab + b²", "a² - b²"], correct: "a² + 2ab + b²", hint: "Bình phương một tổng." },
+                { q: "Kết quả của phép nhân 2x(x - 3) là:", options: ["2x² - 6x", "2x² - 3", "x² - 6x", "2x - 6x"], correct: "2x² - 6x", hint: "Nhân đơn thức với đa thức." },
+                { q: "Hình bình hành có hai đường chéo bằng nhau là hình gì?", options: ["Hình chữ nhật", "Hình thoi", "Hình thang cân", "Hình vuông"], correct: "Hình chữ nhật", hint: "Dấu hiệu nhận biết hình chữ nhật." },
+                { q: "Tổng các góc trong một tứ giác bằng bao nhiêu độ?", options: ["360°", "180°", "90°", "270°"], correct: "360°", hint: "Gấp đôi tổng các góc tam giác." },
+                { q: "Đa thức 5x³y - 10x²y² có nhân tử chung là:", options: ["5x²y", "5xy", "10x²y", "5x³y"], correct: "5x²y", hint: "Tìm ước chung lớn nhất của hệ số và phần biến." },
+                { q: "Giá trị của biểu thức x² - 4 tại x = -3 là:", options: ["5", "-5", "13", "-13"], correct: "5", hint: "Thay x = -3 vào biểu thức." },
+                { q: "Hình thoi có hai đường chéo vuông góc với nhau không?", options: ["Có", "Không", "Tùy trường hợp", "Chỉ khi là hình vuông"], correct: "Có", hint: "Tính chất cơ bản của hình thoi." },
+                { q: "Phân thức 1/x xác định khi nào?", options: ["x ≠ 0", "x = 0", "x > 0", "x < 0"], correct: "x ≠ 0", hint: "Mẫu thức phải khác 0." },
+                { q: "Kết quả rút gọn của phân thức (2x)/(4x²):", options: ["1/(2x)", "2x", "1/2", "2/x"], correct: "1/(2x)", hint: "Chia cả tử và mẫu cho 2x." },
+                { q: "Nghiệm của phương trình x + 5 = 0 là:", options: ["x = -5", "x = 5", "x = 0", "x = 1/5"], correct: "x = -5", hint: "Chuyển vế 5 sang phải." },
+                { q: "Điều kiện xác định của phương trình (1)/(x-2) = 0 là:", options: ["x ≠ 2", "x = 2", "x > 2", "x < 2"], correct: "x ≠ 2", hint: "Mẫu x - 2 khác 0." },
+                { q: "Độ dài đường trung bình của hình thang bằng:", options: ["Nửa tổng hai đáy", "Tổng hai đáy", "Hiệu hai đáy", "Nửa hiệu hai đáy"], correct: "Nửa tổng hai đáy", hint: "Tính chất đường trung bình hình thang." },
+                { q: "Cho tam giác ABC, đt d song song với BC cắt AB, AC. Định lý nào được áp dụng?", options: ["Định lý Thalès", "Định lý Pytago", "Định lý Ta-lét đảo", "Định lý tổng 3 góc"], correct: "Định lý Thalès", hint: "Đường thẳng song song cắt hai cạnh tam giác." },
+                { q: "Tỷ số đồng dạng của hai tam giác đồng dạng là tỷ số giữa:", options: ["Hai cạnh tương ứng", "Hai diện tích", "Hai chu vi", "Hai đường cao"], correct: "Hai cạnh tương ứng", hint: "Định nghĩa tam giác đồng dạng." },
+                { q: "Bất phương trình x - 2 > 0 có nghiệm là:", options: ["x > 2", "x < 2", "x ≥ 2", "x ≤ 2"], correct: "x > 2", hint: "Chuyển -2 sang vế phải." },
+                { q: "Hình chóp tứ giác đều có mặt đáy là hình gì?", options: ["Hình vuông", "Hình chữ nhật", "Tam giác đều", "Hình bình hành"], correct: "Hình vuông", hint: "Đặc điểm đáy chóp tứ giác đều." },
+                { q: "Thể tích của hình chóp đều tính bằng:", options: ["1/3 . S_đáy . chiều cao", "S_đáy . chiều cao", "1/2 . S_đáy . chiều cao", "3 . S_đáy . chiều cao"], correct: "1/3 . S_đáy . chiều cao", hint: "Công thức thể tích chóp nói chung." },
+                { q: "Biểu đồ nào thường dùng để biểu diễn cơ cấu tỷ lệ phần trăm?", options: ["Biểu đồ hình quạt tròn", "Biểu đồ cột", "Biểu đồ đoạn thẳng", "Biểu đồ tranh"], correct: "Biểu đồ hình quạt tròn", hint: "Phân chia theo tỷ lệ 100%." },
+                { q: "Xác suất thực nghiệm của một biến cố phụ thuộc vào:", options: ["Số lần thực hiện thí nghiệm", "Số chấm xúc xắc", "Không phụ thuộc gì", "Ý kiến chủ quan"], correct: "Số lần thực hiện thí nghiệm", hint: "Càng làm nhiều lần số liệu càng sát lý thuyết." },
+                { q: "Kết quả của khai triển (x - 2)² là:", options: ["x² - 4x + 4", "x² - 2x + 4", "x² - 4", "x² + 4x + 4"], correct: "x² - 4x + 4", hint: "Hằng đẳng thức bình phương một hiệu." },
+                { q: "Phân tích đa thức x² - 4x + 4 thành nhân tử:", options: ["(x - 2)²", "(x + 2)²", "(x - 2)(x + 2)", "(x - 4)²"], correct: "(x - 2)²", hint: "Ngược lại của khai triển trên." },
+                { q: "Tứ giác có các cạnh đối song song là:", options: ["Hình bình hành", "Hình thang", "Hình thoi", "Hình chữ nhật"], correct: "Hình bình hành", hint: "Dấu hiệu nhận biết cơ bản." },
+                { q: "Đường chéo hình vuông có tính chất nào sau đây?", options: ["Bằng nhau và vuông góc nhau", "Chỉ vuông góc nhau", "Chỉ bằng nhau", "Không cắt nhau tại trung điểm"], correct: "Bằng nhau và vuông góc nhau", hint: "Đặc trưng của hình vuông." },
+                { q: "Căn bậc hai của 9 là:", options: ["3 và -3", "3", "-3", "81"], correct: "3 và -3", hint: "Số bình phương lên bằng 9 gồm số âm và dương." },
+                { q: "Công thức nghiệm tổng quát của phương trình bậc nhất một ẩn ax + b = 0 (a≠0):", options: ["x = -b/a", "x = b/a", "x = a/b", "x = -a/b"], correct: "x = -b/a", hint: "Chuyển b rồi chia a." },
+                { q: "Góc nội tiếp chắn nửa đường tròn có số đo bằng:", options: ["90 độ", "180 độ", "60 độ", "45 độ"], correct: "90 độ", hint: "Tam giác vuông nội tiếp đường tròn." },
+                { q: "Hình lăng trụ đứng tam giác có bao nhiêu mặt bên?", options: ["3 mặt", "4 mặt", "5 mặt", "6 mặt"], correct: "3 mặt", hint: "Ứng với 3 cạnh của tam giác đáy." },
+                { q: "Diện tích xung quanh hình lăng trụ đứng tính bằng:", options: ["Chu vi đáy nhân chiều cao", "Diện tích đáy nhân chiều cao", "Nửa chu vi đáy nhân chiều cao", "Chu vi đáy cộng chiều cao"], correct: "Chu vi đáy nhân chiều cao", hint: "S_xq = P . h" }
+            ],
+            "physics": [
+                { q: "Công thức tính áp suất chất lỏng là gì?", options: ["p = d.h", "p = F/S", "p = m.g", "p = A/t"], correct: "p = d.h", hint: "Trọng lượng riêng nhân chiều cao cột chất lỏng." },
+                { q: "Lực đẩy Archimedes phụ thuộc vào yếu tố nào?", options: ["Trọng lượng riêng của chất lỏng và thể tích phần chìm", "Khối lượng vật", "Độ sâu đặt vật", "Diện tích đáy vật"], correct: "Trọng lượng riêng của chất lỏng và thể tích phần chìm", hint: "Công thức F_A = d.V" },
+                { q: "Đơn vị của công suất là gì?", options: ["Oát (W)", "Jun (J)", "Niuton (N)", "Vôn (V)"], correct: "Oát (W)", hint: "Tên nhà bác học James Watt." },
+                { q: "Công thức tính công cơ học là:", options: ["A = F.s", "A = F/s", "A = P.t", "A = m.g"], correct: "A = F.s", hint: "Lực nhân quãng đường dịch chuyển." },
+                { q: "Phát biểu nào sau đây đúng về định luật về công?", options: ["Không một máy cơ đơn giản nào cho ta lợi về công", "Máy cơ đơn giản cho lợi về công", "Lợi bao nhiêu lần về lực thiệt bấy nhiêu lần về công", "Công luôn thay đổi tùy máy"], correct: "Không một máy cơ đơn giản nào cho ta lợi về công", hint: "Định luật bảo toàn công." },
+                { q: "Nhiệt độ của vật giảm thì động năng các phân tử cấu tạo nên vật:", options: ["Giảm", "Tăng", "Không đổi", "Vừa tăng vừa giảm"], correct: "Giảm", hint: "Nhiệt độ tỉ lệ với vận tốc chuyển động nhiệt." },
+                { q: "Hiện tượng nào sau đây do sự truyền nhiệt bằng dẫn nhiệt?", options: ["Nung nóng đầu thanh sắt", "Đun nước sôi trong ấm", "Gió thổi từ biển vào đất liền", "Ánh sáng mặt trời chiếu xuống đất"], correct: "Nung nóng đầu thanh sắt", hint: "Chất rắn dẫn nhiệt trực tiếp." },
+                { q: "Đơn vị của nhiệt lượng là gì?", options: ["Jun (J)", "Oát (W)", "Niuton (N)", "Độ C"], correct: "Jun (J)", hint: "Cùng đơn vị với công cơ học." },
+                { q: "Công thức tính nhiệt lượng thu vào hay tỏa ra là:", options: ["Q = m.c.Δt", "Q = m.c", "Q = F.s", "Q = P.t"], correct: "Q = m.c.Δt", hint: "Khối lượng nhân nhiệt dung riêng nhân độ chênh lệch nhiệt độ." },
+                { q: "Nguyên lý truyền nhiệt khi 2 vật tiếp xúc nhau:", options: ["Nhiệt truyền từ vật có nhiệt độ cao sang thấp", "Truyền từ thấp sang cao", "Nhiệt độ hai vật tự động bằng nhau tức khắc", "Không truyền nhiệt"], correct: "Nhiệt truyền từ vật có nhiệt độ cao sang thấp", hint: "Cân bằng nhiệt." },
+                { q: "Năng suất tỏa ra của nhiên liệu tính bằng công thức:", options: ["Q = q.m", "Q = m.c.Δt", "Q = F.s", "Q = A.t"], correct: "Q = q.m", hint: "Năng suất q nhân khối lượng m." },
+                { q: "Động cơ nhiệt là thiết bị biến đổi năng lượng nào thành cơ năng?", options: ["Nhiệt năng", "Hóa năng", "Điện năng", "Quang năng"], correct: "Nhiệt năng", hint: "Đốt nhiên liệu sinh nhiệt." },
+                { q: "Hiệu suất của động cơ nhiệt được tính bằng tỷ số giữa:", options: ["Công có ích và nhiệt lượng do nhiên liệu tỏa ra", "Nhiệt lượng tỏa ra và công có ích", "Công toàn phần và có ích", "Nhiệt lượng vô ích và có ích"], correct: "Công có ích và nhiệt lượng do nhiên liệu tỏa ra", hint: "H = A_i / Q_tp" },
+                { q: "Hiện tượng các chất tự hòa lẫn vào nhau gọi là:", options: ["Hiện tượng khuếch tán", "Hiện tượng dẫn nhiệt", "Hiện tượng bay hơi", "Hiện tượng ngưng tụ"], correct: "Hiện tượng khuếch tán", hint: "Các phân tử xen lẫn khoảng cách của nhau." },
+                { q: "Áp suất khí quyển lớn nhất ở đâu trên Trái Đất?", options: ["Ở mực nước biển", "Trên đỉnh núi cao", "Ở tầng đối lưu", "Ngoài vũ trụ"], correct: "Ở mực nước biển", hint: "Cột không khí đè nặng nhất." },
+                { q: "Lực ma sát nghỉ xuất hiện khi nào?", options: ["Khi vật có xu hướng chuyển động nhưng chưa chuyển động", "Khi vật đang trượt", "Khi vật đang lăn", "Khi vật đứng yên tuyệt đối không có lực tác dụng"], correct: "Khi vật có xu hướng chuyển động nhưng chưa chuyển động", hint: "Giữ vật cố định tạm thời." },
+                { q: "Khi một vật nhúng trong chất lỏng, nó chịu tác dụng của lực nào hướng lên?", options: ["Lực đẩy Archimedes", "Trọng lực", "Lực ma sát", "Lực kéo"], correct: "Lực đẩy Archimedes", hint: "Lực đẩy ngược chiều trọng lực." },
+                { q: "Điều kiện để vật nổi lên mặt chất lỏng là gì?", options: ["Trọng lượng P < Lực đẩy F_A", "P = F_A", "P > F_A", "P = 0"], correct: "Trọng lượng P < Lực đẩy F_A", hint: "Vật nhẹ hơn nước sẽ nổi." },
+                { q: "Công suất được tính bằng công thực hiện được trong:", options: ["Một đơn vị thời gian", "Thời gian bất kỳ", "Quãng đường 1 mét", "1 giây"], correct: "Một đơn vị thời gian", hint: "P = A / t" },
+                { q: "Đại lượng nào cho biết mức độ nhanh hay chậm của công?", options: ["Công suất", "Công cơ học", "Động năng", "Nhiệt lượng"], correct: "Công suất", hint: "Đo lường tốc độ thực hiện công." },
+                { q: "Nhiệt năng của một vật là gì?", options: ["Tổng động năng của các phân tử cấu tạo nên vật", "Thế năng của vật", "Nhiệt độ của vật", "Năng lượng hóa học"], correct: "Tổng động năng của các phân tử cấu tạo nên vật", hint: "Chuyển động hỗn độn của phân tử." },
+                { q: "Cách làm thay đổi nhiệt năng nào không cần truyền nhiệt?", options: ["Thực hiện công", "Đun nóng", "Nhúng vào nước ấm", "Phơi nắng"], correct: "Thực hiện công", hint: "Ví dụ ma sát tay làm ấm tay." },
+                { q: "Chất nào dẫn nhiệt tốt nhất trong các chất sau?", options: ["Đồng", "Nước", "Không khí", "Gỗ"], correct: "Đồng", hint: "Kim loại dẫn nhiệt cực tốt." },
+                { q: "Đối lưu là hình thức truyền nhiệt chủ yếu ở:", options: ["Chất lỏng và chất khí", "Chất rắn", "Chân không", "Mọi chất"], correct: "Chất lỏng và chất khí", hint: "Dòng chất lưu chuyển động." },
+                { q: "Bức xạ nhiệt là hình thức truyền nhiệt có thể truyền qua:", options: ["Chân không", "Chỉ chất rắn", "Chỉ chất khí", "Chỉ chất lỏng"], correct: "Chân không", hint: "Truyền bằng tia nhiệt qua không gian." },
+                { q: "Nhiệt dung riêng của nước khoảng bao nhiêu?", options: ["4200 J/(kg.K)", "880 J/(kg.K)", "460 J/(kg.K)", "2100 J/(kg.K)"], correct: "4200 J/(kg.K)", hint: "Nước hấp thụ nhiệt rất lớn." },
+                { q: "Phương trình cân bằng nhiệt cơ bản là:", options: ["Q_tỏa = Q_thu", "Q_tỏa > Q_thu", "Q_tỏa < Q_thu", "Q_tỏa + Q_thu = 0"], correct: "Q_tỏa = Q_thu", hint: "Nhiệt lượng mất đi bằng nhiệt lượng nhận vào." },
+                { q: "Cấu tạo của một động cơ nhiệt điển hình gồm mấy bộ phận chính?", options: ["3 bộ phận", "2 bộ phận", "4 bộ phận", "5 bộ phận"], correct: "3 bộ phận", hint: "Nồi hơi, tác nhân, bộ phận ngưng tụ/thoát khí." },
+                { q: "Khi thể tích khí trong xilanh tăng gấp đôi, áp suất (giữ nguyên nhiệt độ):", options: ["Giảm một nửa", "Tăng gấp đôi", "Không đổi", "Tăng 4 lần"], correct: "Giảm một nửa", hint: "Áp suất và thể tích tỉ lệ nghịch." },
+                { q: "Áp lực là lực ép có phương thế nào với mặt bị ép?", options: ["Vuông góc", "Song song", "Trùng nhau", "Xiên một góc 45 độ"], correct: "Vuông góc", hint: "Định nghĩa áp lực cơ học." }
+            ],
+            "chemistry": [
+                { q: "Kí hiệu hóa học của Sắt là:", options: ["Fe", "Cu", "Ag", "Au"], correct: "Fe", hint: "Ferrum." },
+                { q: "Khí Oxi chiếm bao nhiêu phần trăm thể tích không khí?", options: ["21%", "78%", "1%", "50%"], correct: "21%", hint: "Khoảng 1 phần 5." },
+                { q: "Công thức hóa học của nước là:", options: ["H₂O", "CO₂", "NaCl", "HCl"], correct: "H₂O", hint: "Hai nguyên tử H và một O." },
+                { q: "Nguyên tử khối của Cacbon (C) là bao nhiêu?", options: ["12", "16", "14", "1", "23"], correct: "12", hint: "Đơn vị C = 12." },
+                { q: "Hóa trị của Oxi trong các hợp chất thường là:", options: ["II", "I", "III", "IV"], correct: "II", hint: "O luôn hóa trị 2." },
+                { q: "Hiện tượng nào sau đây là hiện tượng hóa học?", options: ["Sắt bị gỉ", "Nước sôi", "Bóng đèn cháy sáng", "Hòa tan muối vào nước"], correct: "Sắt bị gỉ", hint: "Tạo chất mới hoàn toàn." },
+                { q: "Phản ứng hóa học là quá trình:", options: ["Biến đổi chất này thành chất khác", "Giữ nguyên tính chất chất ban đầu", "Chỉ thay đổi trạng thái", "Làm thay đổi khối lượng chất"], correct: "Biến đổi chất này thành chất khác", hint: "Bản chất phản ứng hóa học." },
+                { q: "Định luật bảo toàn khối lượng do ai phát hiện?", options: ["Lô-mô-nô-sốp và Lavoisier", "Dalton", "Mendeleev", "Newton"], correct: "Lô-mô-nô-sốp và Lavoisier", hint: "Hai nhà bác học Nga và Pháp." },
+                { q: "Khí nhẹ nhất trong tất cả các khí là:", options: ["H₂", "O₂", "CO₂", "N₂"], correct: "H₂", hint: "Môn tử khối bằng 2." },
+                { q: "Oxit là hợp chất của:", options: ["Oxi với một nguyên tố khác", "Kim loại với phi kim", "Axit với bazơ", "Hydro với phi kim"], correct: "Oxit với một nguyên tố khác", hint: "Chứa nguyên tố Oxi." },
+                { q: "Dung dịch làm quỳ tím hóa đỏ là:", options: ["Axit", "Bazơ", "Muối trung hòa", "Nước cất"], correct: "Axit", hint: "Tính axit." },
+                { q: "Dung dịch làm quỳ tím hóa xanh là:", options: ["Bazơ", "Axit", "Nước muối", "Đường"], correct: "Bazơ", hint: "Tính kiềm." },
+                { q: "pH của dung dịch trung tính (như nước cất) là:", options: ["7", "0", "14", "1"], correct: "7", hint: "Điểm giữa thang đo pH." },
+                { q: "Kim loại nào dẫn điện tốt nhất trong tự nhiên?", options: ["Bạc (Ag)", "Đồng (Cu)", "Nhôm (Al)", "Sắt (Fe)"], correct: "Bạc (Ag)", hint: "Đứng đầu bảng khả năng dẫn điện." },
+                { q: "Phi kim nào ở thể lỏng ở điều kiện thường?", options: ["Brom (Br)", "Clor", "Iot", "Photpho"], correct: "Brom (Br)", hint: "Phi kim lỏng duy nhất." },
+                { q: "Công thức hóa học của Axit Clohidric là:", options: ["HCl", "H₂SO₄", "HNO₃", "H₃PO₄"], correct: "HCl", hint: "Axit có trong dạ dày." },
+                { q: "Muối ăn có công thức hóa học là:", options: ["NaCl", "KCl", "CaCO₃", "Na₂SO₄"], correct: "NaCl", hint: "Natri Clorua." },
+                { q: "Phản ứng phân hủy là phản ứng hóa học trong đó:", options: ["Từ một chất sinh ra từ hai hay nhiều chất mới", "Từ nhiều chất sinh ra một chất", "Chất đổi chỗ cho nhau", "Không đổi chất"], correct: "Từ một chất sinh ra từ hai hay nhiều chất mới", hint: "Phân tách chất ra." },
+                { q: "Phản ứng hóa hợp là phản ứng:", options: ["Từ hai hay nhiều chất tạo thành một chất mới", "Một chất tạo nhiều chất", "Trao đổi nhóm nguyên tử", "Trao đổi ion"], correct: "Từ hai hay nhiều chất tạo thành một chất mới", hint: "Hợp nhất lại." },
+                { q: "Khí CO₂ gây ra hiện tượng gì trên Trái Đất?", options: ["Hiệu ứng nhà kính", "Mưa axit", "Thủng tầng ozon", "Ô nhiễm nguồn nước"], correct: "Hiệu ứng nhà kính", hint: "Giữ nhiệt mặt trời." },
+                { q: "Nguyên tố nào chiếm trữ lượng lớn nhất trong vỏ Trái Đất?", options: ["Oxi", "Silic", "Nhôm", "Sắt"], correct: "Oxi", hint: "Kết hợp với nhiều khoáng vật." },
+                { q: "Chất xúc tác có vai trò gì trong phản ứng hóa học?", options: ["Làm thay đổi tốc độ phản ứng mà không bị tiêu hao", "Làm đứng phản ứng", "Tham gia cấu tạo sản phẩm", "Làm giảm khối lượng sản phẩm"], correct: "Làm thay đổi tốc độ phản ứng mà không bị tiêu hao", hint: "Tăng tốc hoặc giảm tốc độ." },
+                { q: "Số mol của 11,2 lít khí Oxi (đktc) là:", options: ["0,5 mol", "1 mol", "2 mol", "0,25 mol"], correct: "0,5 mol", hint: "Lấy 11,2 chia 22,4." },
+                { q: "Thể tích của 1 mol chất khí bất kỳ ở đktc là:", options: ["22,4 lít", "11,2 lít", "24 lít", "33,6 lít"], correct: "22,4 lít", hint: "Hằng số thể tích khí đktc." },
+                { q: "Công thức tính số mol n theo khối lượng m và khối lượng mol M là:", options: ["n = m / M", "n = M / m", "n = m . M", "n = V / 22,4"], correct: "n = m / M", hint: "Khối lượng chia khối lượng mol." },
+                { q: "Oxit bazơ nào tác dụng với nước tạo ra dung dịch bazơ?", options: ["CaO", "CuO", "Fe₂O₃", "ZnO"], correct: "CaO", hint: "Vôi sống tan tỏa nhiệt." },
+                { q: "Dãy chất nào sau đây toàn là Oxit axit?", options: ["CO₂, SO₂, P₂O₅", "CaO, Na₂O, CuO", "HCl, H₂SO₄, HNO₃", "NaCl, Na₂SO₄, CaCO₃"], correct: "CO₂, SO₂, P₂O₅", hint: "Oxit của phi kim ứng với axit." },
+                { q: "Để điều chế khí Oxi trong phòng thí nghiệm, người ta thường nhiệt phân chất nào?", options: ["KClO₃ hoặc KMnO₄", "CaCO₃", "H₂O", "NaCl"], correct: "KClO₃ hoặc KMnO₄", hint: "Muối giàu oxi dễ phân hủy." },
+                { q: "Thành phần chính của đá vôi là:", options: ["CaCO₃", "CaO", "Ca(OH)₂", "CaCl₂"], correct: "CaCO₃", hint: "Canxi Cacbonat." },
+                { q: "Khi bị ong đốt, người ta thường bôi vôi tôi hoặc xà phòng để làm gì?", options: ["Trung hòa axit trong nọc ong", "Làm lạnh vết thương", "Diệt khuẩn", "Giảm đau thần kinh"], correct: "Trung hòa axit trong nọc ong", hint: "Nọc ong có tính axit nhẹ." }
+            ],
+            "english": [
+                { q: "Quá khứ đơn của động từ 'go' là:", options: ["went", "gone", "goes", "going"], correct: "went", hint: "Động từ bất quy tắc cột 2." },
+                { q: "Chọn dạng đúng của từ trong ngoặc: She (play) tennis yesterday.", options: ["played", "plays", "play", "is playing"], correct: "played", hint: "Có dấu hiệu 'yesterday' (thì quá khứ đơn)." },
+                { q: "Cấu trúc câu bị động ở thì hiện tại đơn:", options: ["S + am/is/are + V3/ed", "S + was/were + V3/ed", "S + will be + V3", "S + has + V3"], correct: "S + am/is/are + V3/ed", hint: "Tobe tương ứng hiện tại." },
+                { q: "Từ nào trái nghĩa với từ 'hot'?", options: ["cold", "warm", "cool", "dry"], correct: "cold", hint: "Nóng và lạnh." },
+                { q: "Thì hiện tại tiếp diễn dùng để diễn tả:", options: ["Hành động đang xảy ra tại thời điểm nói", "Thói quen", "Sự thật hiển nhiên", "Hành động quá khứ"], correct: "Hành động đang xảy ra tại thời điểm nói", hint: "Đang diễn ra." },
+                { q: "Chọn đáp án đúng: I have lived here ... 5 years.", options: ["for", "since", "in", "at"], correct: "for", hint: "Khoảng thời gian dùng for, mốc thời gian dùng since." },
+                { q: "So sánh hơn của tính từ ngắn 'tall' là:", options: ["taller", "tallest", "more tall", "as tall as"], correct: "taller", hint: "Thêm -er vào sau tính từ ngắn." },
+                { q: "So sánh nhất của tính từ ngắn 'big' là:", options: ["the biggest", "bigger", "biggest", "the most big"], correct: "the biggest", hint: "The + tính từ ngắn thêm -est." },
+                { q: "Cấu trúc 'used to' dùng để diễn tả:", options: ["Thói quen trong quá khứ nay không còn", "Hành động đang làm", "Sự việc tương lai", "Khả năng hiện tại"], correct: "Thói quen trong quá khứ nay không còn", hint: "Thói quen cũ." },
+                { q: "Choose the correct word: My brother is interested ... playing soccer.", options: ["in", "on", "at", "with"], correct: "in", hint: "Cụm từ interested in." },
+                { q: "What is the capital of England?", options: ["London", "Paris", "Washington D.C.", "Tokyo"], correct: "London", hint: "Thủ đô xứ sở sương mù." },
+                { q: "Find the word with different sound in underlined part: cat, hat, map, cake", options: ["cake", "cat", "hat", "map"], correct: "cake", hint: "Âm /eɪ/ khác âm /æ/." },
+                { q: "Choose the correct modal verb: You ... finish your homework before going out.", options: ["must", "can", "might", "may"], correct: "must", hint: "Bắt buộc phải làm." },
+                { q: "If it rains, we ... stay at home.", options: ["will", "would", "did", "have"], correct: "will", hint: "Câu điều kiện loại 1." },
+                { q: "She sings very ...", options: ["beautifully", "beautiful", "beauty", "more beautiful"], correct: "beautifully", hint: "Trạng từ bổ nghĩa cho động từ sings." },
+                { q: "He is ... tallest boy in our class.", options: ["the", "a", "an", "Ø"], correct: "the", hint: "Dùng trước so sánh nhất." },
+                { q: "They have already finished their homework, ...?", options: ["haven't they", "have they", "don't they", "did they"], correct: "haven't they", hint: "Câu hỏi đuôi (Tag question)." },
+                { q: "My mother enjoys ... books in her free time.", options: ["reading", "to read", "read", "readed"], correct: "reading", hint: "Sau enjoy là động từ thêm -ing." },
+                { q: "Nam is not tall ... to reach the top shelf.", options: ["enough", "too", "very", "so"], correct: "enough", hint: "Cấu trúc adj + enough." },
+                { q: "The book is ... interesting than that one.", options: ["more", "most", "as", "less"], correct: "more", hint: "So sánh hơn với tính từ dài." },
+                { q: "Lan is good ... English.", options: ["at", "in", "on", "with"], correct: "at", hint: "Cụm từ good at." },
+                { q: "We should recycle cans and bottles to save ... resources.", options: ["natural", "nature", "naturally", "native"], correct: "natural", hint: "Tính từ bổ nghĩa cho resources." },
+                { q: "A disaster caused by a sudden shaking of the ground is called:", options: ["earthquake", "typhoon", "flood", "drought"], correct: "earthquake", hint: "Động đất." },
+                { q: "Tet holiday usually occurs in January or ...", options: ["February", "March", "December", "November"], correct: "February", hint: "Tháng Hai dương lịch." },
+                { q: "Phong can speak English fluently, ... he is only 10 years old.", options: ["although", "because", "so", "but"], correct: "although", hint: "Mặc dù... nhưng..." },
+                { q: "I wish I ... a bird so I could fly.", options: ["were", "am", "will be", "was"], correct: "were", hint: "Câu ước cho điều không có thật ở hiện tại." },
+                { q: "What were you doing at 8 PM yesterday?", options: ["I was watching TV", "I watch TV", "I watched TV", "I am watching TV"], correct: "I was watching TV", hint: "Thì quá khứ tiếp diễn." },
+                { q: "Solar energy can be converted into ... energy.", options: ["electrical", "electric", "electricity", "electrician"], correct: "electrical", hint: "Năng lượng điện." },
+                { q: "We should turn off electrical appliances when not in use to save ...", options: ["energy", "water", "money", "paper"], correct: "energy", hint: "Tiết kiệm năng lượng." },
+                { q: "Nam suggested ... public buses to reduce pollution.", options: ["taking", "take", "to take", "took"], correct: "taking", hint: "Suggest + V-ing." }
+            ],
+            "literature": [
+                { q: "Tác phẩm 'Lão Hạc' của nhà văn nào?", options: ["Nam Cao", "Ngô Tất Tố", "Vũ Trọng Phụng", "Nguyên Hồng"], correct: "Nam Cao", hint: "Tác giả hiện thực xuất sắc viết về người nông dân." },
+                { q: "Đoạn trích 'Tức nước vỡ bờ' trích từ tiểu thuyết nào?", options: ["Tắt đèn", "Số đỏ", "Lão Hạc", "Bỉ vỏ"], correct: "Tắt đèn", hint: "Tiêu biểu của Ngô Tất Tố." },
+                { q: "Nhân vật chính trong truyện ngắn 'Chiếc lá cuối cùng' là ai?", options: ["Cụ Bơ-men, Giôn-xi, Xơ-su", "Phíp-líp", "An-phông-xô", "Lão Hạc"], correct: "Cụ Bơ-men, Giôn-xi, Xơ-su", hint: "Truyện của O. Henry." },
+                { q: "Phương thức biểu đạt chính của văn bản thuyết minh là gì?", options: ["Cung cấp tri thức khách quan", "Biểu cảm", "Tự sự", "Miêu tả"], correct: "Cung cấp tri thức khách quan", hint: "Trình bày đặc điểm sự vật, hiện tượng." },
+                { q: "Tác giả của đoạn trích 'Trong lòng mẹ' là ai?", options: ["Nguyên Hồng", "Tế Hanh", "Hồ Chí Minh", "Nam Cao"], correct: "Nguyên Hồng", hint: "Nhà văn của những người cùng khổ." },
+                { q: "Hịch tướng sĩ do ai sáng tác?", options: ["Trần Quốc Tuấn", "Nguyễn Trãi", "Lý Thường Kiệt", "Phạm Ngũ Lão"], correct: "Trần Quốc Tuấn", hint: "Hưng Đạo Đại Vương." },
+                { q: "Chiếu dời đô được ban bố vào năm nào?", options: ["1010", "1288", "1428", "938"], correct: "1010", hint: "Lý Công Uẩn dời đô về Thăng Long." },
+                { q: "Nước Đại Việt ta (trích Bình Ngô đại cáo) khẳng định điều gì đầu tiên?", options: ["Chủ quyền độc lập dân tộc", "Tội ác giặc Minh", "Sức mạnh quân ta", "Lòng căm thù giặc"], correct: "Chủ quyền độc lập dân tộc", hint: "Chân lý về độc lập dân tộc." },
+                { q: "Thơ Bánh trôi nước của Hồ Xuân Hương thuộc thể thơ gì?", options: ["Thất ngôn bát cú Đường luật", "Thất ngôn tứ tuyệt", "Lục bát", "Song thất lục bát"], correct: "Thất ngôn tứ tuyệt", hint: "Bài thơ 4 câu, mỗi câu 7 chữ." },
+                { q: "Câu nghi vấn dùng để làm gì?", options: ["Dùng để hỏi hoặc biểu thị ý khác", "Dùng để kể", "Dùng để ra lệnh", "Dùng để cảm thán"], correct: "Dùng để hỏi hoặc biểu thị ý khác", hint: "Có dấu chấm hỏi ở cuối." },
+                { q: "Trợ từ là gì?", options: ["Từ chuyên đi kèm một từ ngữ trong câu để nhấn mạnh", "Từ chỉ sự vật", "Từ chỉ hành động", "Từ chỉ số lượng"], correct: "Từ chuyên đi kèm một từ ngữ trong câu để nhấn mạnh", hint: "Ví dụ: những, chính, có..." },
+                { q: "Thán từ dùng để làm gì?", options: ["Bộc lộ tình cảm, cảm xúc hoặc dùng để gọi đáp", "Chỉ định sự vật", "Liên kết các câu", "Nói về thời gian"], correct: "Bộc lộ tình cảm, cảm xúc hoặc dùng để gọi đáp", hint: "Ví dụ: ôi, than ôi, này..." },
+                { q: "Nói giảm nói tránh là gì?", options: ["Biện pháp tu từ dùng cách diễn đạt tế nhị, tránh gây cảm giác đau buồn", "Cường điệu hóa sự vật", "Gọi tên sự vật này bằng tên sự vật khác", "Lặp từ ngữ"], correct: "Biện pháp tu từ dùng cách diễn đạt tế nhị, tránh gây cảm giác đau buồn", hint: "Tránh thô tục, nặng nề." },
+                { q: "Điệp ngữ là gì?", options: ["Biện pháp lặp lại từ ngữ để nhấn mạnh", "Trái nghĩa nhau", "Nói quá sự thật", "Chơi chữ"], correct: "Biện pháp lặp lại từ ngữ để nhấn mạnh", hint: "Lặp từ/cụm từ." },
+                { q: "Tác phẩm Quê hương của nhà thơ Tế Hanh sáng tác theo thể thơ nào?", options: ["Tám chữ", "Thất ngôn", "Lục bát", "Tự do"], correct: "Tám chữ", hint: "Thể thơ hiện đại trung thành với dòng cảm xúc miền biển." },
+                { q: "Nhân vật ông Hai trong truyện ngắn Làng nhớ về điều gì nhất?", options: ["Làng theo kháng chiến", "Cái nhà sạt", "Con đường làng", "Cây đa cũ"], correct: "Làng theo kháng chiến", hint: "Tình yêu làng hòa quyện tình yêu nước." },
+                { q: "Chiếc lược ngã là tác phẩm của nhà văn nào?", options: ["Nguyễn Quang Sáng", "Kim Lân", "Thanh Tịnh", "Vũ Bằng"], correct: "Nguyễn Quang Sáng", hint: "Nhà văn Nam Bộ với tình cha con sâu nặng." },
+                { q: "Bài thơ 'Lượm' của Tố Hữu viết về ai?", options: ["Chú bé liên lạc dũng cảm", "Anh bộ đội cụ Hồ", "Bà mẹ chiến sĩ", "Thiếu niên du kích"], correct: "Chú bé liên lạc dũng cảm", hint: "Lượm ơi, chú bé loắt choắt..." },
+                { q: "Ý nghĩa nhan đề 'Mắt lang' của Nguyễn Minh Châu là gì?", options: ["Cách nhìn nhận cuộc sống và con người đa chiều, sâu sắc", "Đôi mắt của loài nai", "Cảnh thiên nhiên buổi sáng", "Sự thay đổi của thời tiết"], correct: "Cách nhìn nhận cuộc sống và con người đa chiều, sâu sắc", hint: "Chiêm nghiệm nghệ thuật và đời sống." },
+                { q: "Vẻ đẹp của Thúy Kiều trong đoạn trích 'Chị em Thúy Kiều' được miêu tả nổi bật qua:", options: ["Vẻ đẹp sắc sảo, mặn mà, tài hoa xuất chúng", "Chỉ có vẻ đẹp hình thức", "Sự đanh đá", "Sự ngây thơ"], correct: "Vẻ đẹp sắc sảo, mặn mà, tài hoa xuất chúng", hint: "Hoa ghen thua thắm liễu hờn kém xanh." },
+                { q: "Truyện Kiều của Nguyễn Du viết bằng chữ gì?", options: ["Chữ Nôm", "Chữ Hán", "Chữ Quốc ngữ", "Chữ Phạn"], correct: "Chữ Nôm", hint: "Kiệt tác văn học chữ Nôm." },
+                { q: "Mây thua nước tóc tuyết nhường màu da miêu tả ai?", options: ["Thúy Vân", "Thúy Kiều", "Hoạn Thư", "Đạm Tiên"], correct: "Thúy Vân", hint: "Vẻ đẹp hiền hậu, phúc hậu." },
+                { q: "Đoạn trích 'Mã Giám Sinh mua Kiều' tố cáo thế lực nào?", options: ["Bọn đồng tiền và sự bất nhân của xã hội phong kiến", "Gia đình Thúy Kiều", "Thực dân Pháp", "Bọn phong kiến phương Bắc"], correct: "Bọn đồng tiền và sự bất nhân của xã hội phong kiến", hint: "Bản chất buôn thịt bán người." },
+                { q: "Phong cách ngôn ngữ sinh hoạt được dùng ở đâu?", options: ["Trong giao tiếp sinh hoạt hàng ngày", "Trong văn bản hành chính", "Trong báo chí", "Trong sách giáo khoa khoa học"], correct: "Trong giao tiếp sinh hoạt hàng ngày", hint: "Lời ăn tiếng nói đời thường." },
+                { q: "Từ ngữ địa phương là gì?", options: ["Từ ngữ chỉ dùng ở một hoặc một số địa phương nhất định", "Từ dùng toàn quốc", "Từ mượn nước ngoài", "Từ cổ"], correct: "Từ ngữ chỉ dùng ở một hoặc một số địa phương nhất định", hint: "Đặc trưng vùng miền." },
+                { q: "Biện pháp nói quá có tác dụng gì?", options: ["Nhấn mạnh, gây ấn tượng, tăng sức biểu cảm", "Nói giảm sự thật", "Làm châm biếm", "Gây cười"], correct: "Nhấn mạnh, gây ấn tượng, tăng sức biểu cảm", hint: "Phóng đại quy mô, tính chất." },
+                { q: "Trường từ vựng là gì?", options: ["Tập hợp những từ có ít nhất một nét chung về nghĩa", "Tập hợp từ cùng loại từ", "Tập hợp từ đồng nghĩa", "Tập hợp từ trái nghĩa"], correct: "Tập hợp những từ có ít nhất một nét chung về nghĩa", hint: "Liên quan đến một lĩnh vực." },
+                { q: "Từ tượng hình là từ gợi tả:", options: ["Hình ảnh, dáng vẻ, trạng thái của sự vật", "Âm thanh", "Cảm xúc", "Màu sắc"], correct: "Hình ảnh, dáng vẻ, trạng thái của sự vật", hint: "Ví dụ: lúp xúp, gập ghềnh..." },
+                { q: "Từ tượng thanh là từ mô phỏng:", options: ["Âm thanh của tự nhiên, con người", "Hình dáng", "Hành động", "Trạng thái"], correct: "Âm thanh của tự nhiên, con người", hint: "Ví dụ: ào ào, lách tách..." },
+                { q: "Hành động nói là gì?", options: ["Hành động được thực hiện bằng lời nói nhằm mục đích nhất định", "Hành động bằng tay chân", "Viết thư", "Đọc sách"], correct: "Hành động được thực hiện bằng lời nói nhằm mục đích nhất định", hint: "Mục đích cầu khiến, hứa hẹn, hỏi..." }
+            ],
+            "tech": [
+                { q: "Hình chiếu đứng trong bản vẽ kỹ thuật nhìn từ hướng nào tới?", options: ["Từ trước tới", "Từ trên xuống", "Từ trái sang", "Từ phải sang"], correct: "Từ trước tới", hint: "Mặt trước vật thể." },
+                { q: "Ê-tô dùng để làm gì trong cơ khí?", options: ["Kẹp giữ phôi khi gia công", "Đục kim loại", "Cưa sắt", "Dũa phẳng"], correct: "Kẹp giữ phôi khi gia công", hint: "Dụng cụ kẹp chặt." },
+                { q: "Cấu tạo của bản vẽ chi tiết gồm những nội dung gì?", options: ["Hình biểu diễn, kích thước, yêu cầu kỹ thuật, khung tên", "Chỉ có hình vẽ", "Chỉ có khung tên", "Chỉ có kích thước"], correct: "Hình biểu diễn, kích thước, yêu cầu kỹ thuật, khung tên", hint: "4 phần chính bản vẽ chi tiết." },
+                { q: "Vật liệu cơ khí phổ biến được chia thành mấy nhóm chính?", options: ["2 nhóm (Kim loại và Phi kim loại)", "3 nhóm", "4 nhóm", "1 nhóm"], correct: "2 nhóm (Kim loại và Phi kim loại)", hint: "Phân loại vật liệu kỹ thuật." },
+                { q: "Kim loại đen bao gồm:", options: ["Gang và Thép", "Đồng và Nhôm", "Nhôm và Kẽm", "Vàng và Bạc"], correct: "Gang và Thép", hint: "Dựa vào tỷ lệ cacbon và sắt." },
+                { q: "Dụng cụ gia công cầm tay cơ khí bao gồm:", options: ["Cưa, đục, dũa, búa", "Ê-tô, kìm", "Thước cuộn", "Máy khoan"], correct: "Cưa, đục, dũa, búa", hint: "Các dụng cụ tác động trực tiếp bằng tay." },
+                { q: "Đường kính của lỗ trên bản vẽ thường được ký hiệu bằng chữ gì?", options: ["Ø (Phi)", "R", "S", "H"], correct: "Ø (Phi)", hint: "Ký hiệu hình tròn có gạch chéo." },
+                { q: "Tỉ lệ 1:2 trên bản vẽ kỹ thuật có ý nghĩa gì?", options: ["Kích thước trên vẽ nhỏ hơn 2 lần thực tế", "Kích thước lớn gấp đôi", "Kích thước bằng thực tế", "Tỉ lệ phóng to"], correct: "Kích thước trên vẽ nhỏ hơn 2 lần thực tế", hint: "Tỉ lệ thu nhỏ." },
+                { q: "Phương pháp gia công nào bóc đi một phần kim loại dưới dạng phoi?", options: ["Cưa, dũa, khoan, đục", "Đúc", "Hàn", "Cán kéo"], correct: "Cưa, dũa, khoan, đục", hint: "Tạo phoi trong cơ khí." },
+                { q: "Công nghệ đúc kim loại có ưu điểm gì?", options: ["Đúc được vật liệu có hình dạng phức tạp, kích thước lớn", "Tốn ít nguyên liệu", "Thời gian rất nhanh cho 1 sản phẩm đơn lẻ", "Độ chính xác tuyệt đối"], correct: "Đúc được vật liệu có hình dạng phức tạp, kích thước lớn", hint: "Ưu điểm của phương pháp đúc." },
+                { q: "Mối ghép cố định không tháo được gồm những loại nào?", options: ["Hàn, tán đinh, dán keo", "Bu lông, đai ốc", "Mối ghép bằng then", "Mối ghép ren"], correct: "Hàn, tán đinh, dán keo", hint: "Muốn tháo phải phá hủy mối ghép." },
+                { q: "Mối ghép tháo được bao gồm:", options: ["Bu lông, vít cấy, đinh vít", "Hàn", "Tán đinh", "Đúc"], correct: "Bu lông, vít cấy, đinh vít", hint: "Tháo lắp dễ dàng không hỏng bộ phận." },
+                { q: "Truyền động đai thường dùng để truyền chuyển động giữa các trục:", options: ["Song song hoặc chéo nhau ở khoảng cách xa", "Vuông góc", "Trùng nhau", "Khoảng cách rất gần"], correct: "Song song hoặc chéo nhau ở khoảng cách xa", hint: "Dùng dây đai cao su/da." },
+                { q: "Trong cơ cấu tay quay thanh lắc, bộ phận nào chuyển động quay tròn?", options: ["Tay quay", "Thanh lắc", "Con trượt", "Giá đỡ"], correct: "Tay quay", hint: "Quay tròn quanh trục." },
+                { q: "Hộp số xe máy có tác dụng gì?", options: ["Thay đổi tốc độ và momen lực của xe", "Chỉ làm xe chạy nhanh hơn", "Chỉ để phanh xe", "Làm đẹp xe"], correct: "Thay đổi tốc độ và momen lực của xe", hint: "Hệ thống bánh răng thay đổi tỉ số truyền." },
+                { q: "Điện năng tiêu thụ của thiết bị phụ thuộc vào yếu tố nào?", options: ["Công suất và thời gian sử dụng", "Chỉ công suất", "Chỉ thời gian", "Điện áp mạng điện"], correct: "Công suất và thời gian sử dụng", hint: "A = P.t" },
+                { q: "Năng lượng tái tạo là gì?", options: ["Năng lượng sạch, tự phục hồi, không cạn kiệt", "Năng lượng từ than đá", "Năng lượng dầu mỏ", "Khí đốt tự nhiên"], correct: "Năng lượng sạch, tự phục hồi, không cạn kiệt", hint: "Gió, mặt trời, thủy triều." },
+                { q: "Biện pháp nào tiết kiệm điện năng hiệu quả nhất?", options: ["Tắt thiết bị khi không sử dụng", "Mở điện sáng suốt đêm", "Dùng thiết bị cũ tốn điện", "Mở máy lạnh 16 độ liên tục"], correct: "Tắt thiết bị khi không sử dụng", hint: "Ý thức tiết kiệm." },
+                { q: "Cầu chì có tác dụng gì trong mạch điện?", options: ["Bảo vệ mạch điện khi ngắn mạch hoặc quá tải", "Tăng điện áp", "Làm đẹp mạch", "Tiết kiệm tiền điện"], correct: "Bảo vệ mạch điện khi ngắn mạch hoặc quá tải", hint: "Dây chì tự đứt khi dòng quá lớn." },
+                { q: "Vật liệu cách điện phổ biến gồm:", options: ["Nhựa, cao su, thủy tinh, sứ", "Đồng, nhôm, sắt", "Vàng, bạc", "Than chì"], correct: "Nhựa, cao su, thủy tinh, sứ", hint: "Ngăn chặn dòng điện rò rỉ." },
+                { q: "Đèn LED có ưu điểm gì vượt trội so với đèn sợi đốt?", options: ["Tiết kiệm điện, tuổi thọ cao, ít tỏa nhiệt", "Tốn nhiều điện hơn", "Ánh sáng chói cực mạnh", "Giá rất đắt đỏ không bền"], correct: "Tiết kiệm điện, tuổi thọ cao, ít tỏa nhiệt", hint: "Công nghệ chiếu sáng hiện đại." },
+                { q: "Công tơ điện dùng để đo cái gì?", options: ["Điện năng tiêu thụ của gia đình", "Cường độ dòng điện", "Điện áp lưới", "Công suất tức thời"], correct: "Điện năng tiêu thụ của gia đình", hint: "Đồng hồ tính tiền điện hàng tháng." },
+                { q: "Sơ đồ khối của hệ thống điện gồm mấy phần chính?", options: ["3 phần (Nguồn điện, Truyền tải, Tiêu thụ)", "2 phần", "4 phần", "5 phần"], correct: "3 phần (Nguồn điện, Truyền tải, Tiêu thụ)", hint: "Cấu trúc hệ thống điện." },
+                { q: "Nguyên lý làm việc của động cơ điện một pha dựa trên hiện tượng:", options: ["Cảm ứng điện từ và lực điện từ", "Nhiệt điện", "Quang điện", "Hóa điện"], correct: "Cảm ứng điện từ và lực điện từ", hint: "Biến điện năng thành cơ năng." },
+                { q: "Nối đất các thiết bị điện dùng trong nhà nhằm mục đích gì?", options: ["Đảm bảo an toàn, tránh điện giật khi rò rỉ", "Giảm tiền điện", "Giúp thiết bị chạy nhanh hơn", "Làm đẹp thiết bị"], correct: "Đảm bảo an toàn, tránh điện giật khi rò rỉ", hint: "Dây tiếp địa bảo vệ người." },
+                { q: "Khi có người bị điện giật, việc đầu tiên cần làm là gì?", options: ["Ngắt nguồn điện ngay lập tức", "Dùng tay kéo nạn nhân ra", "Đổ nước vào nạn nhân", "Bỏ chạy"], correct: "Ngắt nguồn điện ngay lập tức", hint: "Cắt cầu dao/aptomat." },
+                { q: "Vật liệu nào sau đây dẫn điện tốt?", options: ["Đồng", "Gỗ khô", "Nhựa PVC", "Thủy tinh"], correct: "Đồng", hint: "Kim loại làm lõi dây dẫn." },
+                { q: "Cơ cấu trục vít - bánh vít dùng để làm gì?", options: ["Truyền chuyển động và giảm tốc độ tỷ số lớn", "Tăng tốc độ cực nhanh", "Truyền chuyển động thẳng", "Không có tác dụng gì"], correct: "Truyền chuyển động và giảm tốc độ tỷ số lớn", hint: "Cơ cấu kẹp ê-tô hoặc cần đàn guitar." },
+                { q: "Đặc điểm của mối ghép hàn là gì?", options: ["Mối ghép chắc chắn, không tháo rời được", "Dễ tháo lắp", "Dùng bu lông", "Chỉ dùng cho gỗ"], correct: "Mối ghép chắc chắn, không tháo rời được", hint: "Nung chảy kim loại chỗ nối." },
+                { q: "Bản vẽ lắp dùng để làm gì?", options: ["Diễn tả hình dạng, kết cấu của một cụm sản phẩm", "Chỉ vẽ một chi tiết đơn lẻ", "Làm hóa đơn", "Thiết kế nhà"], correct: "Diễn tả hình dạng, kết cấu của một cụm sản phẩm", hint: "Lắp ráp nhiều chi tiết lại." }
+            ],
+            "history_geo": [
+                { q: "Ai là người lãnh đạo cuộc khởi nghĩa Hương Khê?", options: ["Phan Đình Phùng", "Đinh Công Tráng", "Nguyễn Thi Định", "Hoàng Hoa Thám"], correct: "Phan Đình Phùng", hint: "Cuộc khởi nghĩa tiêu biểu phong trào Cần Vương." },
+                { q: "Phong trào Cần Vương diễn ra vào cuối thế kỷ nào?", options: ["Thế kỷ XIX", "Thế kỷ XVIII", "Thế kỷ XX", "Thế kỷ XVII"], correct: "Thế kỷ XIX", hint: "Từ năm 1885 hưởng ứng chiếu vua Hàm Nghi." },
+                { q: "Lãnh đạo cuộc khởi nghĩa Yên Thế chống Pháp là ai?", options: ["Hoàng Hoa Thám", "Phan Bội Châu", "Phan Châu Trinh", "Nguyễn Tất Thành"], correct: "Hoàng Hoa Thám", hint: "Đề Thám ở Bắc Giang." },
+                { q: "Tổ chức Duy tân hội do ai thành lập năm 1904?", options: ["Phan Bội Châu", "Phan Châu Trinh", "Cường Để", "Huỳnh Thúc Kháng"], correct: "Phan Bội Châu", hint: "Phong trào Đông Du." },
+                { q: "Nguyễn Tất Thành ra đi tìm đường cứu nước vào ngày tháng năm nào?", options: ["5/6/1911", "3/2/1930", "2/9/1945", "19/8/1945"], correct: "5/6/1911", hint: "Từ bến Nhà Rồng." },
+                { q: "Việt Nam nằm ở khu vực nào của châu Á?", options: ["Đông Nam Á", "Nam Á", "Đông Á", "Tây Nam Á"], correct: "Đông Nam Á", hint: "Khu vực bán đảo Đông Dương." },
+                { q: "Đặc điểm khí hậu nổi bật của nước ta là:", options: ["Nhiệt đới ẩm gió mùa", "Ôn đới lục địa", "Hàn đới băng giá", "Hoang mạc khô hạn"], correct: "Nhiệt đới ẩm gió mùa", hint: "Nóng ẩm, mưa nhiều, gió mùa." },
+                { q: "Sông ngòi nước ta có đặc điểm gì chính?", options: ["Mạng lưới dày đặc, nhiều nước, giàu phù sa", "Ít sông ngòi, khô cạn", "Đóng băng vào mùa đông", "Chỉ có sông nhỏ"], correct: "Mạng lưới dày đặc, nhiều nước, giàu phù sa", hint: "Chế độ nước theo mùa." },
+                { q: "Loại đất chiếm diện tích lớn nhất ở đồi núi nước ta là:", options: ["Đất feralit", "Đất phù sa", "Đất cát biển", "Đất mùn núi cao"], correct: "Đất feralit", hint: "Đất đỏ vàng miền đồi núi." },
+                { q: "Vùng kinh tế nào của nước ta dẫn đầu về sản xuất lương thực (lúa gạo)?", options: ["Đồng bằng sông Cửu Long", "Đồng bằng sông Hồng", "Đông Nam Bộ", "Trung du miền núi Bắc Bộ"], correct: "Đồng bằng sông Cửu Long", hint: "Vựa lúa số 1 cả nước." },
+                { q: "Tỉnh Sóc Trăng thuộc vùng kinh tế - xã hội nào?", options: ["Đồng bằng sông Cửu Long", "Đông Nam Bộ", "Tây Nguyên", "Duyên hải Nam Trung Bộ"], correct: "Đồng bằng sông Cửu Long", hint: "Vùng hạ lưu sông Hậu." },
+                { q: "Địa hình nước ta phần lớn là:", options: ["Đồi núi thấp", "Đồng bằng phẳng rộng", "Cao nguyên bazan", "Hoang mạc cát"], correct: "Đồi núi thấp", hint: "3/4 diện tích là đồi núi." },
+                { q: "Biển Đông có vai trò gì quan trọng đối với nước ta?", options: ["Cung cấp nguồn tài nguyên lớn, điều hòa khí hậu, phát triển kinh tế biển", "Không có tác dụng gì", "Gây ngập lụt quanh năm", "Làm khô hạn đất đai"], correct: "Cung cấp nguồn tài nguyên lớn, điều hòa khí hậu, phát triển kinh tế biển", hint: "Lợi thế hướng ra biển." },
+                { q: "Tài nguyên khoáng sản nổi bật ở vùng thềm lục địa nước ta là:", options: ["Dầu mỏ và khí đốt", "Than đá", "Sắt và đồng", "Bô-xít"], correct: "Dầu mỏ và khí đốt", hint: "Khai thác thềm lục địa phía Nam." },
+                { q: "Sự kiện nào đánh dấu mở đầu phong trào chống Pháp cuối thế kỷ XIX?", options: ["Nổ súng tấn công thành Gia Định (1859) / Tôn Thất Thuyết phát động Cần Vương (1885)", "Thực dân Pháp ký hiệp ước", "Khởi nghĩa Lam Sơn", "Cách mạng tháng Tám"], correct: "Nổ súng tấn công thành Gia Định (1859) / Tôn Thất Thuyết phát động Cần Vương (1885)", hint: "Quá trình xâm lược và phản kháng." },
+                { q: "Hội Việt Nam Cách mạng Thanh niên được thành lập bởi ai?", options: ["Nguyễn Ái Quốc", "Phan Bội Châu", "Trần Phú", "Nguyễn Văn Cừ"], correct: "Nguyễn Ái Quốc", hint: "Năm 1925 tại Quảng Châu (Trung Quốc)." },
+                { q: "Đảng Cộng sản Việt Nam ra đời vào ngày tháng năm nào?", options: ["3/2/1930", "19/8/1945", "2/9/1945", "30/4/1975"], correct: "3/2/1930", hint: "Hội nghị thành lập Đảng ở Hương Cảng." },
+                { q: "Cao trào kháng Nhật cứu nước diễn ra vào năm nào?", options: ["1945", "1930", "1940", "1954"], correct: "1945", hint: "Trước cuộc tổng khởi nghĩa tháng Tám." },
+                { q: "Đỉnh núi cao nhất Việt Nam là:", options: ["Phan-xi-păng", "Ngọc Lĩnh", "Lang Biang", "Tây Côn Lĩnh"], correct: "Phan-xi-păng", hint: "Nóc nhà Đông Dương ở Lào Cai." },
+                { q: "Mùa mưa ở miền Bắc nước ta thường gắn liền với gió mùa nào?", options: ["Gió mùa Tây Nam", "Gió mùa Đông Bắc", "Gió Tín phong", "Gió đất liền"], correct: "Gió mùa Tây Nam", hint: "Mang hơi ẩm từ biển vào mùa hè." },
+                { q: "Mùa đông lạnh ở miền Bắc nước ta chịu ảnh hưởng trực tiếp của:", options: ["Gió mùa Đông Bắc", "Gió mùa Tây Nam", "Gió Tây khô nóng", "Bão nhiệt đới"], correct: "Gió mùa Đông Bắc", hint: "Khối khí lạnh phương Bắc." },
+                { q: "Cơ cấu dân số nước ta hiện nay có đặc điểm gì?", options: ["Dân số trẻ, nguồn lao động dồi dào", "Dân số già cỗi", "Tỷ lệ sinh rất thấp", "Không có lao động"], correct: "Dân số trẻ, nguồn lao động dồi dào", hint: "Tháp dân số đáy rộng." },
+                { q: "Các dân tộc ít người ở nước ta phân bố chủ yếu ở đâu?", options: ["Vùng đồi núi và trung du", "Đồng bằng ven biển", "Hải đảo xa", "Thành phố lớn"], correct: "Vùng đồi núi và trung du", hint: "Miền núi cao." },
+                { q: "Ngành công nghiệp nào trọng điểm của nước ta hiện nay?", options: ["Khai thác nhiên liệu, điện, cơ khí, chế biến lương thực thực phẩm", "Chỉ làm nông nghiệp", "Khai thác vàng", "Sản xuất vũ khí"], correct: "Khai thác nhiên liệu, điện, cơ khí, chế biến lương thực thực phẩm", hint: "Cơ cấu công nghiệp đa dạng." },
+                { q: "Đường biên giới trên đất liền của nước ta dài nhất giáp với nước nào?", options: ["Lào", "Campuchia", "Trung Quốc", "Thái Lan"], correct: "Lào", hint: "Đường biên giới dài giáp Lào." },
+                { q: "Vùng kinh tế trọng điểm phía Nam bao gồm bao nhiêu tỉnh thành?", options: ["8 tỉnh thành (TP.HCM, Đồng Nai, Bình Dương...)", "4 tỉnh", "6 tỉnh", "10 tỉnh"], correct: "8 tỉnh thành (TP.HCM, Đồng Nai, Bình Dương...)", hint: "Đầu tàu kinh tế phía Nam." },
+                { q: "Sông nào lớn nhất chảy qua vùng Đồng bằng sông Cửu Long?", options: ["Sông Tiền và Sông Hậu (hệ thống sông Mê Công)", "Sông Hồng", "Sông Đà", "Sông Mã"], correct: "Sông Tiền và Sông Hậu (hệ thống sông Mê Công)", hint: "Chín nhánh sông đổ ra biển." },
+                { q: "Hiện tượng thời tiết cực đoan hay xảy ra ở miền Trung nước ta là:", options: ["Bão và lũ lụt, hạn hán", "Động đất lớn", "Tuyệt đối không có thiên tai", "Núi lửa phun"], correct: "Bão và lũ lụt, hạn hán", hint: "Miền Trung chịu nhiều bão lũ." },
+                { q: "Vườn quốc gia nào ở Việt Nam nổi tiếng với hang động lớn nhất thế giới Sơn Đoòng?", options: ["Vườn quốc gia Phong Nha - Kẻ Bàng (Quảng Bình)", "Cúc Phương", "Ba Bể", "U Minh Hạ"], correct: "Vườn quốc gia Phong Nha - Kẻ Bàng (Quảng Bình)", hint: "Di sản thiên nhiên thế giới." },
+                { q: "Diện tích lãnh thổ phần đất liền của nước ta khoảng bao nhiêu?", options: ["331.212 km²", "500.000 km²", "200.000 km²", "1.000.000 km²"], correct: "331.212 km²", hint: "Diện tích hình chữ S." }
+            ],
+            "local": [
+                { q: "Tỉnh Sóc Trăng nằm ở vùng nào của nước ta?", options: ["Đồng bằng sông Cửu Long", "Đông Nam Bộ", "Tây Nguyên", "Duyên hải Nam Trung Bộ"], correct: "Đồng bằng sông Cửu Long", hint: "Vùng hạ lưu sông Hậu." },
+                { q: "Lễ hội Oóc Om Bóc ở Sóc Trăng gắn liền với đồng bào dân tộc nào?", options: ["Khmer", "Chăm", "Hoa", "Kinh"], correct: "Khmer", hint: "Lễ cúng trăng truyền thống." },
+                { q: "Môn thể thao dân gian nổi tiếng trong lễ hội Oóc Om Bóc là gì?", options: ["Đua ghe Ngo", "Đua thuyền rồng", "Đẩy gậy", "Kéo co"], correct: "Đua ghe Ngo", hint: "Ghe thuyền dài truyền thống trên sông." },
+                { q: "Chùa Dơi (Sóc Trăng) nổi tiếng với loài động vật nào sinh sống bầy đàn?", options: ["Dơi quạ", "Chim én", "Khỉ", "Cò trắng"], correct: "Dơi quạ", hint: "Tên chùa gắn liền với loài dơi treo mình." },
+                { q: "Huyện đảo duy nhất của tỉnh Sóc Trăng là gì?", options: ["Cù Lao Dung", "Phú Quốc", "Côn Đảo", "Hải Đảo"], correct: "Cù Lao Dung", hint: "Dải cù lao bồi đắp giữa sông cửa biển." },
+                { q: "Bánh Pía Sóc Trăng có hương vị đặc trưng của quả gì làm nhân?", options: ["Sầu riêng", "Mít", "Xoài", "Chuối"], correct: "Sầu riêng", hint: "Hương thơm ngào ngạt béo ngậy." },
+                { q: "Chùa Khléang ở Sóc Trăng là một ngôi chùa cổ mang kiến trúc của dân tộc nào?", options: ["Khmer", "Chăm", "Hoa", "Kinh"], correct: "Khmer", hint: "Ngôi chùa cổ lâu đời bậc nhất Sóc Trăng." },
+                { q: "Tỉnh Sóc Trăng giáp với các tỉnh nào sau đây?", options: ["Trà Vinh, Vĩnh Long, Hậu Giang, Bạc Liêu", "Cà Mau, Kiên Giang", "An Giang, Đồng Tháp", "Long An, Tiền Giang"], correct: "Trà Vinh, Vĩnh Long, Hậu Giang, Bạc Liêu", hint: "Các tỉnh lân cận hạ lưu." },
+                { q: "Chùa Chén Kiểu (Sóc Trăng) có tên tiếng Khmer chính thức là gì?", options: ["Chùa Sro Lôn", "Chùa Mahatup", "Chùa Khléang", "Chùa Som Rong"], correct: "Chùa Sro Lôn", hint: "Nổi tiếng dùng các mảnh chén dĩa ốp tường." },
+                { q: "Lễ hội nào của người Hoa được tổ chức quy mô lớn tại Sóc Trăng?", options: ["Lễ hội vía Bà Chúa Xứ / Lễ hội Nghinh Ông / Tết Nguyên Tiêu", "Lễ hội Ok Om Bok", "Lễ Chol Chnam Thmay", "Lễ Sen Đonta"], correct: "Lễ hội vía Bà Chúa Xứ / Lễ hội Nghinh Ông / Tết Nguyên Tiêu", hint: "Văn hóa tâm linh cộng đồng người Hoa." },
+                { q: "Tỉnh Sóc Trăng có đường bờ biển dài khoảng bao nhiêu km?", options: ["Khoảng 72 km", "20 km", "150 km", "10 km"], correct: "Khoảng 72 km", hint: "Vùng duyên hải ven biển Đông." },
+                { q: "Sông Hậu chảy ra biển qua các cửa sông nào thuộc địa phận Sóc Trăng?", options: ["Cửa Trần Đề, cửa Định An", "Cửa Tiểu, cửa Đại", "Cửa Ba Lai", "Cửa Cung Hầu"], correct: "Cửa Trần Đề, cửa Định An", hint: "Hai cửa biển lớn của sông Hậu." },
+                { q: "Khu tưởng niệm đồng chí Ngô Tự Giai nằm ở huyện nào của Sóc Trăng?", options: ["Long Phú / Mỹ Xuyên / Thành phố Sóc Trăng", "Kế Sách", "Cù Lao Dung", "Ngã Năm"], correct: "Long Phú / Mỹ Xuyên / Thành phố Sóc Trăng", hint: "Di tích lịch sử cách mạng tỉnh." },
+                { q: "Chợ nổi duy nhất ở Sóc Trăng nằm ở thị xã nào?", options: ["Ngã Năm", "Vĩnh Châu", "Kế Sách", "Châu Thành"], correct: "Ngã Năm", hint: "Chợ nổi Ngã Năm giao thương năm ngả sông." },
+                { q: "Loại cây ăn quả đặc sản nổi tiếng ở huyện Kế Sách (Sóc Trăng) là gì?", options: ["Vú sữa tím Vông Yến, bưởi, nhãn", "Sầu riêng", "Xoài cát", "Chôm chôm"], correct: "Vú sữa tím Vông Yến, bưởi, nhãn", hint: "Vùng cù lao trái cây trù phú." },
+                { q: "Tượng Phật Thích Ca mâu ni nằm khổng lồ ngoài trời nổi tiếng nằm ở chùa nào ở Sóc Trăng?", options: ["Chùa Som Rong", "Chùa Dơi", "Chùa Chén Kiểu", "Chùa Phật Đại Bi"], correct: "Chùa Som Rong", hint: "Ngôi chùa có tượng Phật nhập niết bàn lớn." },
+                { q: "Lễ hội truyền thống mừng năm mới của đồng bào Khmer Sóc Trăng gọi là gì?", options: ["Chol Chnam Thmay", "Sen Đonta", "Oóc Om Bóc", "Ok Om Bok"], correct: "Chol Chnam Thmay", hint: "Tết cổ truyền năm mới." },
+                { q: "Lễ hội cúng ông bà tổ tiên của đồng bào Khmer Sóc Trăng là:", options: ["Sen Đonta", "Chol Chnam Thmay", "Oóc Om Bóc", "Tết Trung Thu"], correct: "Sen Đonta", hint: "Tưởng nhớ công ơn ông bà cha mẹ." },
+                { q: "Nghề thủ công truyền thống nào rất nổi tiếng của đồng bào Khmer ở thị xã Ngã Năm, Sóc Trăng?", options: ["Làm bún, đan lát chiếu có lõi bàng", "Gốm sứ", "Dệt lụa tơ tằm", "Làm nón lá"], correct: "Làm bún, đan lát chiếu có lõi bàng", hint: "Làng nghề truyền thống bàng bồ." },
+                { q: "Huyện Mỹ Tú (Sóc Trăng) nổi tiếng với khu di tích lịch sử nào?", options: ["Căn cứ Tỉnh ủy Sóc Trăng", "Đền thờ Hồ Chí Minh", "Chùa cổ", "Cù lao du lịch"], correct: "Căn cứ Tỉnh ủy Sóc Trăng", hint: "Căn cứ kháng chiến chống Mỹ." },
+                { q: "Thành phố Sóc Trăng chính thức lên đô thị loại II trực thuộc tỉnh vào năm nào?", options: ["Năm 2022", "Năm 2010", "Năm 2015", "Năm 2020"], correct: "Năm 2022", hint: "Giai đoạn phát triển đô thị mới." },
+                { q: "Tỉnh Sóc Trăng có bao nhiêu đơn vị hành chính cấp huyện, thị xã, thành phố?", options: ["11 đơn vị", "9 đơn vị", "10 đơn vị", "12 đơn vị"], correct: "11 đơn vị", hint: "Gồm 1 TP, 2 thị xã và 8 huyện." },
+                { q: "Loại hình nghệ thuật hát múa truyền thống đặc sắc của đồng bào Khmer Sóc Trăng là gì?", options: ["Múa Rom vông, Dì kê", "Hát bội", "Cải lương", "Ca hò bài chòi"], correct: "Múa Rom vông, Dì kê", hint: "Điệu múa vòng tròn vui tươi." },
+                { q: "Tỉnh Sóc Trăng chú trọng phát triển kinh tế biển trọng tâm là gì?", options: ["Kinh tế cảng biển Trần Đề, năng lượng gió và nuôi trồng thủy hải sản", "Khai thác vàng", "Trồng lúa mì", "Làm muối mỏ"], correct: "Kinh tế cảng biển Trần Đề, năng lượng gió và nuôi trồng thủy hải sản", hint: "Định hướng chiến lược biển." },
+                { q: "Loại bánh ngọt truyền thống nhân đậu xanh mỡ heo gói trong lá chuối của người Kinh ở Sóc Trăng là gì?", options: ["Bánh gừng, bánh ống", "Bánh pía", "Bánh ít trần", "Bánh tét"], correct: "Bánh gừng, bánh ống", hint: "Bánh dân gian truyền thống." },
+                { q: "Cảng nước sâu Trần Đề khi hoàn thành có ý nghĩa gì lớn với Sóc Trăng và vùng ĐBSCL?", options: ["Là cửa ngõ giao thương quốc tế xuất nhập khẩu hàng hóa trực tiếp", "Không có ý nghĩa", "Chỉ phục vụ đánh cá nhỏ", "Làm cảng du lịch thể thao"], correct: "Là cửa ngõ giao thương quốc tế xuất nhập khẩu hàng hóa trực tiếp", hint: "Cảng chiến lược quốc gia." },
+                { q: "Nhà máy điện gió nào đã và đang triển khai xây dựng ven biển Sóc Trăng?", options: ["Các nhà máy điện gió Vĩnh Châu", "Điện gió Bạc Liêu", "Điện gió Cà Mau", "Điện gió Trà Vinh"], correct: "Các nhà máy điện gió Vĩnh Châu", hint: "Khu vực bãi bồi ven biển Vĩnh Châu." },
+                { q: "Tên một loại gạo đặc sản nổi tiếng thơm ngon trồng trên đất Sóc Trăng do kỹ sư Hồ Quang Cua lai tạo từng đạt giải ngon nhất thế giới là:", options: ["ST24 / ST25", "Gạo Nàng Hương", "Gạo Tám thơm", "Gạo Tài Nguyên"], correct: "ST24 / ST25", hint: "Gạo Sóc Trăng thơm hảo hạng." },
+                { q: "Món bánh dân gian làm từ bột gạo, nước cốt dừa, lá dứa có hình ống tre của đồng bào Khmer gọi là:", options: ["Bánh ống", "Bánh Pía", "Bánh xèo", "Bánh khọt"], correct: "Bánh ống", hint: "Nấu bằng ống hơi nước thơm phức." },
+                { q: "Biểu tượng văn hóa đặc sắc khi nhắc đến Sóc Trăng thường gắn liền với hình ảnh:", options: ["Đua ghe Ngo và Chùa Dơi", "Hồ Hoàn Kiếm", "Phố cổ Hội An", "Vịnh Hạ Long"], correct: "Đua ghe Ngo và Chùa Dơi", hint: "Đặc sản du lịch tỉnh nhà." }
+            ]
         },
         "9": {
-            "math": [{ q: "Căn bậc hai số học của 16 là:", options: ["4", "-4", "256", "8"], answer: 0, hint: "Số dương bình phương bằng 16." }],
-            "physics": [{ q: "Công thức Định luật Ôm là:", options: ["I = U / R", "I = U . R", "R = I / U", "U = I / R"], answer: 0, hint: "I tỉ lệ thuận U, tỉ lệ nghịch R." }],
-            "chemistry": [{ q: "Dung dịch Axit làm quỳ tím chuyển màu gì?", options: ["Màu đỏ", "Màu xanh", "Màu hồng", "Không đổi màu"], answer: 0, hint: "Màu đỏ rực." }],
-            "english": [{ q: "Từ đồng nghĩa với 'famous' là:", options: ["well-known", "unknown", "boring", "quiet"], answer: 0, hint: "Nổi tiếng." }],
-            "literature": [{ q: "Nhân vật chính trong 'Chuyện người con gái Nam Xương'?", options: ["Vũ Nương", "Thúy Kiều", "Mị Nương", "Thúy Vân"], answer: 0, hint: "Người phụ nữ bị oan." }],
-            "tech": [{ q: "Điện áp mạng điện sinh hoạt Việt Nam là:", options: ["220V", "110V", "380V", "12V"], answer: 0, hint: "Mức điện lưới gia đình." }],
-            "history_geo": [{ q: "Thế chiến 2 kết thúc năm nào?", options: ["1945", "1939", "1918", "1954"], answer: 0, hint: "Năm 1945." }],
-            "local": [{ q: "Đặc sản làm quà nổi tiếng nhất Sóc Trăng?", options: ["Bánh Pía", "Bánh chưng", "Bánh cốm", "Bánh đậu xanh"], answer: 0, hint: "Bánh nhân sầu riêng trứng muối." }]
+            "math": [
+                { q: "Căn bậc hai số học của 16 là:", options: ["4", "-4", "256", "8"], correct: "4", hint: "Số không âm bình phương bằng 16." },
+                { q: "Điều kiện xác định của căn thức √(x - 3) là:", options: ["x ≥ 3", "x > 3", "x ≤ 3", "x = 3"], correct: "x ≥ 3", hint: "Biểu thức trong căn không âm." },
+                { q: "Giá trị của biểu thức √((-5)²) bằng:", options: ["5", "-5", "25", "-25"], correct: "5", hint: "Căn bậc hai của a bình phương bằng giá trị tuyệt đối của a." },
+                { q: "Đồ thị hàm số y = ax + b (a ≠ 0) đi qua gốc tọa độ khi nào?", options: ["b = 0", "b ≠ 0", "a = 0", "b > 0"], correct: "b = 0", hint: "Đi qua O(0;0)." },
+                { q: "Hàm số nào sau đây là hàm số bậc nhất?", options: ["y = 2x - 1", "y = x² + 1", "y = 2/x", "y = 0x + 3"], correct: "y = 2x - 1", hint: "Có dạng y = ax + b với a khác 0." },
+                { q: "Hệ phương trình bậc nhất hai ẩn có thể có tối đa bao nhiêu nghiệm?", options: ["Vô số nghiệm, 1 nghiệm hoặc vô nghiệm", "Chỉ 1 nghiệm duy nhất", "Luôn có vô số nghiệm", "Chỉ có 2 nghiệm"], correct: "Vô số nghiệm, 1 nghiệm hoặc vô nghiệm", hint: "Các trường hợp tương giao hai đường thẳng." },
+                { q: "Cho tam giác ABC vuông tại A, đường cao AH. Hệ thức nào đúng?", options: ["AH² = BH . CH", "AH = BH . CH", "AH² = AB . AC", "AH = BC²"], correct: "AH² = BH . CH", hint: "Hệ thức lượng trong tam giác vuông." },
+                { q: "Trong một đường tròn, góc nội tiếp chắn nửa đường tròn có số đo bằng:", options: ["90 độ", "180 độ", "60 độ", "45 độ"], correct: "90 độ", hint: "Góc nội tiếp đặc biệt." },
+                { q: "Thể tích hình cầu có bán kính R được tính bằng công thức:", options: ["V = 4/3 . π . R³", "V = 4 . π . R²", "V = π . R² . h", "V = 1/3 . π . R² . h"], correct: "V = 4/3 . π . R³", hint: "Công thức thể tích khối cầu." },
+                { q: "Nghiệm của phương trình x² - 5x + 6 = 0 là:", options: ["x = 2 hoặc x = 3", "x = -2 hoặc x = -3", "x = 1 hoặc x = 6", "Vô nghiệm"], correct: "x = 2 hoặc x = 3", hint: "Dùng Delta hoặc nhẩm nghiệm Vi-ét." },
+                { q: "Đồ thị hàm số y = ax² (a ≠ 0) là một đường gì?", options: ["Đường parabol", "Đường thẳng", "Đường tròn", "Đường hypebol"], correct: "Đường parabol", hint: "Đồ thị hình cánh cung." },
+                { q: "Phương trình ax² + bx + c = 0 (a ≠ 0) có nghiệm kép khi:", options: ["Δ = 0", "Δ > 0", "Δ < 0", "Δ ≠ 0"], correct: "Δ = 0", hint: "Delta bằng 0." },
+                { q: "Theo hệ thức Vi-ét, tổng hai nghiệm x₁ + x₂ của phương trình ax² + bx + c = 0 là:", options: ["-b / a", "b / a", "c / a", "-c / a"], correct: "-b / a", hint: "S = -b/a." },
+                { q: "Góc ở tâm là góc có đỉnh trùng với:", options: ["Tâm đường tròn", "Trên đường tròn", "Ngoài đường tròn", "Bất kỳ"], correct: "Tâm đường tròn", hint: "Đỉnh trùng tâm." },
+                { q: "Tứ giác nội tiếp đường tròn có tính chất gì về các góc đối?", options: ["Tổng hai góc đối bằng 180°", "Hai góc đối bằng nhau", "Tổng hai góc đối bằng 90°", "Các góc bằng nhau từng đôi một"], correct: "Tổng hai góc đối bằng 180°", hint: "Tính chất tứ giác nội tiếp." },
+                { q: "Diện tích mặt cầu bán kính R được tính bằng:", options: ["S = 4 . π . R²", "S = 2 . π . R²", "S = π . R²", "S = 4/3 . π . R³"], correct: "S = 4 . π . R²", hint: "Công thức diện tích mặt cầu." },
+                { q: "Căn bậc ba của -27 là:", options: ["-3", "3", "9", "-9"], correct: "-3", hint: "(-3)³ = -27." },
+                { q: "Hệ số góc của đường thẳng y = -3x + 5 là:", options: ["-3", "3", "5", "-5"], correct: "-3", hint: "Hệ số a trong y = ax + b." },
+                { q: "Hai đường thẳng y = 2x + 1 và y = 2x - 3 có vị trí tương đối là:", options: ["Song song nhau", "Cắt nhau", "Trùng nhau", "Vuông góc"], correct: "Song song nhau", hint: "Cùng hệ số a, khác b." },
+                { q: "Cho sin α = 0,6. Khi đó cos α bằng (biết α nhọn):", options: ["0,8", "0,4", "1", "0,6"], correct: "0,8", hint: "sin²α + cos²α = 1." },
+                { q: "Trong tam giác vuông, cạnh góc vuông bằng cạnh huyền nhân với:", options: ["Sin góc đối hoặc cos góc kề", "Tan góc đối", "Cotan góc kề", "1"], correct: "Sin góc đối hoặc cos góc kề", hint: "Hệ thức lượng cơ bản." },
+                { q: "Đường tròn ngoại tiếp tam giác là đường tròn đi qua:", options: ["3 đỉnh của tam giác", "3 cạnh của tam giác", "Tâm tam giác", "Trực tâm tam giác"], correct: "3 đỉnh của tam giác", hint: "Đi qua tất cả các đỉnh." },
+                { q: "Đường tròn nội tiếp tam giác là đường tròn tiếp xúc với:", options: ["3 cạnh của tam giác", "3 đỉnh của tam giác", "Các đường cao", "Các đường trung tuyến"], correct: "3 cạnh của tam giác", hint: "Tiếp xúc trong 3 cạnh." },
+                { q: "Số nghiệm của phương trình x² + 2x + 5 = 0 là:", options: ["Vô nghiệm", "1 nghiệm", "2 nghiệm phân biệt", "Vô số nghiệm"], correct: "Vô nghiệm", hint: "Tính Δ ra số âm." },
+                { q: "Biểu thức Δ (Delta) tính bằng công thức:", options: ["b² - 4ac", "4ac - b²", "b - 4ac", "b² + 4ac"], correct: "b² - 4ac", hint: "Biệt thức phương trình bậc hai." },
+                { q: "Hình nón có bán kính đáy r và đường sinh l thì diện tích xung quanh là:", options: ["S_xq = π . r . l", "S_xq = 2 . π . r . l", "S_xq = π . r²", "S_xq = 1/3 . π . r . l"], correct: "S_xq = π . r . l", hint: "Diện tích xung quanh hình nón." },
+                { q: "Thể tích hình trụ có bán kính đáy r và chiều cao h là:", options: ["V = π . r² . h", "V = 2 . π . r . h", "V = 1/3 . π . r² . h", "V = 4/3 . π . r³"], correct: "V = π . r² . h", hint: "Diện tích đáy nhân chiều cao." },
+                { q: "Cho phương trình x² - 2x - 3 = 0. Tích hai nghiệm x₁ . x₂ là:", options: ["-3", "3", "2", "-2"], correct: "-3", hint: "Theo Vi-ét: x₁x₂ = c/a." },
+                { q: "Căn thức √(25x²) với x < 0 rút gọn thành:", options: ["-5x", "5x", "25x", "-25x"], correct: "-5x", hint: "Vì x âm nên |x| = -x." },
+                { q: "Góc ở tâm chắn cung nào thì số đo góc ở tâm bằng số đo cung đó không?", options: ["Đúng với mọi cung nhỏ", "Chỉ cung lớn", "Không bao giờ bằng", "Tùy bán kính"], correct: "Đúng với mọi cung nhỏ", hint: "Tính chất góc ở tâm." }
+            ],
+            "physics": [
+                { q: "Công thức định luật Ôm là:", options: ["I = U / R", "I = U . R", "R = I / U", "U = I / R"], correct: "I = U / R", hint: "Cường độ dòng điện tỉ lệ thuận hiệu điện thế, nghịch điện trở." },
+                { q: "Đơn vị của điện trở R là:", options: ["Ôm (Ω)", "Vôn (V)", "Ampe (A)", "Oát (W)"], correct: "Ôm (Ω)", hint: "Ký hiệu chữ cái Hy Lạp Omega." },
+                { q: "Công thức tính điện trở của dây dẫn hình trụ đồng chất là:", options: ["R = ρ . (l / S)", "R = ρ . S / l", "R = U / I", "R = I / U"], correct: "R = ρ . (l / S)", hint: "Phụ thuộc điện trở suất, chiều dài l và tiết diện S." },
+                { q: "Công suất điện của đoạn mạch được tính bằng:", options: ["P = U . I", "P = U / I", "P = I² . R", "P = A . t"], correct: "P = U . I", hint: "Hiệu điện thế nhân cường độ dòng điện." },
+                { q: "Định luật Joule - Lenz biểu thị sự biến đổi năng lượng nào?", options: ["Điện năng thành nhiệt năng", "Nhiệt năng thành điện năng", "Điện năng thành cơ năng", "Quang năng thành điện năng"], correct: "Điện năng thành nhiệt năng", hint: "Dòng điện chạy qua dây dẫn sinh nhiệt." },
+                { q: "Đoạn mạch gồm hai điện trở mắc nối tiếp có điện trở tương đương là:", options: ["R_tđ = R₁ + R₂", "1/R_tđ = 1/R₁ + 1/R₂", "R_tđ = R₁.R₂ / (R₁+R₂)", "R_tđ = R₁ - R₂"], correct: "R_tđ = R₁ + R₂", hint: "Cộng dồn các điện trở." },
+                { q: "Đoạn mạch gồm hai điện trở mắc song song có điện trở tương đương là:", options: ["1/R_tđ = 1/R₁ + 1/R₂", "R_tđ = R₁ + R₂", "R_tđ = R₁ - R₂", "R_tđ = R₁ . R₂"], correct: "1/1R_tđ = 1/R₁ + 1/R₂", hint: "Công thức nghịch đảo." },
+                { q: "Quy tắc nắm tay phải dùng để xác định điều gì?", options: ["Chiều đường sức từ của ống dây có dòng điện", "Cực của nam châm vĩnh cửu", "Chiều lực từ tác dụng", "Chiều dòng điện cảm ứng"], correct: "Chiều đường sức từ của ống dây có dòng điện", hint: "Chiều từ cổ tay đến ngón cái." },
+                { q: "Lực từ tác dụng lên dây dẫn có dòng điện đặt trong từ trường gọi là lực gì?", options: ["Lực từ (Lực Ampere)", "Lực đẩy Archimedes", "Trọng lực", "Lực ma sát"], correct: "Lực từ (Lực Ampere)", hint: "Tác dụng của từ trường lên dòng điện." },
+                { q: "Hiện tượng cảm ứng điện từ xuất hiện khi nào?", options: ["Số đường sức từ xuyên qua tiết diện cuộn dây biến thiên", "Cuộn dây đứng yên trong từ trường đều", "Nam châm không đổi", "Không có từ trường"], correct: "Số đường sức từ xuyên qua tiết diện cuộn dây biến thiên", hint: "Sự biến thiên từ thông." },
+                { q: "Dòng điện xoay chiều là dòng điện có:", options: ["Chiều và cường độ thay đổi tuần hoàn theo thời gian", "Chỉ thay đổi chiều", "Chỉ thay đổi cường độ", "Không đổi chiều"], correct: "Chiều và cường độ thay đổi tuần hoàn theo thời gian", hint: "Đổi chiều liên tục." },
+                { q: "Máy phát điện xoay chiều hoạt động dựa trên hiện tượng gì?", options: ["Cảm ứng điện từ", "Tác dụng nhiệt", "Tác dụng hóa học", "Lực đẩy từ"], correct: "Cảm ứng điện từ", hint: "Nam châm quay trước cuộn dây." },
+                { q: "Máy biến thế có tác dụng gì?", options: ["Thay đổi hiệu điện thế xoay chiều", "Biến đổi dòng một chiều thành xoay chiều", "Tăng công suất mạch điện", "Giảm điện trở dây"], correct: "Thay đổi hiệu điện thế xoay chiều", hint: "Tăng áp hoặc hạ áp." },
+                { q: "Hiện tượng khúc xạ ánh sáng là hiện tượng tia sáng truyền qua mặt phân cách giữa hai môi trường trong suốt bị:", options: ["Gãy khúc (đổi hướng truyền)", "Phản xạ ngược lại", "Hấp thụ hoàn toàn", "Truyền thẳng không đổi"], correct: "Gãy khúc (đổi hướng truyền)", hint: "Thay đổi môi trường." },
+                { q: "Thấu kính hội tụ có đặc điểm nhận dạng là:", options: ["Phần rìa mỏng hơn phần giữa", "Phần giữa mỏng hơn phần rìa", "Độ dày đều nhau", "Mặt lõm hai bên"], correct: "Phần rìa mỏng hơn phần giữa", hint: "Thấu kính mép mỏng." },
+                { q: "Ảnh của một vật tạo bởi thấu kính phân kì luôn là:", options: ["Ảnh ảo, cùng chiều, nhỏ hơn vật", "Ảnh thật lớn hơn vật", "Ảnh thật nhỏ hơn vật", "Ảnh ngược chiều"], correct: "Ảnh ảo, cùng chiều, nhỏ hơn vật", hint: "Tính chất thấu kính phân kì." },
+                { q: "Mắt cận thị có đặc điểm gì?", options: ["Nhìn rõ vật ở gần nhưng không nhìn rõ vật ở xa", "Nhìn rõ vật ở xa nhưng không thấy vật gần", "Mắt hoàn toàn bình thường", "Không nhìn thấy gì"], correct: "Nhìn rõ vật ở gần nhưng không nhìn rõ vật ở xa", hint: "Tật khúc xạ phổ biến học đường." },
+                { q: "Để khắc phục tật mắt cận thị, người ta phải đeo kính gì?", options: ["Kính cận (thấu kính phân kì)", "Kính viễn (thấu kính hội tụ)", "Kính râm", "Kính hai tròng"], correct: "Kính cận (thấu kính phân kì)", hint: "Thấu kính phân kì làm tiêu cự phù hợp." },
+                { q: "Kính lúp thực chất là một loại thấu kính gì?", options: ["Thấu kính hội tụ có tiêu cự ngắn", "Thấu kính phân kì", "Gương phẳng", "Gương cầu lõm"], correct: "Thấu kính hội tụ có tiêu cự ngắn", hint: "Dùng để quan sát vật nhỏ." },
+                { q: "Năng lượng ánh sáng chuyển hóa thành năng lượng điện trong thiết bị nào?", options: ["Pin mặt trời (Pin quang điện)", "Động cơ điện", "Bóng đèn sợi đốt", "Nồi cơm điện"], correct: "Pin mặt trời (Pin quang điện)", hint: "Thu ánh sáng mặt trời phát điện." },
+                { q: "Định luật bảo toàn và chuyển hóa năng lượng khẳng định điều gì?", options: ["Năng lượng không tự sinh ra cũng không tự mất đi, chỉ chuyển hóa", "Năng lượng tự biến mất", "Năng lượng chỉ sinh ra từ hư vô", "Năng lượng không bao giờ đổi dạng"], correct: "Năng lượng không tự sinh ra cũng không tự mất đi, chỉ chuyển hóa", hint: "Định luật bảo toàn cơ bản." },
+                { q: "Số đếm trên công tơ điện gia đình (ví dụ số kWh) cho biết điều gì?", options: ["Điện năng gia đình đã tiêu thụ", "Công suất sử dụng", "Hiệu điện thế lưới", "Cường độ dòng điện"], correct: "Điện năng tiêu thụ gia đình", hint: "Đơn vị Kilo-watt-hour." },
+                { q: "Công thức tính công của dòng điện là:", options: ["A = U . I . t", "A = P . t", "A = I² . R . t", "Tất cả các công thức trên đều đúng"], correct: "Tất cả các công thức trên đều đúng", hint: "Các biến thể công thức công điện." },
+                { q: "Quy tắc bàn tay trái dùng để xác định chiều của đại lượng nào?", options: ["Lực từ (Lực Ampere)", "Đường sức từ", "Dòng điện cảm ứng", "Cực nam châm"], correct: "Lực từ (Lực Ampere)", hint: "Xác định chiều lực tác dụng lên dây dẫn mang dòng điện." },
+                { q: "Hiện tượng quang - phát quang là gì?", options: ["Vật hấp thụ ánh sáng này để phát ra ánh sáng khác", "Phản xạ ánh sáng", "Khúc xạ ánh sáng", "Tán sắc ánh sáng"], correct: "Vật hấp thụ ánh sáng này để phát ra ánh sáng khác", hint: "Phát quang trong đêm." },
+                { q: "Sự truyền tải điện năng đi xa gây hao phí chủ yếu do nguyên nhân nào?", options: ["Tỏa nhiệt trên đường dây dẫn (hiện tượng Joule - Lenz)", "Điện trở quá nhỏ", "Dòng điện quá nhỏ", "Trạm biến áp"], correct: "Tỏa nhiệt trên đường dây dẫn (hiện tượng Joule - Lenz)", hint: "Hao phí qua nhiệt tỏa ra dây." },
+                { q: "Biện pháp hiệu quả nhất để giảm hao phí điện năng trên đường dây tải điện xa là:", options: ["Tăng hiệu điện thế trước khi truyền tải bằng máy biến thế", "Tăng tiết diện dây", "Giảm chiều dài dây", "Giảm hiệu điện thế"], correct: "Tăng hiệu điện thế trước khi truyền tải bằng máy biến thế", hint: "Công suất hao phí tỉ lệ nghịch với bình phương U." },
+                { q: "Hiện tượng tán sắc ánh sáng mặt trời qua lăng kính được Newton phát hiện lần đầu chứng tỏ điều gì?", options: ["Ánh sáng trắng gồm nhiều ánh sáng đơn màu khác nhau", "Ánh sáng trắng là đơn màu tinh khiết", "Ánh sáng chỉ có màu đỏ", "Ánh sáng không màu"], correct: "Ánh sáng trắng gồm nhiều ánh sáng đơn màu khác nhau", hint: "7 sắc cầu vồng." },
+                { q: "Mắt viễn thị có đặc điểm nhìn rõ các vật ở đâu?", options: ["Nhìn rõ vật ở xa nhưng mờ ở gần", "Nhìn rõ vật ở gần", "Không nhìn thấy gì cả", "Nhìn rõ mọi khoảng cách"], correct: "Nhìn rõ vật ở xa nhưng mờ ở gần", hint: "Tật mắt nhìn xa tốt hơn gần." },
+                { q: "Để khắc phục tật mắt viễn thị, người ta phải đeo kính gì?", options: ["Kính viễn (thấu kính hội tụ)", "Kính cận (thấu kính phân kì)", "Kính không độ", "Kính râm"], correct: "Kính viễn (thấu kính hội tụ)", hint: "Hội tụ tia sáng đúng tiêu điểm võng mạc." }
+            ],
+            "chemistry": [
+                { q: "Oxit bazơ nào sau đây tác dụng với nước tạo thành dung dịch bazơ?", options: ["CaO", "Fe₂O₃", "CuO", "Al₂O₃"], correct: "CaO", hint: "Vôi sống hòa tan nước." },
+                { q: "Dung dịch axit làm quỳ tím chuyển sang màu gì?", options: ["Màu đỏ", "Màu xanh", "Màu tím", "Màu vàng"], correct: "Màu đỏ", hint: "Đặc trưng dung dịch axit." },
+                { q: "Kim loại nào tác dụng được với dung dịch axit HCl giải phóng khí H₂?", options: ["Zn (Kẽm)", "Cu (Đồng)", "Ag (Bạc)", "Au (Vàng)"], correct: "Zn (Kẽm)", hint: "Đứng trước H trong dãy hoạt động hóa học." },
+                { q: "Phản ứng giữa axit và bazơ tạo thành muối và nước gọi là phản ứng gì?", options: ["Phản ứng trung hòa", "Phản ứng trao đổi", "Phản ứng phân hủy", "Phản ứng hóa hợp"], correct: "Phản ứng trung hòa", hint: "Axit gặp kiềm." },
+                { q: "Kim loại Sắt (Fe) không phản ứng với dung dịch nào sau đây ở điều kiện thường?", options: ["H₂SO₄ đặc, nguội", "H₂SO₄ loãng", "HCl", "CuSO₄"], correct: "H₂SO₄ đặc, nguội", hint: "Hiện tượng thụ động hóa sắt." },
+                { q: "Dãy hoạt động hóa học của kim loại giúp ta biết điều gì?", options: ["Mức độ hoạt động hóa học mạnh yếu của các kim loại", "Khối lượng riêng kim loại", "Màu sắc kim loại", "Nhiệt độ nóng chảy kim loại"], correct: "Mức độ hoạt động hóa học mạnh yếu của các kim loại", hint: "K, Na, Mg, Al, Zn, Fe, Pb, (H), Cu, Ag, Au..." },
+                { q: "Nhôm (Al) có tính chất hóa học đặc biệt nào khác với sắt?", options: ["Tác dụng được với dung dịch kiềm NaOH giải phóng khí H₂", "Không dẫn điện", "Tan trong nước", "Không tác dụng với oxi"], correct: "Tác dụng được với dung dịch kiềm NaOH giải phóng khí H₂", hint: "Nhôm lưỡng tính." },
+                { q: "Gang là hợp kim của sắt với cácbon, trong đó hàm lượng cácbon chiếm khoảng:", options: ["Từ 2% đến 4%", "Dưới 2%", "Trên 5%", "Đúng 50%"], correct: "Từ 2% đến 4%", hint: "Hợp kim sắt cứng và giòn." },
+                { q: "Thép là hợp kim của sắt với cácbon, trong đó hàm lượng cácbon chiếm khoảng:", options: ["Dưới 2%", "Từ 2% đến 5%", "Trên 5%", "Đúng 10%"], correct: "Dưới 2%", hint: "Hợp kim sắt có tính đàn hồi, dẻo dai." },
+                { q: "Hiện tượng nhôm bị phá hủy lớp màng bảo vệ khi gặp chất nào?", options: ["Axit hoặc dung dịch kiềm mạnh, muối ăn", "Nước cất", "Không khí khô", "Dầu hỏa"], correct: "Axit hoặc dung dịch kiềm mạnh, muối ăn", hint: "Ăn mòn hóa học nhôm." },
+                { q: "Phi kim nào ở thể khí có màu vàng lục?", options: ["Clor (Cl₂)", "Oxi", "Hiđro", "Nitơ"], correct: "Clor (Cl₂)", hint: "Khí độc màu vàng lục." },
+                { q: "Than chì có tính chất dẫn điện không?", options: ["Có dẫn điện", "Không dẫn điện", "Cách điện hoàn toàn", "Chỉ dẫn khi nung nóng"], correct: "Có dẫn điện", hint: "Đồng hình của cacbon." },
+                { q: "Silic là chất bán dẫn quan trọng được dùng để sản xuất cái gì?", options: ["Linh kiện vi mạch bán dẫn, pin mặt trời", "Làm ruột bút chì", "Làm xoong nồi", "Làm dây dẫn điện tải cao"], correct: "Linh kiện vi mạch bán dẫn, pin mặt trời", hint: "Công nghệ bán dẫn điện tử." },
+                { q: "Hợp chất hữu cơ nhất thiết phải chứa nguyên tố nào?", options: ["Cacbon (C)", "Hiđro (H)", "Oxi (O)", "Nitơ (N)"], correct: "Cacbon (C)", hint: "Đặc điểm cơ bản hợp chất hữu cơ." },
+                { q: "Hydrocarbon là những hợp chất hữu cơ chỉ gồm hai nguyên tố:", options: ["Cacbon và Hiđro", "Cacbon và Oxi", "Hiđro và Oxi", "Cacbon và Nito"], correct: "Cacbon và Hiđro", hint: "Hydro + Carbon." },
+                { q: "Metan (CH₄) tham gia phản ứng đặc trưng nào sau đây?", options: ["Phản ứng thế với Clo khi có ánh sáng", "Phản ứng cộng", "Phản ứng trùng hợp", "Phản ứng trung hòa"], correct: "Phản ứng thế với Clo khi có ánh sáng", hint: "Ankan phản ứng thế." },
+                { q: "Ê-ty-len (C₂H₄) tham gia phản ứng đặc trưng nào?", options: ["Phản ứng cộng với dung dịch Brom", "Phản ứng thế", "Không phản ứng gì", "Phản ứng phân hủy"], correct: "Phản ứng cộng với dung dịch Brom", hint: "Làm mất màu nước brom." },
+                { q: "Rượu ê-ty-lic (Etanol) có công thức hóa học là:", options: ["C₂H₅OH", "CH₃COOH", "CH₄", "C₆H₁₂O₆"], correct: "C₂H₅OH", hint: "Cấu tạo rượu thông dụng." },
+                { q: "Axit axetic (Giấm ăn) có công thức hóa học là:", options: ["CH₃COOH", "C₂H₅OH", "HCl", "H₂SO₄"], correct: "CH₃COOH", hint: "Nhóm chức axit -COOH." },
+                { q: "Chất béo (Lipit) thuộc loại hợp chất nào?", options: ["Este của glixerol với các axit béo", "Axit hữu cơ", "Rượu đa chức", "Hydrocarbon thơm"], correct: "Este của glixerol với các axit béo", hint: "Thành phần dầu mỡ động thực vật." },
+                { q: "Đường glucozơ có công thức hóa học là:", options: ["C₆H₁₂O₆", "C₁₂H₂₂O₁₁", "(C₆H₁₀O₅)n", "CH₃COOH"], correct: "C₆H₁₂O₆", hint: "Đường đơn nuôi cơ thể." },
+                { q: "Tinh bột và xenlulozơ là những polime thiên nhiên thuộc loại:", options: ["Polisaccarit", "Đisaccarit", "Monosaccarit", "Protein"], correct: "Polisaccarit", hint: "Đường đa." },
+                { q: "Chất nào sau đây làm đổi màu dung dịch Iot thành màu xanh tím?", options: ["Tinh bột", "Đường glucozơ", "Protein", "Chất béo"], correct: "Tinh bột", hint: "Thuốc thử nhận biết tinh bột." },
+                { q: "Protein có cấu trúc phức tạp và là cơ sở của sự sống nhờ chứa liên kết:", options: ["Peptit", "Este", "Gluxit", "Ionic"], correct: "Peptit", hint: "Chuỗi axit amin liên kết peptit." },
+                { q: "Phản ứng tạo ra polime từ các phân tử nhỏ (monome) kết hợp nhau gọi là:", options: ["Phản ứng trùng hợp hoặc trùng ngưng", "Phản ứng trung hòa", "Phản ứng thế", "Phản ứng phân hủy"], correct: "Phản ứng trùng hợp hoặc trùng ngưng", hint: "Quá trình tổng hợp nhựa." },
+                { q: "Để phân biệt khí Metan và khí Etilen, người ta dùng dung dịch nào?", options: ["Dung dịch nước Brom", "Quỳ tím", "Nước cất", "Dung dịch NaOH"], correct: "Dung dịch nước Brom", hint: "Etilen làm mất màu Br, metan thì không." },
+                { q: "Giấm ăn có vị chua là do trong dung dịch chứa chất nào?", options: ["Axit axetic", "Axit clohidric", "Axit sunfuric", "Rượu etylic"], correct: "Axit axetic", hint: "CH₃COOH có vị chua." },
+                { q: "Nhôm bị ăn mòn ít hơn sắt trong không khí ẩm vì:", options: ["Nhôm có lớp màng oxit mỏng bền vững bảo vệ", "Nhôm không hoạt động bằng sắt", "Nhôm nhẹ hơn sắt", "Nhôm màu trắng bạc"], correct: "Nhôm có lớp màng oxit mỏng bền vững bảo vệ", hint: "Lớp Al₂O₃ bám chặt bề mặt." },
+                { q: "Oxit axit tác dụng với dung dịch bazơ tạo thành sản phẩm gì?", options: ["Muối và nước", "Chỉ muối", "Axit và nước", "Kim loại tự do"], correct: "Muối và nước", hint: "CO₂ + Ca(OH)₂ -> CaCO₃ + H₂O." },
+                { q: "Dãy chất nào sau đây gồm toàn các axit?", options: ["HCl, H₂SO₄, HNO₃", "NaOH, KOH, Ca(OH)₂", "NaCl, Na₂SO₄, CaCO₃", "CaO, Na₂O, CO₂"], correct: "HCl, H₂SO₄, HNO₃", hint: "Bắt đầu bằng nguyên tử Hydro." }
+            ],
+            "english": [
+                { q: "Choose the correct preposition: We are looking forward ... seeing you soon.", options: ["to", "for", "at", "in"], correct: "to", hint: "Cụm từ look forward to + V-ing." },
+                { q: "If I were you, I ... accept that job offer.", options: ["would", "will", "can", "may"], correct: "would", hint: "Câu điều kiện loại 2." },
+                { q: "She has studied English ... 3 years.", options: ["for", "since", "in", "during"], correct: "for", hint: "Khoảng thời gian dùng for." },
+                { q: "The man ... car was stolen called the police.", options: ["whose", "who", "which", "whom"], correct: "whose", hint: "Đại từ quan hệ chỉ sở hữu." },
+                { q: "Nam speaks English very well, ... he is only a beginner.", options: ["although", "because", "so", "if"], correct: "although", hint: "Mặc dù..." },
+                { q: "I wish I ... pass the final exam tomorrow.", options: ["could", "can", "will", "may"], correct: "could", hint: "Câu ước với wish + could ở tương lai." },
+                { q: "This is the most interesting book I ... read.", options: ["have ever", "ever have", "had ever", "did ever"], correct: "have ever", hint: "Thì hiện tại hoàn thành kết hợp so sánh nhất." },
+                { q: "English is considered as a ... language in many countries.", options: ["global", "local", "foreign", "native"], correct: "global", hint: "Ngôn ngữ toàn cầu." },
+                { q: "Computers are used ... information quickly.", options: ["to find", "finding", "find", "for find"], correct: "to find", hint: "Dùng để làm gì (S + be used to + V-inf)." },
+                { q: "Tet is a festival which occurs ... in spring.", options: ["annually", "monthly", "daily", "weekly"], correct: "annually", hint: "Hằng năm." },
+                { q: "Viet Nam exports a lot of ... rice to other countries.", options: ["surplus", "few", "little", "none"], correct: "surplus", hint: "Gạo dư thừa xuất khẩu." },
+                { q: "Natural disasters like typhoons can cause severe ... to houses and crops.", options: ["damage", "damages", "damaging", "damaged"], correct: "damage", hint: "Danh từ không đếm được chỉ sự tàn phá." },
+                { q: "We should turn off faucets when not in use to save ...", options: ["water", "electricity", "paper", "money"], correct: "water", hint: "Tiết kiệm nước (faucet = vòi nước)." },
+                { q: "If we plant more trees along the streets, our city will be ...", options: ["greener", "green", "greenest", "greener than"], correct: "greener", hint: "So sánh hơn làm thành phố xanh hơn." },
+                { q: "Nam suggested ... a meeting to discuss the project.", options: ["holding", "hold", "to hold", "held"], correct: "holding", hint: "Suggest + V-ing." },
+                { q: "Mount Everest is the ... mountain in the world.", options: ["highest", "high", "higher", "most high"], correct: "highest", hint: "So sánh nhất tính từ ngắn." },
+                { q: "She asked me where I ... from.", options: ["came", "come", "comes", "coming"], correct: "came", hint: "Lùi thì trong câu gián tiếp." },
+                { q: "He didn't pass the exam ... he was lazy.", options: ["because", "although", "so", "despite"], correct: "because", hint: "Bởi vì..." },
+                { q: "My father enjoys ... traditional music in the evening.", options: ["listening to", "listen to", "to listen", "listened"], correct: "listening to", hint: "Enjoy + V-ing." },
+                { q: "This shirt is made ... cotton.", options: ["of", "from", "in", "on"], correct: "of", hint: "Chất liệu không biến đổi bản chất." },
+                { q: "Ha Long Bay is recognized ... a World Heritage Site by UNESCO.", options: ["as", "for", "to", "by"], correct: "as", hint: "Recognized as (Được công nhận là)." },
+                { q: "The ao dai is the ... dress of Vietnamese women.", options: ["traditional", "modern", "foreign", "casual"], correct: "traditional", hint: "Trang phục truyền thống." },
+                { q: "We are talking about the environment protection, ...?", options: ["aren't we", "are we", "don't we", "weren't we"], correct: "aren't we", hint: "Câu hỏi đuôi với we are." },
+                { q: "Solar panels are placed on the ... of houses to catch sunlight.", options: ["roof", "wall", "door", "window"], correct: "roof", hint: "Mái nhà." },
+                { q: "Can you tell me how ... this machine?", options: ["to operate", "operate", "operating", "operated"], correct: "to operate", hint: "How + to V." },
+                { q: "Tet is a time for family ... in Vietnam.", options: ["gatherings", "gathering", "gathered", "gather"], correct: "gatherings", hint: "Cuộc sum họp gia đình (danh từ số nhiều)." },
+                { q: "Phongh has a lot of stamp collections; ..., he is a stamp collector.", options: ["therefore", "however", "although", "because"], correct: "therefore", hint: "Do đó, vì thế." },
+                { q: "Be ...! The car is coming fast.", options: ["careful", "carefully", "careless", "caring"], correct: "careful", hint: "Tính từ đi sau động từ to be." },
+                { q: "We decided ... camping this weekend despite the bad weather.", options: ["to go", "going", "go", "went"], correct: "to go", hint: "Decide + to V." },
+                { q: "If people use public transport, there will be less ... pollution.", options: ["air", "water", "noise", "soil"], correct: "air", hint: "Giảm ô nhiễm không khí." }
+            ],
+            "literature": [
+                { q: "Chuyện người con gái Nam Xương là tác phẩm của ai?", options: ["Nguyễn Dữ", "Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương"], correct: "Nguyễn Dữ", hint: "Truyền kỳ mạn lục." },
+                { q: "Nhân vật chính trong Chuyện người con gái Nam Xương là ai?", options: ["Vũ Nương", "Thúy Kiều", "Thúy Vân", "Vũ Thị Thiết"], correct: "Vũ Nương", hint: "Người phụ nữ nết na thùy mị bị oan khuất." },
+                { q: "Truyện Kiều của Nguyễn Du viết theo thể thơ nào?", options: ["Lục bát", "Song thất lục bát", "Thất ngôn bát cú", "Tự do"], correct: "Lục bát", hint: "Thể thơ truyền thống dân tộc." },
+                { q: "Đoạn trích 'Cảnh ngày xuân' nằm trong phần nào của Truyện Kiều?", options: ["Gặp gỡ và đính ước", "Gia biến và lưu lạc", " Đoàn viên", "Mở đầu"], correct: "Gặp gỡ và đính ước", hint: "Thanh minh trong tiết tháng ba." },
+                { q: "Tác phẩm 'Đồng chí' của nhà thơ Chính Hữu viết về ai?", options: ["Anh bộ đội cụ Hồ trong kháng chiến chống Pháp", "Bộ đội chống Mỹ", "Vệ quốc quân chống Pháp", "Thanh niên xung phong"], correct: "Anh bộ đội cụ Hồ trong kháng chiến chống Pháp", hint: "Quê hương anh nước mặn đồng chua." },
+                { q: "Bài thơ 'Bài thơ về tiểu đội xe không kính' của Phạm Tiến Duật sử dụng hình ảnh trung tâm nào?", options: ["Những chiếc xe không kính trên đường Trường Sơn", "Đoàn quân đi", "Cây súng", "Ngọn lửa"], correct: "Những chiếc xe không kính trên đường Trường Sơn", hint: "Xe không kính vì bom giật bom rung." },
+                { q: "Nhà văn sáng tác truyện ngắn 'Lặng lẽ Sa Pa' là ai?", options: ["Nguyễn Thành Long", "Nguyễn Minh Châu", "Kim Lân", "Nam Cao"], correct: "Nguyễn Thành Long", hint: "Truyện viết về anh thanh niên khí tượng." },
+                { q: "Truyện ngắn 'Bức tranh của tôi' hay 'Bức tranh' (hoặc Chiếc lược ngã) khắc họa chủ đề gì?", options: ["Tình cảm gia đình, tình cha con thắm thiết", "Lao động sản xuất", "Tình bạn học sinh", "Chiến tranh biên giới"], correct: "Tình cảm gia đình, tình cha con thắm thiết", hint: "Chiếc lược ngã của Nguyễn Quang Sáng." },
+                { q: "Nhân vật anh thanh niên trong Lặng lẽ Sa Pa làm nghề gì?", options: ["Làm công tác khí tượng kiêm vật lý địa cầu", "Làm giáo viên", "Làm bác sĩ", "Làm chiến sĩ công an"], correct: "Làm công tác khí tượng kiêm vật lý địa cầu", hint: "Đo gió, đo mưa trên đỉnh núi cao." },
+                { q: "Bếp lửa của Bằng Việt gợi nhắc đến tình cảm gì sâu nặng?", options: ["Tình bà cháu và lòng kính yêu tổ tiên", "Tình bạn", "Tình yêu đôi lứa", "Tình làng nghĩa xóm"], correct: "Tình bà cháu và lòng kính yêu tổ tiên", hint: "Một bếp lửa chờờn vờn sương sớm." },
+                { q: "Khổ thơ cuối bài 'Đoàn đánh cá' của Huy Cận phản ánh điều gì?", options: ["Khúc ca khải hoàn mừng ngày mới rực rỡ", "Sự mệt nhọc của ngư dân", "Cảnh hoàng hôn buồn", "Sự cô đơn"], correct: "Khúc ca khải hoàn mừng ngày mới rực rỡ", hint: "Câu hát căng buồm cùng gió khơi." },
+                { q: "Bài thơ 'Mùa xuân nho nhỏ' của Thanh Hải được sáng tác trong hoàn cảnh nào?", options: ["Trước lúc nhà thơ qua đời trên giường bệnh không bao lâu", "Trong những năm kháng chiến chống Pháp", "Ngày hòa bình lập lại", "Khi đi du lịch nước ngoài"], correct: "Trước lúc nhà thơ qua đời trên giường bệnh không bao lâu", hint: "Tiếng chim chiền chiện hót vang trời." },
+                { q: "Viếng lăng Bác của Vi Khương (Viễn Phương) bộc lộ tình cảm gì?", options: ["Lòng thành kính, xúc động sâu sắc với Bác Hồ", "Sự sợ hãi", "Sự tiếc nuối chung chung", "Tâm trạng buồn chán"], correct: "Lòng thành kính, xúc động sâu sắc với Bác Hồ", hint: "Con ở miền Nam ra thăm lăng Bác." },
+                { q: "Truyện ngắn 'Chiếc thuyền ngoài xa' của Nguyễn Minh Châu phản ánh điều gì?", options: ["Đường nhìn đa chiều về cuộc sống và số phận con người", "Vẻ đẹp vùng biển", "Nghệ thuật nhiếp ảnh", "Đời sống thanh niên"], correct: "Đường nhìn đa chiều về cuộc sống và số phận con người", hint: "Chiêm nghiệm sâu sắc hiện thực." },
+                { q: "Phong cách ngôn ngữ nghệ thuật thường được dùng ở đâu?", options: ["Trong tác phẩm văn chương (thơ, truyện, kịch)", "Trong văn bản hành chính", "Trong báo chí", "Trong đời thường"], correct: "Trong tác phẩm văn chương (thơ, truyện, kịch)", hint: "Văn bản nghệ thuật giàu hình ảnh." },
+                { q: "Các phương châm hội thoại do nhà ngôn ngữ học nào nghiên cứu hệ thống?", options: ["Grice (Grai-sơ)", "Newton", "Einstein", "Darwin"], correct: "Grice (Grai-sơ)", hint: "Phương châm về lượng, chất, quan hệ, cách thức." },
+                { q: "Phương châm về lượng trong hội thoại yêu cầu gì?", options: ["Nội dung giao tiếp phải đúng mức, không thừa không thiếu thông tin", "Nói thật", "Nói rõ ràng", "Nói lịch sự"], correct: "Nội dung giao tiếp phải đúng mức, không thừa không thiếu thông tin", hint: "Đúng lượng thông tin cần thiết." },
+                { q: "Phương châm về chất yêu cầu điều gì?", options: ["Không nói những điều mình không tin là đúng sự thật", "Nói thật nhiều", "Nói bí ẩn", "Nói đùa"], correct: "Không nói những điều mình không tin là đúng sự thật", hint: "Đảm bảo tính chân thực." },
+                { q: "Xưng hô trong hội thoại tiếng Việt có đặc điểm gì?", options: ["Rất phong phú, tinh tế, thể hiện rõ tình cảm và quan hệ xã hội", "Chỉ có một vài đại từ chung", "Giống hệt tiếng Anh", "Không quan trọng tuổi tác"], correct: "Rất phong phú, tinh tế, thể hiện rõ tình cảm và quan hệ xã hội", hint: "Hệ thống từ xưng hô đa dạng." },
+                { q: "Cách dẫn trực tiếp là gì?", options: ["Nhắc lại nguyên văn lời nói hoặc ý nghĩ của người/nhân vật", "Dùng lời mình diễn đạt lại", "Không cần dấu ngoặc kép", "Tóm tắt ý chính"], correct: "Nhắc lại nguyên văn lời nói hoặc ý nghĩ của người/nhân vật", hint: "Đặt sau dấu hai chấm và ngoặc kép." },
+                { q: "Cách dẫn gián tiếp là gì?", options: ["Thuật lại ý của người/nhân vật có điều chỉnh từ ngữ cho phù hợp", "Giữ nguyên văn từng chữ", "Dùng ngoặc kép", "Không dùng từ 'rằng/là'"], correct: "Thuật lại ý của người/nhân vật có điều chỉnh từ ngữ cho phù hợp", hint: "Thuật lại ý chính." },
+                { q: "Bài thơ 'Sang thu' của Hữu Thỉnh diễn tả thời điểm nào?", options: ["Khoảnh khắc giao mùa từ hạ sang thu ở nông thôn Bắc Bộ", "Mùa xuân ấm áp", "Mùa đông giá lạnh", "Mùa hè oi bức"], correct: "Khoảnh khắc giao mùa từ hạ sang thu ở nông thôn Bắc Bộ", hint: "Bỗng nhận ra hương ổi phả vào trong gió se." },
+                { q: "Hình ảnh con cò trong ca dao và trong bài thơ 'Con cò' của Chánh Hữu/Chế Lan Viên tượng trưng cho ai?", options: ["Người mẹ và lòng mẫu tử thâm trầm", "Loài vật hoang dã", "Cảnh đồng quê", "Thời tiết"], correct: "Người mẹ và lòng mẫu tử thâm trầm", hint: "Con cò bay qua cánh lúa." },
+                { q: "Bài thơ 'Mây và sóng' của R. Tagore ca ngợi điều gì?", options: ["Tình mẫu tử thiêng liêng, bất diệt", "Vẻ đẹp thiên nhiên", "Cuộc sống du mục", "Sự cô độc"], correct: "Tình mẫu tử thiêng liêng, bất diệt", hint: "Mẹ ơi, trên mây có người gọi con." },
+                { q: "Khởi ngữ trong câu tiếng Việt là gì?", options: ["Thành phần đứng trước chủ ngữ để nêu lên đề tài được nói đến trong câu", "Chủ ngữ chính", "Vị ngữ", "Trạng ngữ chỉ thời gian"], correct: "Thành phần đứng trước chủ ngữ để nêu lên đề tài được nói đến trong câu", hint: "Ví dụ: 'Giàu, thì tôi không giàu'." },
+                { q: "Các thành phần biệt lập trong câu gồm những loại nào?", options: ["Tình thái, cảm thán, gọi đáp, phụ chú", "Chủ ngữ và vị ngữ", "Trạng ngữ", "Định ngữ"], correct: "Tình thái, cảm thán, gọi đáp, phụ chú", hint: "Không tham gia diễn đạt nghĩa sự việc của câu." },
+                { q: "Phép liên kết nào dùng để nối các câu trong đoạn văn?", options: ["Phép lặp, phép thế, phép nối, phép đồng nghĩa/trái nghĩa/liên tưởng", "Chỉ dùng phép lặp", "Chỉ dùng dấu phẩy", "Không cần liên kết"], correct: "Phép lặp, phép thế, phép nối, phép đồng nghĩa/trái nghĩa/liên tưởng", hint: "Giúp đoạn văn mạch lạc." },
+                { q: "Tác phẩm 'Bến quê' của Nguyễn Minh Châu đặt ra vấn đề gì sâu sắc?", options: ["Thức tỉnh sự trân trọng những giá trị bình dị gần gũi quanh ta", "Ca ngợi vẻ đẹp dòng sông", "Khuyên học tập tốt", "Phê phán lối sống hiện đại"], correct: "Thức tỉnh sự trân trọng những giá trị bình dị gần gũi quanh ta", hint: "Nhân vật Nhĩ cuối đời mới nhận ra." },
+                { q: "Thơ 'Mẹ Tơm' của Tố Hữu viết về ai?", options: ["Người mẹ nghèo khổ cưu mang cách mạng ở xứ Thanh", "Mẹ ruột nhà thơ", "Một người anh hùng giấu tên", "Bà mẹ chiến sĩ miền Nam"], correct: "Người mẹ nghèo khổ cưu mang cách mạng ở xứ Thanh", hint: "Sống giữa đồng chiêm dạ đắng cay." },
+                { q: "Tiếng nói của văn nghệ (Nguyễn Đình Thi) bàn về điều gì?", options: ["Sức mạnh kỳ diệu và ý nghĩa của văn nghệ đối với con người", "Cách làm thơ hay", "Lịch sử văn học", "Kỹ năng đọc sách"], correct: "Sức mạnh kỳ diệu và ý nghĩa của văn nghệ đối với con người", hint: "Văn nghệ phản ánh thực tại qua lăng kính chủ quan." }
+            ],
+            "tech": [
+                { q: "Điện áp định mức của mạng điện sinh hoạt tại Việt Nam là:", options: ["220V", "110V", "380V", "12V"], correct: "220V", hint: "Mức điện lưới gia đình." },
+                { q: "Thiết bị nào dùng để bảo vệ mạch điện khi xảy ra sự cố ngắn mạch hoặc quá tải?", options: ["Cầu chì / Áp-tô-mát", "Công tắc điện", "Ổ cắm điện", "Bóng đèn"], correct: "Cầu chì / Áp-tô-mát", hint: "Tự động ngắt điện khi nguy hiểm." },
+                { q: "Mạng điện trong nhà thường sử dụng dòng điện nào?", options: ["Dòng điện xoay chiều có điện áp 220V", "Dòng điện một chiều 12V", "Dòng điện cao thế 500kV", "Dòng điện mặt trời trực tiếp"], correct: "Dòng điện xoay chiều có điện áp 220V", hint: "Tiêu chuẩn lưới điện dân dụng." },
+                { q: "Bộ phận nào của mạng điện trong nhà dùng để lấy điện cho các thiết bị dùng điện?", options: ["Ổ cắm điện", "Cầu chì", "Công tắc", "Bảng điện"], correct: "Ổ cắm điện", hint: "Cắm phích cắm vào." },
+                { q: "Công tơ điện (đồng hồ điện) đo đại lượng nào?", options: ["Điện năng tiêu thụ của gia đình trong một thời gian", "Cường độ dòng điện", "Điện áp mạch", "Công suất tức thời"], correct: "Điện năng tiêu thụ của gia đình trong một thời gian", hint: "Tính tiền điện hàng tháng." },
+                { q: "Sơ đồ lắp đặt mạch điện khác sơ đồ nguyên lý ở điểm nào?", options: ["Thể hiện rõ vị trí lắp đặt và cách đấu nối thực tế các thiết bị", "Chỉ vẽ ký hiệu sơ lược", "Không dùng dây dẫn", "Chỉ dùng cho nhà máy lớn"], correct: "Thể hiện rõ vị trí lắp đặt và cách đấu nối thực tế các thiết bị", hint: "Sơ đồ thực tế thi công." },
+                { q: "Vật liệu cách điện được dùng để làm gì?", options: ["Ngăn cách dòng điện rò rỉ gây nguy hiểm cho người và thiết bị", "Dẫn điện tốt", "Trang trí nhà cửa", "Làm nóng thiết bị"], correct: "Ngăn cách dòng điện rò rỉ gây nguy hiểm cho người và thiết bị", hint: "Bảo vệ an toàn." },
+                { q: "Dụng cụ nào dùng để vặn ốc vít khi lắp đặt thiết bị điện?", options: ["Tua-vít", "Kìm điện", "Búa", "Cưa sắt"], correct: "Tua-vít", hint: "Vặn vít." },
+                { q: "Đèn huỳnh quang có ưu điểm gì so với đèn sợi đốt cũ?", options: ["Hiệu suất phát quang cao hơn, tiết kiệm điện hơn", "Tỏa nhiệt cực nhiều", "Mau cháy hơn", "Tốn gấp đôi điện"], correct: "Hiệu suất phát quang cao hơn, tiết kiệm điện hơn", hint: "Đèn tuýp thắp sáng." },
+                { q: "Hệ thống điện quốc gia bao gồm những thành phần nào?", options: ["Nguồn điện, các lưới điện và các hộ tiêu thụ điện trên toàn quốc", "Chỉ có nhà máy điện", "Chỉ có trạm biến áp", "Chỉ có đường dây tải điện"], correct: "Nguồn điện, các lưới điện và các hộ tiêu thụ điện trên toàn quốc", hint: "Quy mô toàn hệ thống." },
+                { q: "Đường dây truyền tải điện cao thế (như 500kV) có tác dụng gì?", options: ["Truyền tải điện năng đi xa với tổn hao năng lượng nhỏ nhất", "Cung cấp điện trực tiếp cho bóng đèn bàn", "Làm đẹp cảnh quan", "Giảm điện áp xuống 12V"], correct: "Truyền tải điện năng đi xa với tổn hao năng lượng nhỏ nhất", hint: "Truyền tải đường dài Bắc - Nam." },
+                { q: "Khi sửa chữa điện trong nhà, nguyên tắc an toàn hàng đầu là gì?", options: ["Phải ngắt cầu dao/cầu chì nguồn điện trước khi làm", "Đi chân đất cho mát", "Làm nhanh không cần ngắt điện", "Dùng tay ướt vặn công tắc"], correct: "Phải ngắt cầu dao/cầu chì nguồn điện trước khi làm", hint: "Ngắt nguồn điện." },
+                { q: "Nối đất vỏ kim loại các thiết bị điện (như tủ lạnh, máy giặt) nhằm mục đích gì?", options: ["Đảm bảo an toàn, tránh điện giật khi vỏ bị rò điện", "Giúp tủ lạnh chạy lạnh hơn", "Tiết kiệm tiền điện", "Làm mát máy"], correct: "Đảm bảo an toàn, tránh điện giật khi rò rỉ", hint: "Dây tiếp địa bảo vệ người dùng." },
+                { q: "Nghề điện dân dụng bao gồm những công việc chính nào?", options: ["Lắp đặt, sửa chữa, bảo dưỡng mạng điện và thiết bị điện trong gia đình", "Chỉ trồng cây", "Chỉ lái xe ô tô", "Chỉ xây nhà cao tầng"], correct: "Lắp đặt, sửa chữa, bảo dưỡng mạng điện và thiết bị điện trong gia đình", hint: "Công việc của thợ điện." },
+                { q: "Yêu cầu an toàn khi làm nghề điện là gì?", options: ["Tuân thủ tuyệt đối quy trình an toàn điện, dùng dụng cụ bảo cách điện", "Làm việc cẩu thả", "Không cần mang bảo hộ", "Làm lúc trời mưa to"], correct: "Tuân thủ tuyệt đối quy trình an toàn điện, dùng dụng cụ bảo cách điện", hint: "An toàn là trên hết." },
+                { q: "Máy biến áp trong mạng điện có cấu tạo chính gồm mấy cuộn dây quấn?", options: ["Ít nhất 2 cuộn dây (cuộn sơ cấp và thứ cấp)", "1 cuộn", "4 cuộn", "Không có cuộn dây nào"], correct: "Ít nhất 2 cuộn dây (cuộn sơ cấp và thứ cấp)", hint: "Cấu tạo biến áp." },
+                { q: "Nguyên lý làm việc của máy biến áp dựa trên hiện tượng vật lý nào?", options: ["Cảm ứng điện từ", "Tác dụng nhiệt", "Tác dụng từ của dòng điện một chiều", "Hiện tượng quang điện"], correct: "Cảm ứng điện từ", hint: "Dòng điện xoay chiều sinh từ trường biến thiên." },
+                { q: "Dây dẫn điện trong nhà thường dùng chất liệu gì làm lõi để đảm bảo dẫn điện tốt?", options: ["Đồng hoặc nhôm", "Sắt gỉ", "Chì", "Nhựa"], correct: "Đồng hoặc nhôm", hint: "Kim loại dẫn điện tốt phổ biến." },
+                { q: "Công tắc điện thường được mắc vào dây nào trong mạch điện?", options: ["Dây pha (dây nóng)", "Dây trung tính (dây nguội)", "Dây tiếp địa", "Dây nào cũng được"], correct: "Dây pha (dây nóng)", hint: "Ngắt dây nóng đảm bảo an toàn ngắt thiết bị." },
+                { q: "Cầu chì được lắp đặt trên dây nào của mạng điện?", options: ["Dây pha trước các thiết bị cần bảo vệ", "Dây nguội", "Dây tiếp địa", "Sau công tắc"], correct: "Dây pha trước các thiết bị cần bảo vệ", hint: "Ngắt dòng điện khi quá tải đi qua dây pha." },
+                { q: "Thiết bị nào đóng vai trò là 'công tắc tổng' tự động ngắt mạch khi có sự cố chập điện?", options: ["Aptomat tổng (CB)", "Bóng đèn", "Cục sạc điện thoại", "Quạt trần"], correct: "Aptomat tổng (CB)", hint: "Thiết bị tự động ngắt hiện đại thay cầu chì." },
+                { q: "Đèn LED (Light Emitting Diode) có ưu điểm lớn nhất là gì?", options: ["Tiết kiệm điện tối đa, tuổi thọ cực cao, thân thiện môi trường", "Rất mau hỏng", "Tỏa nhiệt cực nóng", "Tiêu thụ điện gấp 5 lần đèn cũ"], correct: "Tiết kiệm điện tối đa, tuổi thọ cực cao, thân thiện môi trường", hint: "Công nghệ chiếu sáng xanh." },
+                { q: "Lắp đặt mạng điện chìm (âm tường) có ưu điểm gì so với nổi?", options: ["Tăng tính thẩm mỹ cho ngôi nhà, tránh va đập hư hỏng dây", "Dễ sửa chữa khi hỏng hóc", "Chi phí lắp đặt rất rẻ", "Không cần ống luồn dây"], correct: "Tăng tính thẩm mỹ cho ngôi nhà, tránh va đập hư hỏng dây", hint: "Đi dây ngầm trong tường." },
+                { q: "Khi dùng bút thử điện, ta phải đặt ngón tay ở vị trí nào để đèn báo sáng?", options: ["Vào kẹp kim loại ở đỉnh bút thử điện", "Không chạm vào đâu cả", "Chạm vào vỏ nhựa thân bút", "Cầm vào đầu mũi bút"], correct: "Vào kẹp kim loại ở đỉnh bút thử điện", hint: "Tạo mạch điện kín qua cơ thể xuống đất." },
+                { q: "Nguyên nhân chính gây ra tai nạn điện là gì?", options: ["Chạm trực tiếp vào vật mang điện, vi phạm khoảng cách an toàn, thiết bị hỏng rò điện", "Do trời nắng đẹp", "Do dùng đèn học", "Do quạt quay nhanh"], correct: "Chạm trực tiếp vào vật mang điện, vi phạm khoảng cách an toàn, thiết bị hỏng rò điện", hint: "Sự bất cẩn với điện." },
+                { q: "Biện pháp sơ cứu người bị điện giật đầu tiên là:", options: ["Nhanh chóng tách nạn nhân ra khỏi nguồn điện (ngắt cầu dao hoặc dùng vật cách điện gạt dây)", "Bỏ chạy đi gọi người", "Đổ nước lạnh lên người", "Để nạn nhân nằm yên không làm gì"], correct: "Nhanh chóng tách nạn nhân ra khỏi nguồn điện (ngắt cầu dao hoặc dùng vật cách điện gạt dây)", hint: "Cứu người khẩn cấp." },
+                { q: "Hệ thống điện gia đình ở nước ta phân phối điện áp bao nhiêu pha cho các thiết bị công suất lớn?", options: ["Điện áp 3 pha hoặc 1 pha", "Chỉ điện 1 pha", "Chỉ điện 12V", "Điện cao thế 1000V"], correct: "Điện áp 3 pha hoặc 1 pha", hint: "Lưới điện sinh hoạt và sản xuất nhỏ." },
+                { q: "Thiết bị đo lường nào có trong mọi hộ gia đình tiêu thụ điện để tính tiền điện hàng tháng?", options: ["Công tơ điện", "Ampe kế", "Vôn kế", "Ôm kế"], correct: "Công tơ điện", hint: "Đồng hồ ghi chỉ số điện." },
+                { q: "Đường dây dẫn điện trong nhà không nên dùng dây trần không bọc cách điện vì:", options: ["Dễ gây tai nạn điện giật và chập cháy nguy hiểm", "Tốn kém tiền mua", "Không dẫn được điện", "Làm mất thẩm mỹ"], correct: "Dễ gây tai nạn điện giật và chập cháy nguy hiểm", hint: "Bắt buộc phải có vỏ cách điện bảo vệ." },
+                { q: "Sơ đồ khối của hệ thống điện và truyền tải gồm những khối chức năng theo thứ tự:", options: ["Nhà máy điện -> Trạm biến áp tăng áp -> Đường dây tải điện -> Trạm biến áp hạ áp -> Hộ tiêu thụ", "Hộ tiêu thụ -> Nhà máy điện", "Trạm biến áp -> Nhà máy", "Không theo trật tự"], correct: "Nhà máy điện -> Trạm biến áp tăng áp -> Đường dây tải điện -> Trạm biến áp hạ áp -> Hộ tiêu thụ", hint: "Hành trình dòng điện từ nhà máy đến nhà dân." }
+            ],
+            "history_geo": [
+                { q: "Chiến tranh thế giới thứ hai kết thúc vào năm nào?", options: ["1945", "1939", "1918", "1954"], correct: "1945", hint: "Năm đánh dấu phát xít sụp đổ." },
+                { q: "Tổ chức Liên Hợp Quốc được thành lập chính thức vào năm nào?", options: ["1945", "1940", "1950", "1935"], correct: "1945", hint: "Trụ sở tại New York nhằm duy trì hòa bình thế giới." },
+                { q: "Cách mạng tháng Tám năm 1945 ở Việt Nam thành công trong khoảng thời gian nào?", options: ["Giữa tháng 8 năm 1945", "Tháng 9 năm 1945", "Tháng 12 năm 1945", "Tháng 5 năm 1945"], correct: "Giữa tháng 8 năm 1945", hint: "Tổng khởi nghĩa giành chính quyền toàn quốc." },
+                { q: "Chủ tịch Hồ Chí Minh đọc bản Tuyên ngôn Độc lập tại Quảng trường Ba Đình vào ngày nào?", options: ["2 tháng 9 năm 1945", "19 tháng 8 năm 1945", "3 tháng 2 năm 1930", "7 tháng 5 năm 1954"], correct: "2 tháng 9 năm 1945", hint: "Khai sinh nước Việt Nam Dân chủ Cộng hòa." },
+                { q: "Chiến dịch Điện Biên Phủ 'lừng lẫy năm châu, chấn động địa cầu' diễn ra vào năm nào?", options: ["1954", "1945", "1975", "1972"], correct: "1954", hint: "Kết thúc thắng lợi cuộc kháng chiến chống Pháp." },
+                { q: "Cuộc kháng chiến chống Mỹ cứu nước của nhân dân ta kết thúc toàn thắng vào năm nào?", options: ["1975", "1954", "1972", "1968"], correct: "1975", hint: "Đại thắng mùa xuân 30/4/1975." },
+                { q: "Đường lối Đổi mới đất nước được Đảng ta khởi xướng và đề ra tại Đại hội lần thứ mấy?", options: ["Đại hội VI (1986)", "Đại hội V (1982)", "Đại hội VII (1991)", "Đại hội IV (1976)"], correct: "Đại hội VI (1986)", hint: "Mốc lịch sử đưa đất nước phát triển hội nhập." },
+                { q: "Việt Nam chính thức gia nhập tổ chức ASEAN vào năm nào?", options: ["1995", "1967", "1997", "2000"], correct: "1995", hint: "Thành viên thứ 7 của khối ASEAN." },
+                { q: "Việt Nam gia nhập Tổ chức Thương mại Thế giới (WTO) vào năm nào?", options: ["2007", "2005", "2010", "1995"], correct: "2007", hint: "Chính thức hội nhập kinh tế toàn cầu sâu rộng." },
+                { q: "Nền kinh tế thế giới từ cuối thế kỷ XX đến nay có xu hướng nổi bật nào?", options: ["Toàn cầu hóa và hội nhập quốc tế", "Đóng cửa khép kín", "Tách rời thị trường", "Không có giao thương"], correct: "Toàn cầu hóa và hội nhập quốc tế", hint: "Xu thế toàn cầu hóa." },
+                { q: "Cơ cấu nền kinh tế nước ta đang chuyển dịch theo hướng nào?", options: ["Công nghiệp hóa, hiện đại hóa (tăng tỷ trọng công nghiệp và dịch vụ, giảm nông nghiệp)", "Thuần nông", "Chỉ làm dịch vụ du lịch", "Không thay đổi"], correct: "Công nghiệp hóa, hiện đại hóa (tăng tỷ trọng công nghiệp và dịch vụ, giảm nông nghiệp)", hint: "Chuyển dịch cơ cấu kinh tế hiện đại." },
+                { q: "Vùng kinh tế nào của nước ta dẫn đầu về phát triển công nghiệp và dịch vụ công nghệ cao?", options: ["Đông Nam Bộ", "Trung du miền núi Bắc Bộ", "Tây Nguyên", "Đồng bằng sông Cửu Long"], correct: "Đông Nam Bộ", hint: "Vùng kinh tế trọng điểm phía Nam." },
+                { q: "Đặc điểm địa hình phần lớn diện tích của nước ta là:", options: ["Đồi núi thấp (3/4 diện tích)", "Đồng bằng rộng lớn", "Cao nguyên băng giá", "Hoang mạc cát"], correct: "Đồi núi thấp (3/4 diện tích)", hint: "Địa hình chủ yếu đồi núi." },
+                { q: "Khí hậu nước ta mang tính chất gì rõ rệt?", options: ["Nhiệt đới ẩm gió mùa", "Ôn đới khô", "Hàn đới lạnh giá", "Xích đạo mưa quanh năm"], correct: "Nhiệt đới ẩm gió mùa", hint: "Đặc trưng khí hậu Việt Nam." },
+                { q: "Biển Đông có diện tích lớn thứ mấy trong các biển của thế giới?", options: ["Là một trong những biển lớn nhất", "Nhỏ nhất", "Trung bình", "Không xác định"], correct: "Là một trong những biển lớn nhất", hint: "Biển nửa kín rộng lớn." },
+                { q: "Các nước thành viên sáng lập ASEAN năm 1967 gồm những quốc gia nào?", options: ["Indonesia, Malaysia, Philippines, Singapore, Thailand", "Việt Nam, Lào, Campuchia", "Trung Quốc, Nhật Bản", "Hàn Quốc, Triều Tiên"], correct: "Indonesia, Malaysia, Philippines, Singapore, Thailand", hint: "5 nước sáng lập ban đầu ở Bangkok." },
+                { q: "Trật tự thế giới hai cực I-an-ta (Yalta) hình thành sau sự kiện nào?", options: ["Chiến tranh thế giới thứ hai kết thúc", "Chiến tranh thế giới thứ nhất", "Cách mạng tháng Mười Nga", "Chiến tranh lạnh"], correct: "Chiến tranh thế giới thứ hai kết thúc", hint: "Hội nghị Yalta năm 1945." },
+                { q: "Sự kiện nào đánh dấu Chiến tranh lạnh chính thức kết thúc?", options: ["Chế độ xã hội chủ nghĩa ở Liên Xô và Đông Âu sụp đổ (1989-1991)", "Mỹ ký hiệp định Paris", "Thành lập Liên Hợp Quốc", "Chiến tranh Triều Tiên"], correct: "Chế độ xã hội chủ nghĩa ở Liên Xô và Đông Âu sụp đổ (1989-1991)", hint: "Chấm dứt đối đầu Đông - Tây." },
+                { q: "Cuộc cách mạng công nghiệp lần thứ tư (4.0) đặc trưng bởi công nghệ gì?", options: ["Trí tuệ nhân tạo (AI), dữ liệu lớn (Big Data), Internet vạn vật (IoT)", "Hơi nước và cơ giới hóa", "Điện và dây chuyền hàng loạt", "Tự động hóa bằng máy tính điện tử đầu tiên"], correct: "Trí tuệ nhân tạo (AI), dữ liệu lớn (Big Data), Internet vạn vật (IoT)", hint: "Công nghệ số hóa thông minh." },
+                { q: "Tỉnh/thành phố nào ở nước ta có mật độ dân số cao nhất?", options: ["Thành phố Hồ Chí Minh và Hà Nội", "Sóc Trăng", "Kon Tum", "Lai Châu"], correct: "Thành phố Hồ Chí Minh và Hà Nội", hint: "Hai trung tâm đô thị lớn nhất nước." },
+                { q: "Vùng nuôi trồng thủy sản (đặc biệt là tôm, cá tra) trọng điểm của nước ta là:", options: ["Đồng bằng sông Cửu Long", "Đồng bằng sông Hồng", "Trung du miền núi Bắc Bộ", "Tây Nguyên"], correct: "Đồng bằng sông Cửu Long", hint: "Vựa thủy sản xuất khẩu lớn nhất." },
+                { q: "Cây công nghiệp lâu năm chủ yếu được trồng ở vùng nào của nước ta?", options: ["Tây Nguyên và Đông Nam Bộ", "Đồng bằng sông Hồng", "Đồng bằng sông Cửu Long", "Đồng bằng ven biển miền Trung"], correct: "Tây Nguyên và Đông Nam Bộ", hint: "Đất badan và đất xám phù hợp cây công nghiệp." },
+                { q: "Khu vực kinh tế nào đóng góp tỷ trọng lớn nhất trong GDP của nước ta hiện nay?", options: ["Khu vực dịch vụ và công nghiệp - xây dựng", "Khu vực nông - lâm - ngư nghiệp", "Khu vực tự cung tự cấp", "Khu vực thủ công nghiệp nhỏ"], correct: "Khu vực dịch vụ và công nghiệp - xây dựng", hint: "Xu hướng phát triển hiện đại." },
+                { q: "Quần đảo Trường Sa và Hoàng Sa thuộc chủ quyền thiêng liêng của quốc gia nào?", options: ["Việt Nam", "Các nước láng giềng", "Quốc tế chung", "Không rõ chủ quyền"], correct: "Việt Nam", hint: "Chủ quyền biển đảo không thể chối cãi." },
+                { q: "Ý nghĩa chiến lược của Biển Đông đối với kinh tế nước ta là gì?", options: ["Giao thông hàng hải quốc tế, khai thác dầu khí, đánh bắt hải sản, du lịch", "Không có giá trị", "Chỉ để làm cảnh", "Chỉ làm muối"], correct: "Giao thông hàng hải quốc tế, khai thác dầu khí, đánh bắt hải sản, du lịch", hint: "Tầm nhìn chiến lược kinh tế biển." },
+                { q: "Đặc điểm nguồn lao động nước ta hiện nay có ưu điểm gì lớn?", options: ["Cần cù, sáng tạo, tiếp thu nhanh khoa học kỹ thuật và lực lượng dồi dào", "Tay nghề cao tuyệt đối không cần đào tạo", "Số lượng lao động ít", "Lao động đã già hóa hết"], correct: "Cần cù, sáng tạo, tiếp thu nhanh khoa học kỹ thuật và lực lượng dồi dào", hint: "Lợi thế dân số vàng." },
+                { q: "Mục tiêu tổng quát của Việt Nam trong chiến lược phát triển kinh tế - xã hội hướng tới năm 2045 là gì?", options: ["Trở thành nước phát triển, thu nhập cao theo định hướng xã hội chủ nghĩa", "Trở thành nước đang phát triển trung bình", "Giữ nguyên trạng", "Không phát triển công nghiệp"], correct: "Trở thành nước phát triển, thu nhập cao theo định hướng xã hội chủ nghĩa", hint: "Tầm nhìn 100 năm thành lập nước (2045)." },
+                { q: "Tổ chức quốc tế lớn nhất khu vực châu Âu hiện nay mà nhiều nước tham gia là:", options: ["Liên minh Châu Âu (EU)", "ASEAN", "APEC", "NATO"], correct: "Liên minh Châu Âu (EU)", hint: "Khối liên kết kinh tế chính trị châu Âu." },
+                { q: "Nước nào ở châu Á có nền kinh tế lớn thứ hai thế giới hiện nay?", options: ["Trung Quốc", "Nhật Bản", "Ấn Độ", "Singapore"], correct: "Trung Quốc", hint: "Siêu cường kinh tế châu Á." },
+                { q: "Sự kiện lịch sử thế giới nào vào năm 1917 đã mở ra kỷ nguyên mới cho nhân loại?", options: ["Cách mạng tháng Mười Nga vĩ đại", "Cách mạng Pháp", "Chiến tranh thế giới 1", "Thành lập Liên Hợp Quốc"], correct: "Cách mạng tháng Mười Nga vĩ đại", hint: "Nhà nước XHCN đầu tiên ra đời." }
+            ],
+            "local": [
+                { q: "Tỉnh Sóc Trăng có bao nhiêu đơn vị hành chính cấp huyện, thị xã, thành phố?", options: ["11 đơn vị", "10 đơn vị", "9 đơn vị", "12 đơn vị"], correct: "11 đơn vị", hint: "1 Thành phố, 2 Thị xã và 8 Huyện." },
+                { q: "Thành phố Sóc Trăng là trung tâm gì của tỉnh Sóc Trăng?", options: ["Trung tâm chính trị, kinh tế, văn hóa và xã hội của tỉnh", "Chỉ là khu công nghiệp", "Chỉ là vùng nông nghiệp", "Huyện đảo xa bờ"], correct: "Trung tâm chính trị, kinh tế, văn hóa và xã hội của tỉnh", hint: "Thủ phủ của tỉnh nhà." },
+                { q: "Lễ hội Oóc Om Bóc (Cúng trăng) của đồng bào Khmer Sóc Trăng diễn ra vào tháng mấy âm lịch hằng năm?", options: ["Tháng 10 âm lịch", "Tháng Giêng", "Tháng 5 âm lịch", "Tháng 8 âm lịch"], correct: "Tháng 10 âm lịch", hint: "Mùa trăng rằm tháng 10 kết thúc vụ mùa." },
+                { q: "Ý nghĩa của hội đua ghe Ngo truyền thống ở Sóc Trăng là gì?", options: ["Tưởng nhớ thần nước, cầu mùa màng bội thu và thắt chặt tình đoàn kết", "Chỉ để giải trí cá cược", "Thi bơi lội vượt biển", "Tập dượt đánh giặc"], correct: "Tưởng nhớ thần nước, cầu mùa màng bội thu và thắt chặt tình đoàn kết", hint: "Nét văn hóa sông nước Khmer." },
+                { q: "Chùa Dơi (Sóc Trăng) nổi tiếng thu hút du khách bởi điều gì?", options: ["Kiến trúc độc đáo và hàng ngàn con dơi quạ treo mình trên cây trong khuôn viên chùa", "Có kho báu cổ", "Là chùa lớn nhất thế giới", "Nằm dưới lòng đất"], correct: "Kiến trúc độc đáo và hàng ngàn con dơi quạ treo mình trên cây trong khuôn viên chùa", hint: "Ngôi chùa gắn với loài dơi tự nhiên." },
+                { q: "Đặc sản bánh Pía Sóc Trăng có nhân truyền thống kết hợp từ những nguyên liệu nào?", options: ["Đầu xanh, sầu riêng, trứng muối mỡ heo", "Chỉ có bột mì và đường", "Thịt bò và khoai tây", "Đậu đỏ và trà xanh"], correct: "Đầu xanh, sầu riêng, trứng muối mỡ heo", hint: "Hương vị béo thơm đặc trưng miền Nam." },
+                { q: "Chùa Chén Kiểu (Sóc Trăng) còn có tên gọi dân gian thú vị vì lý do gì?", options: ["Dùng các mảnh chén, đĩa sành sứ vỡ ốp trang trí tường kiến trúc độc đáo", "Được xây toàn bằng vàng", "Chứa hàng ngàn chiếc chén cổ", "Nằm bên dòng suối chén"], correct: "Dùng các mảnh chén, đĩa sành sứ vỡ ốp trang trí tường kiến trúc độc đáo", hint: "Tận dụng sành sứ trang trí nghệ thuật." },
+                { q: "Huyện Cù Lao Dung của tỉnh Sóc Trăng có địa hình đặc biệt nào?", options: ["Là dải cù lao xanh tươi nằm giữa cửa sông Hậu đổ ra biển", "Là vùng núi cao hiểm trở", "Là hoang mạc cát trắng", "Là vùng đất ngập mặn khô cằn hoàn toàn"], correct: "Là dải cù lao xanh tươi nằm giữa cửa sông Hậu đổ ra biển", hint: "Cù lao giữa dòng nước lớn." },
+                { q: "Chợ nổi Ngã Năm (Sóc Trăng) giao thương kết nối từ mấy ngả sông?", options: ["5 ngả sông", "3 ngả sông", "4 ngả sông", "6 ngả sông"], correct: "5 ngả sông", hint: "Tên gọi đã nói lên số ngả sông giao nhau." },
+                { q: "Tỉnh Sóc Trăng có đường bờ biển tiếp giáp với vùng biển nào?", options: ["Biển Đông", "Vịnh Thái Lan", "Biển Tây", "Ấn Độ Dương"], correct: "Biển Đông", hint: "Vùng biển phía Đông Nam." },
+                { q: "Khu di tích lịch sử Căn cứ Tỉnh ủy Sóc Trăng nằm ở địa bàn huyện nào?", options: ["Mỹ Tú", "Cù Lao Dung", "Kế Sách", "Trần Đề"], correct: "Mỹ Tú", hint: "Vùng căn cứ kháng chiến xưa." },
+                { q: "Lễ hội Chol Chnam Thmay là lễ hội gì của đồng bào Khmer Sóc Trăng?", options: ["Lễ mừng năm mới (Tết cổ truyền)", "Lễ cúng trăng", "Lễ hội đua ghe", "Lễ hội mùa gặt"], correct: "Lễ mừng năm mới (Tết cổ truyền)", hint: "Đón năm mới theo lịch Phật lịch." },
+                { q: "Lễ hội Sen Đonta của đồng bào Khmer Sóc Trăng là dịp để làm gì?", options: ["Báo hiếu, cúng ông bà tổ tiên và tưởng nhớ người đã khuất", "Cúng thần lúa", "Đua thuyền", "Múa hát đầu năm"], correct: "Báo hiếu, cúng ông bà tổ tiên và tưởng nhớ người đã khuất", hint: "Lễ hội xá tội vong nhân / báo hiếu." },
+                { q: "Tượng Phật Thích Ca nhập niết bàn (Phật nằm) ngoài trời lớn nhất ở Sóc Trăng nằm ở chùa nào?", options: ["Chùa Som Rong (Wat Phat Them)", "Chùa Dơi", "Chùa Khléang", "Chùa Chén Kiểu"], correct: "Chùa Som Rong (Wat Phat Them)", hint: "Ngôi chùa có tượng Phật khổng lồ nổi bật." },
+                { q: "Sản phẩm gạo nào của Sóc Trăng do kỹ sư Hồ Quang Cua nghiên cứu đã vinh danh gạo ngon nhất thế giới?", options: ["Gạo ST24 và ST25", "Gạo nàng thơm Chợ Đào", "Gạo tài nguyên", "Gạo bắc hương"], correct: "Gạo ST24 và ST25", hint: "Hạt gạo thơm đặc sản Sóc Trăng." },
+                { q: "Tỉnh Sóc Trăng có tỉ lệ đồng bào dân tộc nào sinh sống chiếm số lượng lớn tạo nên văn hóa đa dạng?", options: ["Dân tộc Khmer và Hoa", "Dân tộc Mường", "Dân tộc Tày, Nùng", "Dân tộc Chăm độc lập"], correct: "Dân tộc Khmer và Hoa", hint: "Sự giao thoa ba dân tộc Kinh - Khmer - Hoa." },
+                { q: "Cảng biển nước sâu Trần Đề khi xây dựng xong sẽ đóng vai trò chiến lược gì cho Sóc Trăng?", options: ["Cảng tổng hợp quốc gia cửa ngõ vùng Đồng bằng sông Cửu Long", "Chỉ làm bến tàu du lịch nhỏ", "Chỉ neo đậu tàu cá địa phương", "Không có giá trị kinh tế"], correct: "Cảng tổng hợp quốc gia cửa ngõ vùng Đồng bằng sông Cửu Long", hint: "Siêu dự án cảng biển quốc tế." },
+                { q: "Nghề làm bánh tráng, bánh cóng hoặc bánh pía ở Sóc Trăng thuộc lĩnh vực công nghiệp/tiểu thủ công nghiệp nào?", options: ["Công nghiệp chế biến lương thực, thực phẩm truyền thống", "Công nghiệp luyện kim", "Công nghiệp khai khoáng", "Công nghệ thông tin"], correct: "Công nghiệp chế biến lương thực, thực phẩm truyền thống", hint: "Ẩm thực đặc sản địa phương." },
+                { q: "Tỉnh Sóc Trăng nằm ở hạ lưu sông nào lớn nhất miền Tây Nam Bộ?", options: ["Sông Hậu", "Sông Tiền", "Sông Đồng Nai", "Sông Sài Gòn"], correct: "Sông Hậu", hint: "Dòng sông lớn chảy qua trước khi đổ ra biển qua các cửa của Sóc Trăng." },
+                { q: "Hệ thống giao thông đường bộ huyết mạch nào chạy qua địa phận tỉnh Sóc Trăng?", options: ["Quốc lộ 1A và các tuyến Nam Sông Hậu, Quản Lộ - Phụng Hiệp", "Chỉ có đường sắt cao tốc", "Chỉ có đường hàng không", "Không có đường lớn"], correct: "Quốc lộ 1A và các tuyến Nam Sông Hậu, Quản Lộ - Phụng Hiệp", hint: "Trục giao thông quốc gia chính." },
+                { q: "Loại hình nghệ thuật sân khấu truyền thống độc đáo của đồng bào Khmer Nam bộ nói chung và Sóc Trăng nói riêng là:", options: ["Dì kê (Lịch-hôn) và múa Rô-băm", "Hát tuồng cổ", "Ca trù", "Hát xẩm"], correct: "Dì kê (Lịch-hôn) và múa Rô-băm", hint: "Nghệ thuật biểu diễn dân gian." },
+                { q: "Khu kinh tế ven biển tỉnh Sóc Trăng tập trung gắn liền với địa danh nào?", options: ["Khu vực cảng Trần Đề và vùng ven biển Vĩnh Châu", "Khu vực nội thành Sóc Trăng", "Vùng núi cao Kế Sách", "Vùng biên giới giáp Campuchia"], correct: "Khu vực cảng Trần Đề và vùng ven biển Vĩnh Châu", hint: "Định hướng phát triển kinh tế biển tỉnh." },
+                { q: "Địa danh nào ở Sóc Trăng nổi tiếng với nghề trồng hành tím quy mô lớn nhất cả nước?", options: ["Thị xã Vĩnh Châu", "Huyện Cù Lao Dung", "Huyện Long Phú", "Huyện Thạnh Trị"], correct: "Thị xã Vĩnh Châu", hint: "Thủ phủ hành tím Vĩnh Châu." },
+                { q: "Chùa Khléang tại thành phố Sóc Trăng được xây dựng vào khoảng thế kỷ nào?", options: ["Thế kỷ XVI (năm 1533)", "Thế kỷ XX", "Thế kỷ XXI", "Thế kỷ X"], correct: "Thế kỷ XVI (năm 1533)", hint: "Ngôi chùa cổ có tuổi đời hàng trăm năm." },
+                { q: "Truyền thống yêu nước và cách mạng của nhân dân Sóc Trăng tiêu biểu qua các cuộc kháng chiến chống giặc ngoại xâm thể hiện qua:", options: ["Tinh thần kiên cường, bất khuất, lập nhiều chiến công vang dội cùng cả nước", "Đầu hàng giặc", "Không tham gia kháng chiến", "Chỉ di cư đi nơi khác"], correct: "Tinh thần kiên cường, bất khuất, lập nhiều chiến công vang dội cùng cả nước", hint: "Lịch sử hào hùng miền quê hương." },
+                { q: "Sóc Trăng có các dự án năng lượng trọng điểm nào đang phát triển mạnh mẽ dọc theo bờ biển?", options: ["Các dự án nhà máy điện gió và điện mặt trời", "Nhà máy thủy điện ngầm", "Nhà máy nhiệt điện than khổng lồ duy nhất", "Không phát triển năng lượng"], correct: "Các dự án nhà máy điện gió và điện mặt trời", hint: "Năng lượng sạch tái tạo." },
+                { q: "Ẩm thực dân gian Sóc Trăng rất nổi tiếng với món bún nước lèo mang hương vị đậm đà của:", options: ["Mắm cá mắm bò hóc (Prahok) kết hợp sả và ngải bún", "Mắm tôm Bắc", "Nước mắm chua ngọt thuần túy", "Không dùng mắm"], correct: "Mắm cá mắm bò hóc (Prahok) kết hợp sả và ngải bún", hint: "Hương vị đặc trưng xứ sở." },
+                { q: "Ý nghĩa của việc giữ gìn và phát huy bản sắc văn hóa các dân tộc tại Sóc Trăng là gì?", options: ["Xây dựng khối đại đoàn kết toàn dân tộc và phát triển du lịch văn hóa bền vững", "Làm phai nhạt văn hóa", "Không có ý nghĩa", "Chỉ để biểu diễn cho vui"], correct: "Xây dựng khối đại đoàn kết toàn dân tộc và phát triển du lịch văn hóa bền vững", hint: "Sức mạnh khối đại đoàn kết." },
+                { q: "Thế hệ học sinh lớp 8, lớp 9 tại Sóc Trăng khi học tập về địa phương có trách nhiệm gì?", options: ["Tìm hiểu, trân trọng, giữ gìn và quảng bá những giá trị truyền thống tốt đẹp của quê hương", "Lãng quên lịch sử", "Không quan tâm", "Phá hoại di tích"], correct: "Tìm hiểu, trân trọng, giữ gìn và quảng bá những giá trị truyền thống tốt đẹp của quê hương", hint: "Trách nhiệm thế hệ trẻ." },
+                { q: "Biểu tượng tự hào của ngành nông nghiệp Sóc Trăng vươn tầm quốc tế trong những năm gần đây là hạt gạo gì?", options: ["Hạt gạo ST (ST24, ST25)", "Hạt lúa mạch", "Hạt ngô ngọt", "Hạt đậu xanh"], correct: "Hạt gạo ST (ST24, ST25)", hint: "Thương hiệu gạo ngon nhất thế giới." }
+            ]
         }
     };
 
@@ -213,7 +709,7 @@
     let score = 0;
     let selectedAns = null;
 
-    // --- LOGIC XỬ LÝ ĐĂNG KÝ / ĐĂNG NHẬP ---
+    // --- HỆ THỐNG XỬ LÝ ĐĂNG KÝ / ĐĂNG NHẬP ---
     function toggleAuth(mode) {
         if(mode === 'register') {
             document.getElementById('login-screen').classList.add('hidden');
@@ -300,7 +796,7 @@
         Object.keys(db[currentClass]).forEach(key => {
             const card = document.createElement('div');
             card.className = 'subject-card';
-            card.innerHTML = `<div style="font-size:2rem; margin-bottom:10px;">📚</div><b>${subjNames[key]}</b>`;
+            card.innerHTML = `<div style="font-size:2rem; margin-bottom:10px;">📚</div><b>${subjNames[key]}</b><div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px;">Kho 30 câu (Thi 10 câu)</div>`;
             card.onclick = () => startTest(key);
             grid.appendChild(card);
         });
@@ -308,7 +804,24 @@
 
     function startTest(subj) {
         currentSubj = subj;
-        questions = [...db[currentClass][subj]].sort(() => Math.random() - 0.5);
+        let fullPool = db[currentClass][subj];
+        
+        // Random lấy 10 câu từ kho 30 câu
+        let shuffledPool = [...fullPool].sort(() => Math.random() - 0.5);
+        let selectedQuestions = shuffledPool.slice(0, 10);
+
+        // Tráo vị trí đáp án ngẫu nhiên cho từng câu
+        questions = selectedQuestions.map(item => {
+            let optionsCopy = [...item.options];
+            optionsCopy.sort(() => Math.random() - 0.5);
+            return {
+                q: item.q,
+                options: optionsCopy,
+                correct: item.correct,
+                hint: item.hint
+            };
+        });
+
         qIndex = 0; score = 0;
         document.getElementById('tab-test').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
@@ -327,18 +840,20 @@
 
         const box = document.getElementById('options-box');
         box.innerHTML = '';
+        
         q.options.forEach((optText, idx) => {
             let btn = document.createElement('button');
             btn.className = 'opt-btn';
             btn.innerText = String.fromCharCode(65 + idx) + ". " + optText;
             btn.onclick = () => {
-                selectedAns = idx;
+                selectedAns = optText; // Lưu giá trị đáp án người dùng chọn để so sánh chuẩn xác với đáp án đúng dù bị tráo vị trí
                 document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 document.getElementById('next-btn').disabled = false;
             };
             box.appendChild(btn);
         });
+        document.getElementById('next-btn').innerText = (qIndex === questions.length - 1) ? "NỘP BÀI" : "CÂU TIẾP THEO ❯";
     }
 
     function showHint() {
@@ -347,7 +862,7 @@
     }
 
     function nextQuestion() {
-        if(selectedAns === questions[qIndex].answer) score++;
+        if(selectedAns === questions[qIndex].correct) score++;
         qIndex++;
         if(qIndex < questions.length) loadQuestion();
         else finishTest();
