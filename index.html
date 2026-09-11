@@ -3,219 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3301 // LỚP 9 ARENA</title>
+    <title>3301 // LỚP 9 ARENA (REMASTERED)</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #080c10;
+            background-color: #05080c;
+            background-image: radial-gradient(circle at center, #0a1118 0%, #020406 100%);
             color: #00ff66;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 15px;
+            align-items: flex-start;
+            padding: 20px;
         }
-        .box {
-            width: 100%;
-            max-width: 750px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
-            position: relative;
-        }
-        h1, h2, h3 { color: #58a6ff; text-align: center; margin-bottom: 15px; }
-        .user-bar {
+
+        /* BỐ CỤC 2 CỘT */
+        .container {
             display: flex;
-            justify-content: space-between;
-            background: #161b22;
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        input, select {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #161b22;
-            border: 1px solid #30363d;
-            color: #00ff66;
-            font-family: inherit;
-            border-radius: 4px;
+            max-width: 1100px;
+            gap: 20px;
+            align-items: flex-start;
         }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn {
-            background: #238636;
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            font-family: inherit;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
-            margin-top: 10px;
+
+        /* GLASSMORPHISM BOX CHUNG */
+        .glass-box {
+            background: rgba(13, 17, 23, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.05);
         }
-        .btn:hover { background: #2ea043; }
-        .btn-opt {
-            background: #161b22;
-            border: 1px solid #30363d;
-            color: #00ff66;
-            padding: 12px;
-            text-align: left;
-            font-family: inherit;
-            cursor: pointer;
-            border-radius: 4px;
+
+        /* SIDEBAR TRÁI */
+        .sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-card, .leaderboard-card { border-top: 3px solid #00f0ff; }
+        .leaderboard-card { border-top: 3px solid #ff0055; }
+        
+        .stat-title { color: #8b949e; font-size: 0.85rem; }
+        .stat-val { color: #00f0ff; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+
+        .lb-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid #ff0055;
+            padding: 10px;
             margin-bottom: 8px;
-            width: 100%;
+            font-size: 0.9rem;
+            border-radius: 0 4px 4px 0;
         }
-        .btn-opt.selected { background: #1f6feb; color: #fff; border-color: #58a6ff; }
-        .hidden { display: none; }
-        .stat-val { color: #d29922; font-weight: bold; }
-        .best-score-card {
-            background: #161b22;
-            border: 1px dashed #d29922;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 15px 0;
-            text-align: center;
+
+        /* VÙNG MAIN BÊN PHẢI */
+        .main-content {
+            flex-grow: 1;
+            width: 100%;
+            border-top: 3px solid #00ff66;
+        }
+
+        h1, h2, h3 { color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.3); margin-bottom: 20px; text-align: center; }
+        
+        input, select {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(0,255,102,0.3);
+            color: #00f0ff; font-family: inherit; font-size: 1rem; border-radius: 6px;
+        }
+        input:focus { outline: none; border-color: #00f0ff; box-shadow: 0 0 10px rgba(0,240,255,0.2); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .btn {
+            background: transparent; color: #00ff66;
+            border: 1px solid #00ff66; padding: 15px;
+            font-family: inherit; font-size: 1rem; font-weight: bold;
+            cursor: pointer; border-radius: 6px; width: 100%;
+            transition: all 0.3s ease; text-transform: uppercase;
+        }
+        .btn:hover { background: rgba(0, 255, 102, 0.1); box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
+        .btn-primary { background: #00ff66; color: #000; }
+        .btn-primary:hover { background: #00cc55; color: #000; }
+        .btn-danger { border-color: #ff0055; color: #ff0055; }
+        .btn-danger:hover { background: rgba(255,0,85,0.1); box-shadow: 0 0 15px rgba(255,0,85,0.3); }
+        .btn:disabled { border-color: #30363d; color: #8b949e; cursor: not-allowed; background: transparent; box-shadow: none; }
+
+        .btn-opt {
+            background: rgba(255,255,255,0.02); border: 1px solid #30363d;
+            color: #c9d1d9; padding: 15px; text-align: left;
+            font-family: inherit; font-size: 1rem; cursor: pointer;
+            border-radius: 6px; margin-bottom: 10px; width: 100%;
+            transition: 0.2s;
+        }
+        .btn-opt:hover { border-color: #00f0ff; background: rgba(0, 240, 255, 0.05); }
+        .btn-opt.selected { background: #00f0ff; color: #000; border-color: #00f0ff; font-weight: bold; }
+
+        .hidden { display: none !important; }
+        
+        #q-text { color: #fff; line-height: 1.6; font-size: 1.2rem; text-align: left; border-left: 3px solid #00f0ff; padding-left: 15px; margin-bottom: 25px;}
+
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; order: 2; } /* Trên mobile, Sidebar xuống dưới */
+            .main-content { order: 1; }
+            .grid-2 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <!-- BAR THÔNG TIN TÀI KHOẢN & GPA (GÓC MÀN HÌNH) -->
-    <div id="user-bar" class="user-bar hidden">
-        <span>👤 HỌC CÔNG: <b id="display-user" class="stat-val">...</b></span>
-        <span>📊 GPA TRUNG BÌNH: <b id="display-gpa" class="stat-val">0.0 / 10</b></span>
-    </div>
+<div class="container">
+    
+    <!-- === CỘT TRÁI (SIDEBAR) === -->
+    <div id="sidebar" class="sidebar hidden">
+        <!-- Profile -->
+        <div class="glass-box profile-card">
+            <div class="stat-title">THÔNG TIN HỌC VIÊN:</div>
+            <div class="stat-val" id="display-user">...</div>
+            <div class="stat-title">ĐIỂM GPA TRUNG BÌNH (HỆ 10):</div>
+            <div class="stat-val" style="color:#00ff66;" id="display-gpa">0.0</div>
+        </div>
 
-    <!-- 1. MÀN HÌNH ĐĂNG KÝ / ĐĂNG NHẬP -->
-    <div id="auth-screen">
-        <h1>[AUTH // LỚP 9 SYSTEM]</h1>
-        <p style="text-align:center; color:#8b949e; margin-bottom:15px;">Đăng ký danh tính để ghi danh Bảng Xếp Hạng</p>
-        <input type="text" id="username" placeholder="Nhập Tên / Biệt danh..." autocomplete="off">
-        <input type="password" id="password" placeholder="Nhập Mật khẩu bảo mật..." autocomplete="off">
-        <button class="btn" onclick="login()">⚡ VÀO HỆ THỐNG</button>
-    </div>
-
-    <!-- 2. MÀN HÌNH CHỌN MÔN & KHỐI LỚP -->
-    <div id="menu-screen" class="hidden">
-        <h2>[CHỌN LĨNH VỰC THI]</h2>
-        
-        <label style="color:#8b949e; font-size:0.85rem;">CHỌN KHỐI LỚP:</label>
-        <select id="grade-select">
-            <option value="9">Lớp 9 (Chuẩn Chương Trình)</option>
-            <option value="8">Lớp 8 (Ôn tập kiến thức cũ)</option>
-        </select>
-
-        <label style="color:#8b949e; font-size:0.85rem;">CHỌN MÔN HỌC (30 CÂU/MÔN):</label>
-        <div class="grid-2" style="margin-top:5px;">
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('math')">📐 TOÁN HỌC</button>
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('physics')">⚡ VẬT LÝ</button>
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('chemistry')">🧪 HÓA HỌC</button>
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('english')">🇬🇧 TIẾNG ANH</button>
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('literature')">📖 NGỮ VĂN</button>
-            <button class="btn" style="background:#161b22; border:1px solid #30363d;" onclick="previewSubject('tech')">💻 TIN HỌC / ARG</button>
+        <!-- Leaderboard -->
+        <div class="glass-box leaderboard-card">
+            <h3 style="color:#ff0055; font-size:1.1rem; margin-bottom:15px; text-align:left;">🏆 TOP RANKING</h3>
+            <div id="leaderboard-list">
+                <div style="color:#8b949e; font-size:0.85rem;">Chưa có dữ liệu. Hãy là người đầu tiên!</div>
+            </div>
         </div>
     </div>
 
-    <!-- 3. MÀN HÌNH PREVIEW KỶ LỤC & BẮT ĐẦU THI -->
-    <div id="preview-screen" class="hidden">
-        <h2 id="subj-title">MÔN: ...</h2>
+    <!-- === CỘT PHẢI (MAIN APP) === -->
+    <div class="main-content glass-box">
         
-        <div class="best-score-card">
-            🏆 MY BEST SCORE (ĐIỂM TỐT NHẤT CỦA BẠN):<br>
-            <span id="my-best-val" style="font-size:2rem; color:#58a6ff; font-weight:bold;">0 / 10</span>
+        <!-- 1. MÀN ĐĂNG NHẬP -->
+        <div id="auth-screen">
+            <h1>[LỚP 9 SYSTEM LOG]</h1>
+            <p style="text-align:center; color:#8b949e; margin-bottom:25px;">Truy cập vào hệ thống giả lập kiểm tra</p>
+            <input type="text" id="username" placeholder="> Tên hiển thị (Nickname)..." autocomplete="off">
+            <input type="password" id="password" placeholder="> Mã bảo mật (Passcode)..." autocomplete="off">
+            <button class="btn btn-primary" style="margin-top:10px;" onclick="login()">KÍCH HOẠT HỆ THỐNG</button>
         </div>
 
-        <p style="text-align:center; color:#c9d1d9; margin-bottom:15px;">Mỗi lượt thi sẽ xáo trộn ngẫu nhiên **10 câu hỏi** từ ngân hàng 30 câu.</p>
-        
-        <button class="btn" style="background:#238636;" onclick="startExam()">🚀 BẮT ĐẦU KIỂM TRA</button>
-        <button class="btn" style="background:#da3633; margin-top:5px;" onclick="showMenu()">⬅️ CHỌN MÔN KHÁC</button>
-    </div>
-
-    <!-- 4. MÀN HÌNH LÀM BÀI THI -->
-    <div id="exam-screen" class="hidden">
-        <div style="display:flex; justify-content:space-between; color:#8b949e; margin-bottom:10px;">
-            <span id="exam-subj">MÔN...</span>
-            <span id="exam-progress">CÂU 1 / 10</span>
-        </div>
-        
-        <h3 id="q-text" style="text-align:left; color:#c9d1d9; margin-bottom:15px;">Đang tải...</h3>
-        <div id="options-box"></div>
-
-        <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>CÂU TIẾP TEO ></button>
-    </div>
-
-    <!-- 5. MÀN KẾT QUẢ & BẢNG XẾP HẠNG -->
-    <div id="result-screen" class="hidden">
-        <h2>[KẾT QUẢ BÀI THI]</h2>
-        <div style="font-size: 2.5rem; color: #58a6ff; text-align:center; margin:10px 0;" id="score-text">0 / 10</div>
-        
-        <div class="best-score-card">
-            🥇 BẢNG XẾP HẠNG TOP LOCAL (LƯU TRÊN MÁY):
-            <div id="leaderboard-box" style="text-align:left; font-size:0.85rem; margin-top:10px; color:#c9d1d9;"></div>
+        <!-- 2. MÀN CHỌN MÔN -->
+        <div id="menu-screen" class="hidden">
+            <h2>> CHỌN LĨNH VỰC THI</h2>
+            <div class="grid-2">
+                <button class="btn" onclick="previewSubject('math')">📐 TOÁN HỌC</button>
+                <button class="btn" onclick="previewSubject('physics')">⚡ VẬT LÝ</button>
+                <button class="btn" onclick="previewSubject('chemistry')">🧪 HÓA HỌC</button>
+                <button class="btn" onclick="previewSubject('english')">🇬🇧 TIẾNG ANH</button>
+                <button class="btn" onclick="previewSubject('literature')">📖 NGỮ VĂN</button>
+                <button class="btn" onclick="previewSubject('tech')">💻 TIN HỌC / ARG</button>
+            </div>
         </div>
 
-        <button class="btn" onclick="showMenu()">🔄 CHỌN MÔN KHÁC</button>
+        <!-- 3. MÀN PREVIEW KỶ LỤC -->
+        <div id="preview-screen" class="hidden">
+            <h2 id="subj-title">MÔN: ...</h2>
+            <div style="text-align:center; margin: 30px 0;">
+                <div style="color:#8b949e; margin-bottom:10px;">ĐIỂM KỶ LỤC CỦA BẠN (MÔN NÀY):</div>
+                <div id="my-best-val" style="font-size:3rem; color:#00f0ff; font-weight:bold; text-shadow: 0 0 15px rgba(0,240,255,0.4);">0.0</div>
+            </div>
+            <button class="btn btn-primary" onclick="startExam()">🚀 BẮT ĐẦU KIỂM TRA</button>
+            <button class="btn btn-danger" style="margin-top:15px;" onclick="showMenu()">[ QUAY LẠI ]</button>
+        </div>
+
+        <!-- 4. MÀN LÀM BÀI THI -->
+        <div id="exam-screen" class="hidden">
+            <div style="display:flex; justify-content:space-between; color:#00f0ff; margin-bottom:20px; font-weight:bold;">
+                <span id="exam-subj">MÔN...</span>
+                <span id="exam-progress">CÂU 1 / 10</span>
+            </div>
+            
+            <div id="q-text">Đang tải...</div>
+            <div id="options-box" style="margin-bottom: 25px;"></div>
+
+            <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" disabled>CÂU TIẾP THEO ></button>
+        </div>
+
+        <!-- 5. MÀN KẾT QUẢ -->
+        <div id="result-screen" class="hidden">
+            <h2>[KẾT QUẢ BÀI THI]</h2>
+            <div style="font-size: 3.5rem; color: #00ff66; text-align:center; margin:20px 0; font-weight:bold;" id="score-text">0.0</div>
+            <p style="text-align:center; color:#c9d1d9; margin-bottom: 30px;">Hệ thống đã cập nhật điểm vào Cơ sở dữ liệu LB.</p>
+            <button class="btn btn-primary" onclick="showMenu()">🔄 CHỌN MÔN KHÁC</button>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // NGÂN HÀNG 30 CÂU HỎI MỖI MÔN (LỚP 9)
+    // NGÂN HÀNG CÂU HỎI
     const db = {
         math: [
             { q: "Căn bậc hai số học của 9 là bao nhiêu?", options: ["3", "-3", "81", "9"], answer: 0 },
             { q: "Đồ thị hàm số y = ax + b (a ≠ 0) là một đường gì?", options: ["Đường thẳng", "Đường Parabol", "Đường tròn", "Đường cong"], answer: 0 },
-            { q: "Hệ phương trình bậc nhất 2 ẩn có nghiệm duy nhất khi nào?", options: ["a/a' ≠ b/b'", "a/a' = b/b'", "a/a' = c/c'", "Vô nghiệm"], answer: 0 },
-            { q: "Công thức tính diện tích đường tròn bán kính R là gì?", options: ["πR²", "2πR", "4πR", "πR"], answer: 0 },
             { q: "Nghiệm của phương trình x² - 5x + 6 = 0 là gì?", options: ["x=2, x=3", "x=-2, x=-3", "x=1, x=6", "x=0, x=5"], answer: 0 },
-            { q: "Cho tam giác ABC vuông tại A, sinB bằng tỉ số nào?", options: ["Cạnh đối / Cạnh huyền", "Cạnh kề / Cạnh huyền", "Cạnh đối / Cạnh kề", "Cạnh kề / Cạnh đối"], answer: 0 },
-            { q: "Góc nội tiếp chắn nửa đường tròn có số đo bằng bao nhiêu?", options: ["90°", "180°", "60°", "45°"], answer: 0 },
-            { q: "Giá trị của √(-5)² bằng bao nhiêu?", options: ["5", "-5", "25", "-25"], answer: 0 },
             { q: "Biệt thức Delta (Δ) của phương trình ax² + bx + c = 0 tính bằng công thức nào?", options: ["b² - 4ac", "b - 4ac", "b² + 4ac", "4ac - b²"], answer: 0 },
-            { q: "Số đường tròn đi qua 3 điểm không thẳng hàng là bao nhiêu?", options: ["1", "2", "Vô số", "0"], answer: 0 }
-        ],
-        physics: [
-            { q: "Theo định luật Ôm, cường độ dòng điện I tính bằng công thức nào?", options: ["I = U / R", "I = U . R", "I = R / U", "I = U² / R"], answer: 0 },
-            { q: "Đơn vị đo Điện trở là gì?", options: ["Ôm (Ω)", "Vôn (V)", "Ampe (A)", "Oát (W)"], answer: 0 },
-            { q: "Công suất điện P được tính bằng công thức nào?", options: ["P = U . I", "P = U / I", "P = I / U", "P = U² . I"], answer: 0 },
-            { q: "Thấu kính phân kỳ luôn cho ảnh có đặc điểm gì?", options: ["Ảnh ảo, nhỏ hơn vật", "Ảnh thật, ngược chiều", "Ảnh ảo, lớn hơn vật", "Ảnh thật, lớn hơn vật"], answer: 0 },
-            { q: "Hiện tượng khúc xạ ánh sáng là hiện tượng ánh sáng bị làm sao khi qua mặt phân cách 2 môi trường?", options: ["Bị gãy khúc", "Bị phản xạ toàn phần", "Bị hút mất", "Không thay đổi"], answer: 0 }
-        ],
-        chemistry: [
-            { q: "Dung dịch Axit làm quỳ tím chuyển sang màu gì?", options: ["Đỏ", "Xanh", "Hồng", "Không đổi màu"], answer: 0 },
-            { q: "Kim loại nào dẫn điện và dẫn nhiệt tốt nhất?", options: ["Bạc (Ag)", "Đồng (Cu)", "Vàng (Au)", "Nhôm (Al)"], answer: 0 },
-            { q: "Dung dịch Bazo làm dung dịch Phenolphthalein không màu chuyển sang màu gì?", options: ["Hồng / Tím", "Xanh", "Đỏ", "Vàng"], answer: 0 },
-            { q: "Khí metan (CH4) là thành phần chính của loại khí nào?", options: ["Khí thiên nhiên / Khí bãi rác", "Khí cười", "Khí Oxy", "Khí Độc"], answer: 0 },
-            { q: "Thuốc thử để nhận biết hồ tinh bột là gì?", options: ["Dung dịch Iốt", "Quỳ tím", "Axit HCl", "Nước vôi trong"], answer: 0 }
+            { q: "Giá trị của √(-5)² bằng bao nhiêu?", options: ["5", "-5", "25", "-25"], answer: 0 }
         ],
         english: [
             { q: "Thì Hiện tại hoàn thành dùng trợ động từ nào đi với 'He/She/It'?", options: ["Has", "Have", "Is", "Does"], answer: 0 },
             { q: "Từ nào đồng nghĩa với 'Famous'?", options: ["Well-known", "Unknown", "Bad", "Quiet"], answer: 0 },
-            { q: "Chuyển câu 'I clean the room' sang thể Bị Động (Passive Voice)?", options: ["The room is cleaned by me", "The room was cleaned", "The room cleans me", "I am cleaned"], answer: 0 },
-            { q: "Động từ dạng V-ing đứng sau giới từ nào?", options: ["Tất cả giới từ (in, on, at, of...)", "Chỉ từ TO", "Không đứng sau giới từ", "Chỉ từ FOR"], answer: 0 },
+            { q: "Chuyển câu 'I clean the room' sang thể Bị Động?", options: ["The room is cleaned by me", "The room was cleaned", "The room cleans me", "I am cleaned"], answer: 0 },
+            { q: "Động từ dạng V-ing đứng sau giới từ nào?", options: ["Tất cả giới từ", "Chỉ từ TO", "Không đứng sau giới từ", "Chỉ từ FOR"], answer: 0 },
             { q: "Từ trái nghĩa với 'Dangerous' là gì?", options: ["Safe", "Harmful", "Risky", "Scary"], answer: 0 }
+        ],
+        physics: [
+            { q: "Theo định luật Ôm, cường độ dòng điện I tính bằng công thức nào?", options: ["I = U / R", "I = U . R", "I = R / U", "I = U² / R"], answer: 0 },
+            { q: "Đơn vị đo Điện trở là gì?", options: ["Ôm (Ω)", "Vôn (V)", "Ampe (A)", "Oát (W)"], answer: 0 }
+        ],
+        chemistry: [
+            { q: "Dung dịch Axit làm quỳ tím chuyển sang màu gì?", options: ["Đỏ", "Xanh", "Hồng", "Không đổi màu"], answer: 0 },
+            { q: "Kim loại nào dẫn điện và dẫn nhiệt tốt nhất?", options: ["Bạc (Ag)", "Đồng (Cu)", "Vàng (Au)", "Nhôm (Al)"], answer: 0 }
         ],
         literature: [
             { q: "Bài thơ 'Đồng chí' do nhà thơ nào sáng tác?", options: ["Chính Hữu", "Phạm Tiến Duật", "Huy Cận", "Bằng Việt"], answer: 0 },
-            { q: "Hình ảnh 'Chiếc xe không kính' xuất hiện trong tác phẩm của ai?", options: ["Phạm Tiến Duật", "Nguyễn Khoa Điềm", "Chính Hữu", "Tố Hữu"], answer: 0 },
-            { q: "Nhân vật ông Hai trong truyện ngắn 'Làng' của Kim Lân có tình yêu sâu sắc với cái gì?", options: ["Làng Chợ Dầu & Đất nước", "Nghề làm ruộng", "Cái nhà cổ", "Những con vật nuôi"], answer: 0 },
-            { q: "Tác phẩm 'Lặng lẽ Sa Pa' của tác giả nào?", options: ["Nguyễn Thành Long", "Nguyễn Quang Sáng", "Kim Lân", "Lê Minh Khuê"], answer: 0 },
-            { q: "Truyện ngắn 'Chiếc lược ngà' lấy bối cảnh ở vùng nào?", options: ["Nam Bộ", "Bắc Bộ", "Trung Bộ", "Tây Nguyên"], answer: 0 }
+            { q: "Tác phẩm 'Lặng lẽ Sa Pa' của tác giả nào?", options: ["Nguyễn Thành Long", "Nguyễn Quang Sáng", "Kim Lân", "Lê Minh Khuê"], answer: 0 }
         ],
         tech: [
-            { q: "Mật mã Caesar dịch lùi 3 bước chữ 'A' thành chữ gì?", options: ["D", "E", "F", "B"], answer: 0 },
-            { q: "Port mặc định của web bảo mật HTTPS là gì?", options: ["443", "80", "22", "8080"], answer: 0 },
             { q: "Địa chỉ IP Localhost chuẩn là gì?", options: ["127.0.0.1", "192.168.1.1", "8.8.8.8", "1.1.1.1"], answer: 0 },
-            { q: "Kỹ thuật giấu tin mật vào ảnh/audio gọi là gì?", options: ["Steganography", "Cryptography", "Brute Force", "Phishing"], answer: 0 },
-            { q: "Con vật 5 móng được thờ ở chùa Dơi Sóc Trăng là con gì?", options: ["Con Heo", "Con Bò", "Con Chó", "Con Dơi"], answer: 0 }
+            { q: "Port mặc định của web bảo mật HTTPS là gì?", options: ["443", "80", "22", "8080"], answer: 0 }
         ]
     };
 
@@ -235,28 +252,49 @@
         return arr;
     }
 
+    function updateLeaderboardUI() {
+        let board = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+        let html = '';
+        if(board.length === 0) {
+            html = '<div style="color:#8b949e; font-size:0.85rem;">Chưa có kỷ lục nào.</div>';
+        } else {
+            board.forEach((item, i) => {
+                let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹';
+                html += `
+                <div class="lb-item">
+                    <b>${medal} ${item.name}</b><br>
+                    <span style="font-size:0.8rem; color:#8b949e;">Môn: ${item.subj.toUpperCase()} | </span>
+                    <span style="color:#00ff66; font-weight:bold;">${item.score.toFixed(1)} Điểm</span>
+                </div>`;
+            });
+        }
+        document.getElementById('leaderboard-list').innerHTML = html;
+    }
+
     function login() {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
-        if(!u || !p) return alert("Vui lòng điền cả Tên và Mật khẩu bro ơi!");
+        if(!u || !p) return alert("Hệ thống từ chối: Bắt buộc nhập Tên và Passcode!");
         
         currentUser = u;
         document.getElementById('display-user').innerText = u;
+        
         document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('user-bar').classList.remove('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
         document.getElementById('menu-screen').classList.remove('hidden');
         
         updateGPA();
+        updateLeaderboardUI();
     }
 
     function updateGPA() {
         let history = JSON.parse(localStorage.getItem('user_history_' + currentUser) || '[]');
         if(history.length === 0) {
-            document.getElementById('display-gpa').innerText = "0.0 / 10";
+            document.getElementById('display-gpa').innerText = "0.0";
             return;
         }
         let avg = history.reduce((a,b) => a + b, 0) / history.length;
-        document.getElementById('display-gpa').innerText = avg.toFixed(1) + " / 10";
+        document.getElementById('display-gpa').innerText = avg.toFixed(1);
     }
 
     function previewSubject(subj) {
@@ -264,9 +302,8 @@
         const titles = { math:'📐 TOÁN HỌC', physics:'⚡ VẬT LÝ', chemistry:'🧪 HÓA HỌC', english:'🇬🇧 TIẾNG ANH', literature:'📖 NGỮ VĂN', tech:'💻 TIN HỌC / ARG' };
         document.getElementById('subj-title').innerText = titles[subj];
 
-        // Lấy điểm Best Score từ LocalStorage
-        let best = localStorage.getItem(`best_${currentUser}_${subj}`) || 0;
-        document.getElementById('my-best-val').innerText = `${best} / 10`;
+        let best = parseFloat(localStorage.getItem(`best_${currentUser}_${subj}`) || '0');
+        document.getElementById('my-best-val').innerText = best.toFixed(1);
 
         document.getElementById('menu-screen').classList.add('hidden');
         document.getElementById('preview-screen').classList.remove('hidden');
@@ -276,11 +313,12 @@
         document.getElementById('preview-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.add('hidden');
         document.getElementById('menu-screen').classList.remove('hidden');
+        updateLeaderboardUI();
     }
 
     function startExam() {
-        // Xáo trộn ngẫu nhiên 10 câu hỏi từ ngân hàng
         let rawList = db[selectedSubj] || db['tech'];
+        // Tự động điều chỉnh theo số lượng câu hỏi thực tế (Tối đa 10)
         currentQuestions = shuffle(rawList).slice(0, 10).map(q => {
             let correctText = q.options[q.answer];
             let shufOpt = shuffle(q.options);
@@ -300,8 +338,8 @@
         document.getElementById('next-btn').disabled = true;
         let q = currentQuestions[currentIndex];
         
-        document.getElementById('exam-subj').innerText = selectedSubj.toUpperCase();
-        document.getElementById('exam-progress').innerText = `CÂU ${currentIndex + 1} / 10`;
+        document.getElementById('exam-subj').innerText = `MÔN: ${selectedSubj.toUpperCase()}`;
+        document.getElementById('exam-progress').innerText = `CÂU ${currentIndex + 1} / ${currentQuestions.length}`;
         document.getElementById('q-text').innerText = `${currentIndex + 1}. ${q.q}`;
 
         let container = document.getElementById('options-box');
@@ -320,13 +358,16 @@
             container.appendChild(btn);
         });
 
-        document.getElementById('next-btn').innerText = (currentIndex === 9) ? "NỘP BÀI THI" : "CÂU TIẾP TEO >";
+        // BUG FIXED: So sánh với tổng số câu hỏi thay vì hardcode số 10
+        document.getElementById('next-btn').innerText = (currentIndex === currentQuestions.length - 1) ? "[ NỘP BÀI THI ]" : "CÂU TIẾP THEO >";
     }
 
     function nextQuestion() {
         if(selectedOpt === currentQuestions[currentIndex].answer) score++;
         currentIndex++;
-        if(currentIndex < 10) {
+        
+        // BUG FIXED: Nếu index nhỏ hơn TỔNG SỐ CÂU HỎI thì mới đi tiếp
+        if(currentIndex < currentQuestions.length) {
             showQuestion();
         } else {
             finishExam();
@@ -336,35 +377,32 @@
     function finishExam() {
         document.getElementById('exam-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('score-text').innerText = `${score} / 10`;
+        
+        // Tính điểm hệ 10 linh hoạt theo số câu hỏi
+        let score10 = (score / currentQuestions.length) * 10;
+        document.getElementById('score-text').innerText = score10.toFixed(1);
 
-        // 1. Lưu điểm Best Score môn đó
-        let oldBest = parseInt(localStorage.getItem(`best_${currentUser}_${selectedSubj}`) || '0');
-        if(score > oldBest) {
-            localStorage.setItem(`best_${currentUser}_${selectedSubj}`, score);
+        // Lưu kỷ lục cá nhân
+        let oldBest = parseFloat(localStorage.getItem(`best_${currentUser}_${selectedSubj}`) || '0');
+        if(score10 > oldBest) {
+            localStorage.setItem(`best_${currentUser}_${selectedSubj}`, score10.toFixed(1));
         }
 
-        // 2. Cập nhật Lịch sử làm bài để tính điểm GPA Trung Bình
+        // Cập nhật GPA
         let history = JSON.parse(localStorage.getItem('user_history_' + currentUser) || '[]');
-        history.push(score);
+        history.push(score10);
         localStorage.setItem('user_history_' + currentUser, JSON.stringify(history));
         updateGPA();
 
-        // 3. Cập nhật Bảng Xếp Hạng Top Local
+        // Cập nhật Leaderboard Toàn Cầu
         let board = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-        board.push({ name: currentUser, score: score, subj: selectedSubj });
+        board.push({ name: currentUser, score: score10, subj: selectedSubj });
         board.sort((a,b) => b.score - a.score);
-        board = board.slice(0, 5); // Lấy Top 5
+        board = board.slice(0, 5); // Lưu top 5
         localStorage.setItem('leaderboard', JSON.stringify(board));
-
-        // Render Bảng Xếp Hạng
-        let html = '';
-        board.forEach((item, i) => {
-            html += `<p><b>#${i+1} ${item.name}</b> - Môn: ${item.subj.toUpperCase()} - <span style="color:#00ff66;">${item.score}/10 ĐIỂM</span></p>`;
-        });
-        document.getElementById('leaderboard-box').innerHTML = html;
+        
+        updateLeaderboardUI();
     }
 </script>
-
 </body>
 </html>
