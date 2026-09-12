@@ -1,37 +1,104 @@
+// ==========================================
+// 1. CẤU HÌNH FIREBASE (Thay bằng keys của bạn)
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCPeganWPl0YKBL6gccnlJniYn7OLFY5M4",
+  authDomain: "appontap-ae318.firebaseapp.com",
+  projectId: "appontap-ae318",
+  storageBucket: "appontap-ae318.firebasestorage.app",
+  messagingSenderId: "1048552244725",
+  appId: "1:1048552244725:web:48c4c68b16abf825574cbc",
+};
+
+// Khởi tạo Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const dbStore = firebase.firestore();
+
 let currentUser = null;
 let currentQuestions = [];
 let currentQuestionIndex = 0;
 let userAnswers = [];
 let timerInterval = null;
 let timeLeft = 0;
+let isSignUpMode = false;
 
-// 1. DỰ PHÒNG & TỰ ĐỘNG SAO LƯU TRÊN LOCALSTORAGE
-function getStorageData() {
-    return JSON.parse(localStorage.getItem('app_data_v2') || '{"users":{}}');
-}
-
-function autoSaveData(data) {
-    localStorage.setItem('app_data_v2', JSON.stringify(data));
+// ==========================================
+// 2. ĐĂNG NHẬP / ĐĂNG KÝ STYLE ROBLOX
+// ==========================================
+function toggleAuthMode() {
+    isSignUpMode = !isSignUpMode;
+    document.getElementById('auth-title').innerText = isSignUpMode ? 'Đăng Ký Tài Khoản Roblox Style' : 'Đăng Nhập Roblox Style';
+    document.getElementById('auth-submit-btn').innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
+    document.getElementById('auth-toggle-btn').innerText = isSignUpMode ? 'Đã có tài khoản? Đăng nhập ngay' : 'Chưa có tài khoản? Đăng ký ngay';
 }
 
 function handleAuth(e) {
     e.preventDefault();
-    const username = document.getElementById('auth-user').value.trim();
-    if(!username) return;
+    const usernameInput = document.getElementById('auth-user').value.trim();
+    const password = document.getElementById('auth-pass').value.trim();
 
-    currentUser = username;
-    const data = getStorageData();
-    if(!data.users[currentUser]) {
-        data.users[currentUser] = { tests: 0, totalScoreConverted: 0, avgScore: 0 };
-        autoSaveData(data);
+    // Regex kiểm tra tên Roblox: Cho phép chữ, số và ký tự @!-_
+    const robloxUsernameRegex = /^[a-zA-1090-9@!\-_]{3,20}$/;
+    if (!robloxUsernameRegex.test(usernameInput)) {
+        alert("Tên tài khoản chỉ chứa từ 3-20 ký tự (bao gồm chữ, số, và các ký tự @ ! - _)");
+        return;
     }
 
+    if (password.length < 6) {
+        alert("Mật khẩu phải từ 6 ký tự trở lên!");
+        return;
+    }
+
+    // Tạo email giả định từ Username để dùng Firebase Auth
+    const internalEmail = `${usernameInput.toLowerCase().replace(/[^a-z0-9]/g, '_')}@robloxapp.internal`;
+
+    if (isSignUpMode) {
+        // Đăng ký mới
+        auth.createUserWithEmailAndPassword(internalEmail, password)
+            .then((userCredential) => {
+                // Lưu Profile lên Firestore (Kiểm tra trùng tên)
+                return dbStore.collection("users").doc(userCredential.user.uid).set({
+                    username: usernameInput,
+                    tests: 0,
+                    totalScoreConverted: 0,
+                    avgScore: 0
+                });
+            })
+            .then(() => {
+                alert("Đăng ký thành công! Hãy đăng nhập.");
+                toggleAuthMode();
+            })
+            .catch((error) => {
+                if(error.code === 'auth/email-already-in-use') alert("Tên tài khoản này đã được sử dụng trên hệ thống!");
+                else alert("Lỗi: " + error.message);
+            });
+    } else {
+        // Đăng nhập
+        auth.signInWithEmailAndPassword(internalEmail, password)
+            .then((userCredential) => {
+                return dbStore.collection("users").doc(userCredential.user.uid).get();
+            })
+            .then((doc) => {
+                if (doc.exists) {
+                    currentUser = doc.data();
+                    currentUser.uid = doc.id;
+                    loginSuccess();
+                }
+            })
+            .catch(() => alert("Sai tài khoản hoặc mật khẩu!"));
+    }
+}
+
+function loginSuccess() {
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('main-screen').classList.remove('hidden');
+    document.getElementById('user-display').innerText = currentUser.username;
     renderSubjects();
 }
 
 function logout() {
+    auth.signOut();
     currentUser = null;
     document.getElementById('main-screen').classList.add('hidden');
     document.getElementById('quiz-screen').classList.add('hidden');
@@ -39,31 +106,9 @@ function logout() {
     document.getElementById('auth-screen').classList.remove('hidden');
 }
 
-// Export / Import Sao Lưu
-function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getStorageData()));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `hoc_tap_backup_${new Date().toISOString().slice(0,10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function importData(e) {
-    const fileReader = new FileReader();
-    fileReader.onload = function (event) {
-        try {
-            const importedData = JSON.parse(event.target.result);
-            autoSaveData(importedData);
-            alert("Khôi phục dữ liệu sao lưu thành công!");
-            renderLeaderboard();
-        } catch (err) { alert("File sao lưu không hợp lệ!"); }
-    };
-    fileReader.readAsText(e.target.files[0]);
-}
-
-// 2. RENDER VÀ LUYỆN TẬP
+// ==========================================
+// 3. LUYỆN TẬP & THI TRẮC NGHIỆM
+// ==========================================
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-study').classList.add('hidden');
@@ -75,7 +120,7 @@ function switchTab(tab) {
     } else {
         event.target.classList.add('active');
         document.getElementById('tab-leaderboard').classList.remove('hidden');
-        renderLeaderboard();
+        renderGlobalLeaderboard();
     }
 }
 
@@ -89,25 +134,22 @@ function renderSubjects() {
         const card = document.createElement('div');
         card.className = 'subject-card';
         card.onclick = () => startQuiz(grade, key);
-        card.innerHTML = `<h3 style="color:var(--primary);">${subjectNames[key] || key}</h3><p style="font-size:0.85rem;">${subjects[key].length} câu khả dụng</p>`;
+        card.innerHTML = `<h3 style="color:var(--primary);">${subjectNames[key]}</h3><p style="font-size:0.85rem;">${subjects[key].length} câu ngân hàng</p>`;
         container.appendChild(card);
     }
 }
 
 function startQuiz(grade, subjectKey) {
     const allQ = db[grade][subjectKey] || [];
-    if(allQ.length === 0) return alert("Môn này chưa có câu hỏi!");
-
-    const countOption = document.getElementById('question-count-select').value;
-    let limit = countOption === 'all' ? allQ.length : parseInt(countOption);
+    const countOption = parseInt(document.getElementById('question-count-select').value);
     
-    // Trộn ngẫu nhiên câu hỏi
+    // Trộn ngẫu nhiên câu hỏi để làm không trùng lặp
     let shuffled = [...allQ].sort(() => 0.5 - Math.random());
-    currentQuestions = shuffled.slice(0, Math.min(limit, allQ.length));
+    currentQuestions = shuffled.slice(0, Math.min(countOption, allQ.length));
     
     currentQuestionIndex = 0;
     userAnswers = new Array(currentQuestions.length).fill(null);
-    timeLeft = currentQuestions.length * 90; // 90 giây cho mỗi câu
+    timeLeft = currentQuestions.length * 90;
 
     document.getElementById('main-screen').classList.add('hidden');
     document.getElementById('quiz-screen').classList.remove('hidden');
@@ -128,7 +170,6 @@ function startTimer() {
     }, 1000);
 }
 
-// Render giao diện phù hợp với từng dạng câu hỏi (MC, Essay, TF)
 function renderQuestion() {
     const q = currentQuestions[currentQuestionIndex];
     document.getElementById('question-text').innerText = `Câu ${currentQuestionIndex + 1}/${currentQuestions.length}: ${q.q}`;
@@ -149,37 +190,13 @@ function renderQuestion() {
     } else if (q.type === 'essay') {
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = 'Nhập đáp án của bạn tại đây...';
+        input.placeholder = 'Nhập kết quả giải mã / đáp án ngắn...';
         input.value = userAnswers[currentQuestionIndex] || '';
         input.oninput = (e) => { userAnswers[currentQuestionIndex] = e.target.value; };
         box.appendChild(input);
-    } else if (q.type === 'tf') {
-        if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = {};
-        const tfContainer = document.createElement('div');
-        tfContainer.className = 'tf-container';
-
-        q.items.forEach((item, idx) => {
-            const row = document.createElement('div');
-            row.className = 'tf-row';
-            const val = userAnswers[currentQuestionIndex][idx];
-            row.innerHTML = `
-                <span>${idx + 1}) ${item.text}</span>
-                <div class="tf-btn-group">
-                    <button class="tf-btn ${val === true ? 'active-true' : ''}" onclick="setTFAnswer(${idx}, true)">Đúng</button>
-                    <button class="tf-btn ${val === false ? 'active-false' : ''}" onclick="setTFAnswer(${idx}, false)">Sai</button>
-                </div>
-            `;
-            tfContainer.appendChild(row);
-        });
-        box.appendChild(tfContainer);
     }
 
     document.getElementById('next-btn').innerText = (currentQuestionIndex === currentQuestions.length - 1) ? 'Nộp Bài' : 'Câu Tiếp Theo';
-}
-
-function setTFAnswer(itemIdx, value) {
-    userAnswers[currentQuestionIndex][itemIdx] = value;
-    renderQuestion();
 }
 
 function toggleHint() { document.getElementById('hint-box').classList.toggle('hidden'); }
@@ -189,11 +206,13 @@ function submitAnswer() {
         currentQuestionIndex++;
         renderQuestion();
     } else {
-        if (confirm("Bạn muốn nộp bài chứ?")) finishQuiz();
+        if (confirm("Xác nhận nộp bài?")) finishQuiz();
     }
 }
 
-// 3. CHẤM ĐIỂM, XEM LẠI ĐÁP ÁN & CẬP NHẬT BXH
+// ==========================================
+// 4. CHẤM ĐIỂM & ĐỒNG BỘ BẢNG XẾP HẠNG GLOBAL
+// ==========================================
 function finishQuiz() {
     clearInterval(timerInterval);
     let correctCount = 0;
@@ -204,28 +223,30 @@ function finishQuiz() {
             if (uAns === q.correct) correctCount++;
         } else if (q.type === 'essay') {
             if (uAns && uAns.trim().toLowerCase() === q.correct.trim().toLowerCase()) correctCount++;
-        } else if (q.type === 'tf') {
-            let fullCorrect = true;
-            q.items.forEach((item, idx) => {
-                if (!uAns || uAns[idx] !== item.ans) fullCorrect = false;
-            });
-            if (fullCorrect) correctCount++;
         }
     });
 
-    // Quy đổi về thang điểm 10 chuẩn hóa cho BXH
+    // Quy đổi về Thang 10 chuẩn
     const score10 = parseFloat(((correctCount / currentQuestions.length) * 10).toFixed(1));
 
-    // Cập nhật dữ liệu Local
-    const data = getStorageData();
-    const u = data.users[currentUser];
-    u.tests += 1;
-    u.totalScoreConverted += score10;
-    u.avgScore = parseFloat((u.totalScoreConverted / u.tests).toFixed(1));
-    autoSaveData(data);
+    // Cập nhật Database Cloud Firestore
+    const userRef = dbStore.collection("users").doc(currentUser.uid);
+    dbStore.runTransaction((transaction) => {
+        return transaction.get(userRef).then((sfDoc) => {
+            if (!sfDoc.exists) return;
+            const newTests = (sfDoc.data().tests || 0) + 1;
+            const newTotal = (sfDoc.data().totalScoreConverted || 0) + score10;
+            const newAvg = parseFloat((newTotal / newTests).toFixed(1));
 
-    // Mở màn hình xem lại bài làm
-    showReviewScreen(correctCount, score10);
+            transaction.update(userRef, {
+                tests: newTests,
+                totalScoreConverted: newTotal,
+                avgScore: newAvg
+            });
+        });
+    }).then(() => {
+        showReviewScreen(correctCount, score10);
+    });
 }
 
 function showReviewScreen(correctCount, score10) {
@@ -233,8 +254,8 @@ function showReviewScreen(correctCount, score10) {
     document.getElementById('review-screen').classList.remove('hidden');
 
     document.getElementById('review-summary').innerHTML = `
-        Kết quả: <strong>${correctCount}/${currentQuestions.length}</strong> câu đúng.<br>
-        Điểm quy đổi (Thang 10): <strong style="color:var(--warning); font-size:1.4rem;">${score10}</strong>
+        Số câu đúng: <strong>${correctCount}/${currentQuestions.length}</strong><br>
+        Điểm số (Thang 10): <strong style="color:var(--warning); font-size:1.4rem;">${score10}</strong>
     `;
 
     const list = document.getElementById('review-list');
@@ -243,26 +264,13 @@ function showReviewScreen(correctCount, score10) {
     currentQuestions.forEach((q, i) => {
         const card = document.createElement('div');
         const uAns = userAnswers[i];
-        let isCorrect = false;
-        let displayCorrect = q.correct;
-
-        if (!q.type || q.type === 'mc') {
-            isCorrect = (uAns === q.correct);
-        } else if (q.type === 'essay') {
-            isCorrect = (uAns && uAns.trim().toLowerCase() === q.correct.trim().toLowerCase());
-        } else if (q.type === 'tf') {
-            isCorrect = q.items.every((item, idx) => uAns && uAns[idx] === item.ans);
-            displayCorrect = q.items.map(it => `${it.text}: [${it.ans ? 'Đúng' : 'Sai'}]`).join('<br>');
-        }
+        let isCorrect = (!q.type || q.type === 'mc') ? (uAns === q.correct) : (uAns && uAns.trim().toLowerCase() === q.correct.trim().toLowerCase());
 
         card.className = `review-card ${isCorrect ? 'correct' : 'wrong'}`;
         card.innerHTML = `
             <div><strong>Câu ${i + 1}: ${q.q}</strong></div>
-            <div style="margin-top:5px; font-size:0.9rem;">
-                Bạn chọn: <span style="color:${isCorrect ? 'var(--success)' : 'var(--danger)'}">
-                ${q.type === 'tf' ? JSON.stringify(uAns || {}) : (uAns || 'Chưa trả lời')}</span>
-            </div>
-            ${!isCorrect ? `<div style="margin-top:5px; font-size:0.9rem; color:var(--primary);">Đáp án đúng:<br>${displayCorrect}</div>` : ''}
+            <div style="margin-top:5px; font-size:0.9rem;">Bạn làm: <span style="color:${isCorrect ? 'var(--success)' : 'var(--danger)'}">${uAns || 'Bỏ trống'}</span></div>
+            ${!isCorrect ? `<div style="margin-top:5px; font-size:0.9rem; color:var(--primary);">Đáp án đúng: ${q.correct}</div>` : ''}
         `;
         list.appendChild(card);
     });
@@ -274,24 +282,22 @@ function exitReview() {
     switchTab('study');
 }
 
-function renderLeaderboard() {
-    const data = getStorageData();
-    const list = [];
-    for (let name in data.users) {
-        list.push({ name, avg: data.users[name].avgScore, tests: data.users[name].tests });
-    }
-    list.sort((a, b) => b.avg - a.avg);
-
-    const tbody = document.getElementById('leaderboard-body');
-    tbody.innerHTML = '';
-    list.forEach((u, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>#${index + 1}</td>
-            <td>${u.name} ${u.name === currentUser ? '(Tôi)' : ''}</td>
-            <td style="color:var(--warning); font-weight:bold;">${u.avg}</td>
-            <td>${u.tests}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+function renderGlobalLeaderboard() {
+    dbStore.collection("users").orderBy("avgScore", "desc").limit(20).get()
+        .then((querySnapshot) => {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            let rank = 1;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${rank++}</td>
+                    <td>${data.username} ${currentUser && data.username === currentUser.username ? '(Tôi)' : ''}</td>
+                    <td style="color:var(--warning); font-weight:bold;">${data.avgScore}</td>
+                    <td>${data.tests}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
 }
