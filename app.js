@@ -11,6 +11,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const dbStore = firebase.firestore();
 
 let currentUser = null;
@@ -21,8 +22,36 @@ let timerInterval = null;
 let timeLeft = 0;
 let isSignUpMode = false;
 
+// Tự động lắng nghe trạng thái đăng nhập
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // Lấy dữ liệu user từ Firestore
+        dbStore.collection("users").doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                currentUser = doc.data();
+                currentUser.uid = user.uid;
+                loginSuccess();
+            } else {
+                // Nếu chưa có profile trong Firestore, tạo mới
+                const displayName = user.displayName || user.email.split('@')[0];
+                const newUser = {
+                    username: displayName,
+                    tests: 0,
+                    totalScoreConverted: 0,
+                    avgScore: 0
+                };
+                dbStore.collection("users").doc(user.uid).set(newUser).then(() => {
+                    currentUser = newUser;
+                    currentUser.uid = user.uid;
+                    loginSuccess();
+                });
+            }
+        });
+    }
+});
+
 // ==========================================
-// 2. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ (KHÔNG RELOAD TRANG)
+// 2. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ BẰNG FIREBASE AUTH
 // ==========================================
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
@@ -32,64 +61,67 @@ function toggleAuthMode() {
 }
 
 function handleAuth(e) {
-    if (e) e.preventDefault(); // Chặn tải lại trang để tránh dải dấu ? trên URL
+    if (e) e.preventDefault();
 
-    const usernameInput = document.getElementById('auth-user').value.trim();
+    const userInput = document.getElementById('auth-user').value.trim();
     const password = document.getElementById('auth-pass').value.trim();
 
-    // Regex kiểm tra tên tài khoản: 3-20 ký tự, cho phép chữ, số và ký tự @!-_
-    const validUserRegex = /^[a-zA-Z0-9@!\-_]{3,20}$/;
-    if (!validUserRegex.test(usernameInput)) {
-        alert("Tên tài khoản từ 3-20 ký tự (chữ, số và các ký tự @ ! - _)");
+    if (!userInput || !password) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
         return false;
     }
 
-    if (!password) {
-        alert("Vui lòng nhập mật khẩu!");
+    if (password.length < 6) {
+        alert("Mật khẩu phải từ 6 ký tự trở lên!");
         return false;
     }
 
-    const docId = usernameInput.toLowerCase();
-    const userDocRef = dbStore.collection("users").doc(docId);
+    // Nếu nhập tên thường, chuyển thành email ảo hệ thống để qua Firebase Auth
+    let email = userInput;
+    if (!userInput.includes('@')) {
+        const cleanName = userInput.toLowerCase().replace(/[^a-z0-9@!\-_]/g, '_');
+        email = `${cleanName}@system.app`;
+    }
 
     if (isSignUpMode) {
-        // --- ĐĂNG KÝ TÀI KHOẢN MỚI ---
-        userDocRef.get().then((doc) => {
-            if (doc.exists) {
-                alert("Tên tài khoản này đã tồn tại! Vui lòng chọn tên khác.");
-            } else {
-                userDocRef.set({
-                    username: usernameInput,
-                    password: password,
+        // Đăng ký qua Firebase Auth
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const uid = userCredential.user.uid;
+                return dbStore.collection("users").doc(uid).set({
+                    username: userInput.includes('@') ? userInput.split('@')[0] : userInput,
                     tests: 0,
                     totalScoreConverted: 0,
                     avgScore: 0
-                }).then(() => {
-                    alert("Đăng ký thành công! Bạn có thể chuyển sang Đăng nhập.");
-                    toggleAuthMode();
-                }).catch(err => alert("Lỗi đăng ký: " + err.message));
-            }
-        }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
-
-    } else {
-        // --- ĐĂNG NHẬP ---
-        userDocRef.get().then((doc) => {
-            if (!doc.exists) {
-                alert("Tài khoản không tồn tại!");
-            } else {
-                const userData = doc.data();
-                if (userData.password === password) {
-                    currentUser = userData;
-                    currentUser.docId = docId;
-                    loginSuccess();
+                });
+            })
+            .then(() => {
+                alert("Đăng ký thành công!");
+            })
+            .catch((error) => {
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("Tên tài khoản/Email này đã được sử dụng!");
                 } else {
-                    alert("Mật khẩu không chính xác!");
+                    alert("Lỗi đăng ký: " + error.message);
                 }
-            }
-        }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
+            });
+    } else {
+        // Đăng nhập qua Firebase Auth
+        auth.signInWithEmailAndPassword(email, password)
+            .catch((error) => {
+                alert("Đăng nhập thất bại: Sai tài khoản hoặc mật khẩu!");
+            });
     }
 
     return false;
+}
+
+// Đăng nhập bằng tài khoản Google
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch((error) => {
+        alert("Lỗi đăng nhập Google: " + error.message);
+    });
 }
 
 function loginSuccess() {
@@ -100,11 +132,13 @@ function loginSuccess() {
 }
 
 function logout() {
-    currentUser = null;
-    document.getElementById('main-screen').classList.add('hidden');
-    document.getElementById('quiz-screen').classList.add('hidden');
-    document.getElementById('review-screen').classList.add('hidden');
-    document.getElementById('auth-screen').classList.remove('hidden');
+    auth.signOut().then(() => {
+        currentUser = null;
+        document.getElementById('main-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('review-screen').classList.add('hidden');
+        document.getElementById('auth-screen').classList.remove('hidden');
+    });
 }
 
 // ==========================================
@@ -212,7 +246,7 @@ function submitAnswer() {
 }
 
 // ==========================================
-// 4. CHẤM ĐIỂM & ĐỒNG BỘ BXH REALTIME
+// 4. CHẤM ĐIỂM & ĐỒNG BỘ BẢNG XẾP HẠNG REALTIME
 // ==========================================
 function finishQuiz() {
     clearInterval(timerInterval);
@@ -229,7 +263,7 @@ function finishQuiz() {
 
     const score10 = parseFloat(((correctCount / currentQuestions.length) * 10).toFixed(1));
 
-    const userRef = dbStore.collection("users").doc(currentUser.docId);
+    const userRef = dbStore.collection("users").doc(currentUser.uid);
     dbStore.runTransaction((transaction) => {
         return transaction.get(userRef).then((sfDoc) => {
             if (!sfDoc.exists) return;
