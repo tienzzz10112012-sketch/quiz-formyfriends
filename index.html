@@ -3,36 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Ôn Tập Lớp 6 - 9</title>
+    <title>Hệ Thống Ôn Tập & Giải Mã ARG</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Dùng CDN chính thức) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <main class="container">
-        <!-- Đăng nhập Client-Side -->
+        <!-- ĐĂNG NHẬP / ĐĂNG KÝ KIỂU ROBLOX -->
         <section id="auth-screen" class="auth-box">
-            <h2 id="auth-title">Đăng Nhập Local</h2>
-            <div class="auth-notice">⚠️ Dữ liệu chỉ lưu trên thiết bị này.</div>
+            <h2 id="auth-title">Đăng Nhập Roblox Style</h2>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
-                <input type="text" id="auth-user" placeholder="Tên của bạn..." required autocomplete="username">
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Vào Học Ngay</button>
+                <input type="text" id="auth-user" placeholder="Tên tài khoản (Cho phép @!-_)" required style="margin-bottom: 10px;">
+                <input type="password" id="auth-pass" placeholder="Mật khẩu (Ít nhất 6 ký tự)" required style="margin-bottom: 15px;">
+                
+                <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng Nhập</button>
             </form>
+
+            <div style="margin-top: 15px; font-size: 0.9rem;">
+                <a href="#" id="auth-toggle-btn" onclick="toggleAuthMode()" style="color: var(--primary);">Chưa có tài khoản? Đăng ký ngay</a>
+            </div>
         </section>
 
-        <!-- Màn hình Chính -->
+        <!-- MÀN HÌNH CHÍNH -->
         <section id="main-screen" class="hidden">
             <nav class="tabs">
                 <button class="tab-btn active" onclick="switchTab('study')">Luyện Tập</button>
-                <button class="tab-btn" onclick="switchTab('leaderboard')">BXH Thiết Bị</button>
-                <button class="btn btn-danger" onclick="logout()" style="margin-left: auto;">Thoát</button>
+                <button class="tab-btn" onclick="switchTab('leaderboard')">BXH Toàn Cầu</button>
+                <button class="btn btn-danger" onclick="logout()" style="margin-left: auto;">Thoát (<span id="user-display"></span>)</button>
             </nav>
 
-            <!-- TAB LUYỆN TẬP -->
             <article id="tab-study">
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
                     <div style="flex: 1; min-width: 130px;">
-                        <label style="font-size: 0.85rem; font-weight: bold;">Khối Lớp:</label>
+                        <label style="font-size: 0.85rem; font-weight: bold;">Khối Lớp / Cấp độ:</label>
                         <select id="grade-select" onchange="renderSubjects()">
                             <option value="6">Lớp 6</option>
                             <option value="7">Lớp 7</option>
@@ -42,12 +50,11 @@
                     </div>
 
                     <div style="flex: 1; min-width: 130px;">
-                        <label style="font-size: 0.85rem; font-weight: bold;">Số câu làm:</label>
+                        <label style="font-size: 0.85rem; font-weight: bold;">Số câu ngẫu nhiên:</label>
                         <select id="question-count-select">
-                            <option value="5">5 Câu (Nhanh)</option>
-                            <option value="10" selected>10 Câu (Chuẩn)</option>
-                            <option value="15">15 Câu</option>
-                            <option value="all">Tất cả câu</option>
+                            <option value="10" selected>10 Câu</option>
+                            <option value="20">20 Câu</option>
+                            <option value="50">50 Câu (Thử thách)</option>
                         </select>
                     </div>
                 </div>
@@ -55,24 +62,16 @@
                 <div id="subject-list" class="subject-grid"></div>
             </article>
 
-            <!-- TAB BẢNG XẾP HẠNG & SAO LƯU -->
             <article id="tab-leaderboard" class="hidden">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button class="btn btn-secondary" onclick="exportData()" style="flex:1;">📥 Tải Sao Lưu</button>
-                    <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()" style="flex:1;">📤 Nhập Sao Lưu</button>
-                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
-                </div>
-
-                <h3 style="margin-bottom: 10px;">Top Học Sinh Trên Máy Này</h3>
-                <!-- Bảng xếp hạng bọc thẻ table-responsive chống rớt khung trên mobile -->
+                <h3 style="margin-bottom: 10px;">Top Học Sinh / Master ARG (Global)</h3>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Hạng</th>
                                 <th>Tài khoản</th>
-                                <th>ĐTB (Quy đổi)</th>
-                                <th>Số bài</th>
+                                <th>ĐTB (Thang 10)</th>
+                                <th>Bài đã làm</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body"></tbody>
@@ -81,7 +80,7 @@
             </article>
         </section>
 
-        <!-- MÀN HÌNH LÀM BÀI -->
+        <!-- MÀN HÌNH BÀI THI & REVIEW -->
         <section id="quiz-screen" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 id="quiz-title">Bài Thi</h3>
@@ -89,7 +88,7 @@
             </div>
 
             <div id="question-container">
-                <div class="question-text" id="question-text">---</div>
+                <div class="question-text" id="question-text"></div>
                 <div id="answer-box"></div>
             </div>
 
@@ -103,12 +102,11 @@
             </div>
         </section>
 
-        <!-- MÀN HÌNH XEM LẠI ĐÁP ÁN SAI -->
         <section id="review-screen" class="hidden">
-            <h2>Kết Quả & Xem Lại Đáp Án</h2>
+            <h2>Kết Quả & Đáp Án</h2>
             <div id="review-summary" style="margin: 15px 0; font-size: 1.1rem;"></div>
             <div id="review-list"></div>
-            <button class="btn btn-primary" onclick="exitReview()" style="width: 100%; margin-top: 15px;">Quay Về Trang Chủ</button>
+            <button class="btn btn-primary" onclick="exitReview()" style="width: 100%; margin-top: 15px;">Về Trang Chủ</button>
         </section>
     </main>
 
