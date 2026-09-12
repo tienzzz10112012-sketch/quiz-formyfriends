@@ -12,8 +12,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-// Khai báo rõ Database ID là 'luu-diem'
-const dbStore = firebase.app().firestore("luu-diem");
+// Kết nối tới Firestore Database mặc định (default)
+const dbStore = firebase.firestore();
 
 let currentUser = null;
 let currentQuestions = [];
