@@ -3,125 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Ôn Tập & Luyện Thi Lớp 8 - 9</title>
+    <title>Hệ Thống Ôn Tập Lớp 6 - 9</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <main class="container">
-        <!-- Màn hình Đăng nhập / Đăng ký -->
+        <!-- Đăng nhập Client-Side -->
         <section id="auth-screen" class="auth-box">
-            <h1 id="auth-title">Đăng Nhập</h1>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">Hệ thống ôn tập kiến thức THCS</p>
+            <h2 id="auth-title">Đăng Nhập Local</h2>
+            <div class="auth-notice">⚠️ Dữ liệu chỉ lưu trên thiết bị này.</div>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
-                <input type="text" id="auth-user" placeholder="Tên đăng nhập" required autocomplete="username">
-                <input type="password" id="auth-pass" placeholder="Mật khẩu" required autocomplete="current-password">
-                <br>
-                <button type="submit" class="btn btn-primary" id="auth-submit-btn">Đăng Nhập</button>
+                <input type="text" id="auth-user" placeholder="Tên của bạn..." required autocomplete="username">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Vào Học Ngay</button>
             </form>
-
-            <span class="auth-switch-link" id="auth-toggle-btn" onclick="toggleAuthMode()">
-                Chưa có tài khoản? Đăng ký ngay
-            </span>
         </section>
 
-        <!-- Màn hình Bảng điều khiển / Nội dung chính -->
+        <!-- Màn hình Chính -->
         <section id="main-screen" class="hidden">
-            <!-- Điều hướng Tab -->
-            <nav class="tabs" aria-label="Điều hướng chính">
+            <nav class="tabs">
                 <button class="tab-btn active" onclick="switchTab('study')">Luyện Tập</button>
-                <button class="tab-btn" onclick="switchTab('leaderboard')">Bảng Xếp Hạng & Thống Kê</button>
-                <button class="btn btn-danger" onclick="logout()" style="margin-left: auto; align-self: center;">Đăng Xuất</button>
+                <button class="tab-btn" onclick="switchTab('leaderboard')">BXH Thiết Bị</button>
+                <button class="btn btn-danger" onclick="logout()" style="margin-left: auto;">Thoát</button>
             </nav>
 
-            <!-- TAB 1: Chọn Khối & Môn Học -->
+            <!-- TAB LUYỆN TẬP -->
             <article id="tab-study">
-                <div style="margin-bottom: 20px;">
-                    <label for="grade-select" style="font-weight: bold; margin-right: 10px;">Chọn Khối Lớp:</label>
-                    <select id="grade-select" onchange="renderSubjects()" style="width: auto; display: inline-block;">
-                        <option value="8">Lớp 8</option>
-                        <option value="9">Lớp 9</option>
-                    </select>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.85rem; font-weight: bold;">Khối Lớp:</label>
+                        <select id="grade-select" onchange="renderSubjects()">
+                            <option value="6">Lớp 6</option>
+                            <option value="7">Lớp 7</option>
+                            <option value="8">Lớp 8</option>
+                            <option value="9">Lớp 9</option>
+                        </select>
+                    </div>
+
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.85rem; font-weight: bold;">Số câu làm:</label>
+                        <select id="question-count-select">
+                            <option value="5">5 Câu (Nhanh)</option>
+                            <option value="10" selected>10 Câu (Chuẩn)</option>
+                            <option value="15">15 Câu</option>
+                            <option value="all">Tất cả câu</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="subject-list" class="subject-grid">
-                    <!-- Danh sách môn học sẽ được Javascript render tự động tại đây -->
-                </div>
+                <div id="subject-list" class="subject-grid"></div>
             </article>
 
-            <!-- TAB 2: Thống Kê & Bảng Xếp Hạng -->
+            <!-- TAB BẢNG XẾP HẠNG & SAO LƯU -->
             <article id="tab-leaderboard" class="hidden">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-title">Thống Kê Cá Nhân</div>
-                        <div class="stat-row">
-                            <span>Tổng số bài đã làm:</span>
-                            <span class="stat-val" id="user-total-tests">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Điểm trung bình:</span>
-                            <span class="stat-val" id="user-avg-score">0.0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Tỷ lệ chính xác:</span>
-                            <span class="stat-val" id="user-accuracy">0%</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-title">Hệ Thống Thành Tích</div>
-                        <div id="user-badges">
-                            <!-- Danh hiệu sẽ được render tự động -->
-                        </div>
-                    </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-secondary" onclick="exportData()" style="flex:1;">📥 Tải Sao Lưu</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()" style="flex:1;">📤 Nhập Sao Lưu</button>
+                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-title">Bảng Xếp Hạng Top Học Sinh</div>
+                <h3 style="margin-bottom: 10px;">Top Học Sinh Trên Máy Này</h3>
+                <!-- Bảng xếp hạng bọc thẻ table-responsive chống rớt khung trên mobile -->
+                <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Hạng</th>
                                 <th>Tài khoản</th>
-                                <th>Điểm trung bình</th>
-                                <th>Số bài hoàn thành</th>
+                                <th>ĐTB (Quy đổi)</th>
+                                <th>Số bài</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboard-body">
-                            <!-- Dữ liệu bảng xếp hạng được render tự động -->
-                        </tbody>
+                        <tbody id="leaderboard-body"></tbody>
                     </table>
                 </div>
             </article>
         </section>
 
-        <!-- Màn hình Làm Bài Trắc Nghiệm -->
+        <!-- MÀN HÌNH LÀM BÀI -->
         <section id="quiz-screen" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 id="quiz-title">Bài Thi</h2>
-                <div id="quiz-timer" style="font-size: 1.2rem; font-weight: bold; color: var(--warning);">Thời gian: 15:00</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="quiz-title">Bài Thi</h3>
+                <div id="quiz-timer" style="font-weight: bold; color: var(--warning);">15:00</div>
             </div>
 
             <div id="question-container">
-                <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
-                <div class="options-list" id="options-container">
-                    <!-- Các lựa chọn đáp án được render tự động -->
-                </div>
+                <div class="question-text" id="question-text">---</div>
+                <div id="answer-box"></div>
             </div>
 
-            <div id="hint-box" class="hint-box hidden">
-                <strong>Gợi ý:</strong> <span id="hint-text"></span>
+            <div id="hint-box" class="hint-box hidden" style="margin-top:15px; padding:10px; background: rgba(245,158,11,0.1); color:#fcd34d; border-radius:6px;">
+                💡 <strong>Gợi ý:</strong> <span id="hint-text"></span>
             </div>
 
-            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button class="btn btn-warning" onclick="toggleHint()">Xem Gợi Ý</button>
-                <button class="btn btn-primary" id="next-btn" onclick="submitAnswer()">Câu Tiếp Theo</button>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px; gap: 10px;">
+                <button class="btn btn-warning" onclick="toggleHint()">Gợi Ý</button>
+                <button class="btn btn-primary" id="next-btn" onclick="submitAnswer()">Tiếp theo</button>
             </div>
+        </section>
+
+        <!-- MÀN HÌNH XEM LẠI ĐÁP ÁN SAI -->
+        <section id="review-screen" class="hidden">
+            <h2>Kết Quả & Xem Lại Đáp Án</h2>
+            <div id="review-summary" style="margin: 15px 0; font-size: 1.1rem;"></div>
+            <div id="review-list"></div>
+            <button class="btn btn-primary" onclick="exitReview()" style="width: 100%; margin-top: 15px;">Quay Về Trang Chủ</button>
         </section>
     </main>
 
-    <!-- Thư viện & Mã nguồn JavaScript -->
     <script src="questions.js"></script>
     <script src="app.js"></script>
 </body>
