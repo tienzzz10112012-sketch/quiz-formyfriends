@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Ôn Tập & Giải Mã ARG</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Chỉ cần dùng SDK Firestore của Firebase -->
+    <!-- Firebase SDK Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <main class="container">
-        <!-- ĐĂNG NHẬP / ĐĂNG KÝ (KHÔNG CẦN FIREBASE AUTH) -->
+        <!-- ĐĂNG NHẬP / ĐĂNG KÝ -->
         <section id="auth-screen" class="auth-box">
             <h2 id="auth-title">Đăng Nhập</h2>
             
-            <form id="auth-form" onsubmit="handleAuth(event)">
+            <!-- Thêm onsubmit="return false;" để chặn tuyệt đối form reload lại trang / thêm dấu ? trên URL -->
+            <form id="auth-form" onsubmit="handleAuth(event); return false;">
                 <input type="text" id="auth-user" placeholder="Tên tài khoản (cho phép @!-_)" required style="margin-bottom: 10px;">
                 <input type="password" id="auth-pass" placeholder="Mật khẩu" required style="margin-bottom: 15px;">
                 
@@ -24,16 +25,19 @@
             </form>
 
             <div style="margin-top: 15px; font-size: 0.9rem;">
-                <a href="#" id="auth-toggle-btn" onclick="toggleAuthMode()" style="color: var(--primary);">Chưa có tài khoản? Đăng ký ngay</a>
+                <!-- Dùng type="button" thay vì thẻ <a> có href="#" để không bị thêm dấu # trên URL -->
+                <button type="button" id="auth-toggle-btn" onclick="toggleAuthMode()" style="background:none; border:none; color: var(--primary); cursor:pointer; font-weight:bold; text-decoration:underline;">
+                    Chưa có tài khoản? Đăng ký ngay
+                </button>
             </div>
         </section>
 
         <!-- MÀN HÌNH CHÍNH -->
         <section id="main-screen" class="hidden">
             <nav class="tabs">
-                <button class="tab-btn active" onclick="switchTab('study')">Luyện Tập</button>
-                <button class="tab-btn" onclick="switchTab('leaderboard')">BXH Toàn Cầu</button>
-                <button class="btn btn-danger" onclick="logout()" style="margin-left: auto;">Thoát (<span id="user-display"></span>)</button>
+                <button type="button" class="tab-btn active" onclick="switchTab('study')">Luyện Tập</button>
+                <button type="button" class="tab-btn" onclick="switchTab('leaderboard')">BXH Toàn Cầu</button>
+                <button type="button" class="btn btn-danger" onclick="logout()" style="margin-left: auto;">Thoát (<span id="user-display"></span>)</button>
             </nav>
 
             <article id="tab-study">
@@ -96,8 +100,8 @@
             </div>
 
             <div style="display: flex; justify-content: space-between; margin-top: 20px; gap: 10px;">
-                <button class="btn btn-warning" onclick="toggleHint()">Gợi Ý</button>
-                <button class="btn btn-primary" id="next-btn" onclick="submitAnswer()">Tiếp theo</button>
+                <button type="button" class="btn btn-warning" onclick="toggleHint()">Gợi Ý</button>
+                <button type="button" class="btn btn-primary" id="next-btn" onclick="submitAnswer()">Tiếp theo</button>
             </div>
         </section>
 
@@ -105,7 +109,7 @@
             <h2>Kết Quả & Đáp Án</h2>
             <div id="review-summary" style="margin: 15px 0; font-size: 1.1rem;"></div>
             <div id="review-list"></div>
-            <button class="btn btn-primary" onclick="exitReview()" style="width: 100%; margin-top: 15px;">Về Trang Chủ</button>
+            <button type="button" class="btn btn-primary" onclick="exitReview()" style="width: 100%; margin-top: 15px;">Về Trang Chủ</button>
         </section>
     </main>
 
