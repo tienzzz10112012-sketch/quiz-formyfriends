@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Ôn Tập & Giải Mã ARG</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDK (Dùng CDN chính thức) -->
+    <!-- Chỉ cần dùng SDK Firestore của Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <main class="container">
-        <!-- ĐĂNG NHẬP / ĐĂNG KÝ KIỂU ROBLOX -->
+        <!-- ĐĂNG NHẬP / ĐĂNG KÝ (KHÔNG CẦN FIREBASE AUTH) -->
         <section id="auth-screen" class="auth-box">
-            <h2 id="auth-title">Đăng Nhập Roblox Style</h2>
+            <h2 id="auth-title">Đăng Nhập</h2>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
-                <input type="text" id="auth-user" placeholder="Tên tài khoản (Cho phép @!-_)" required style="margin-bottom: 10px;">
-                <input type="password" id="auth-pass" placeholder="Mật khẩu (Ít nhất 6 ký tự)" required style="margin-bottom: 15px;">
+                <input type="text" id="auth-user" placeholder="Tên tài khoản (cho phép @!-_)" required style="margin-bottom: 10px;">
+                <input type="password" id="auth-pass" placeholder="Mật khẩu" required style="margin-bottom: 15px;">
                 
                 <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng Nhập</button>
             </form>
