@@ -1,5 +1,5 @@
 // ==========================================
-// 1. CẤU HÌNH FIREBASE (Dùng duy nhất Firestore)
+// 1. CẤU HÌNH FIREBASE
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCPeganWPl0YKBL6gccnlJniYn7OLFY5M4",
@@ -22,7 +22,7 @@ let timeLeft = 0;
 let isSignUpMode = false;
 
 // ==========================================
-// 2. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ QUA DATABASE
+// 2. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ (KHÔNG RELOAD TRANG)
 // ==========================================
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
@@ -32,47 +32,47 @@ function toggleAuthMode() {
 }
 
 function handleAuth(e) {
-    e.preventDefault();
+    if (e) e.preventDefault(); // Chặn tải lại trang để tránh dải dấu ? trên URL
+
     const usernameInput = document.getElementById('auth-user').value.trim();
     const password = document.getElementById('auth-pass').value.trim();
 
-    // Cho phép kí tự đặc biệt @ ! - _
+    // Regex kiểm tra tên tài khoản: 3-20 ký tự, cho phép chữ, số và ký tự @!-_
     const validUserRegex = /^[a-zA-Z0-9@!\-_]{3,20}$/;
     if (!validUserRegex.test(usernameInput)) {
-        alert("Tên tài khoản từ 3-20 ký tự (chữ, số và ký tự @ ! - _)");
-        return;
+        alert("Tên tài khoản từ 3-20 ký tự (chữ, số và các ký tự @ ! - _)");
+        return false;
     }
 
     if (!password) {
         alert("Vui lòng nhập mật khẩu!");
-        return;
+        return false;
     }
 
-    // Chuyển username thành ID viết thường để tránh trùng lặp
     const docId = usernameInput.toLowerCase();
     const userDocRef = dbStore.collection("users").doc(docId);
 
     if (isSignUpMode) {
-        // --- XỬ LÝ ĐĂNG KÝ ---
+        // --- ĐĂNG KÝ TÀI KHOẢN MỚI ---
         userDocRef.get().then((doc) => {
             if (doc.exists) {
                 alert("Tên tài khoản này đã tồn tại! Vui lòng chọn tên khác.");
             } else {
                 userDocRef.set({
                     username: usernameInput,
-                    password: password, // Lưu mật khẩu
+                    password: password,
                     tests: 0,
                     totalScoreConverted: 0,
                     avgScore: 0
                 }).then(() => {
-                    alert("Đăng ký thành công! Hãy bấm Đăng nhập.");
+                    alert("Đăng ký thành công! Bạn có thể chuyển sang Đăng nhập.");
                     toggleAuthMode();
-                }).catch(err => alert("Lỗi khi đăng ký: " + err.message));
+                }).catch(err => alert("Lỗi đăng ký: " + err.message));
             }
         }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
 
     } else {
-        // --- XỬ LÝ ĐĂNG NHẬP ---
+        // --- ĐĂNG NHẬP ---
         userDocRef.get().then((doc) => {
             if (!doc.exists) {
                 alert("Tài khoản không tồn tại!");
@@ -88,6 +88,8 @@ function handleAuth(e) {
             }
         }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
     }
+
+    return false;
 }
 
 function loginSuccess() {
@@ -106,7 +108,7 @@ function logout() {
 }
 
 // ==========================================
-// 3. ĐIỀU HƯỚNG & THI TRẮC NGHIỆM
+// 3. ĐIỀU HƯỚNG & LUYỆN TẬP
 // ==========================================
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -180,6 +182,7 @@ function renderQuestion() {
     if (!q.type || q.type === 'mc') {
         q.options.forEach(opt => {
             const btn = document.createElement('button');
+            btn.type = 'button';
             btn.className = `opt-btn ${userAnswers[currentQuestionIndex] === opt ? 'selected' : ''}`;
             btn.innerText = opt;
             btn.onclick = () => { userAnswers[currentQuestionIndex] = opt; renderQuestion(); };
@@ -209,7 +212,7 @@ function submitAnswer() {
 }
 
 // ==========================================
-// 4. CHẤM ĐIỂM & ĐỒNG BỘ BẢNG XẾP HẠNG
+// 4. CHẤM ĐIỂM & ĐỒNG BỘ BXH REALTIME
 // ==========================================
 function finishQuiz() {
     clearInterval(timerInterval);
@@ -226,7 +229,6 @@ function finishQuiz() {
 
     const score10 = parseFloat(((correctCount / currentQuestions.length) * 10).toFixed(1));
 
-    // Cập nhật điểm lên Firestore
     const userRef = dbStore.collection("users").doc(currentUser.docId);
     dbStore.runTransaction((transaction) => {
         return transaction.get(userRef).then((sfDoc) => {
@@ -243,7 +245,7 @@ function finishQuiz() {
         });
     }).then(() => {
         showReviewScreen(correctCount, score10);
-    }).catch(err => alert("Lỗi khi lưu điểm: " + err.message));
+    }).catch(err => alert("Lỗi lưu điểm: " + err.message));
 }
 
 function showReviewScreen(correctCount, score10) {
