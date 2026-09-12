@@ -1,18 +1,16 @@
 // ==========================================
-// 1. CẤU HÌNH FIREBASE (Thay bằng keys của bạn)
+// 1. CẤU HÌNH FIREBASE (Dùng duy nhất Firestore)
 // ==========================================
 const firebaseConfig = {
-  apiKey: "AIzaSyCPeganWPl0YKBL6gccnlJniYn7OLFY5M4",
-  authDomain: "appontap-ae318.firebaseapp.com",
-  projectId: "appontap-ae318",
-  storageBucket: "appontap-ae318.firebasestorage.app",
-  messagingSenderId: "1048552244725",
-  appId: "1:1048552244725:web:48c4c68b16abf825574cbc",
+  apiKey: "AIzaSyCPeganWPl0YKBL6gccnlJniYn7OLFY5M4",
+  authDomain: "appontap-ae318.firebaseapp.com",
+  projectId: "appontap-ae318",
+  storageBucket: "appontap-ae318.firebasestorage.app",
+  messagingSenderId: "1048552244725",
+  appId: "1:1048552244725:web:48c4c68b16abf825574cbc",
 };
 
-// Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const dbStore = firebase.firestore();
 
 let currentUser = null;
@@ -24,11 +22,11 @@ let timeLeft = 0;
 let isSignUpMode = false;
 
 // ==========================================
-// 2. ĐĂNG NHẬP / ĐĂNG KÝ STYLE ROBLOX
+// 2. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ QUA DATABASE
 // ==========================================
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
-    document.getElementById('auth-title').innerText = isSignUpMode ? 'Đăng Ký Tài Khoản Roblox Style' : 'Đăng Nhập Roblox Style';
+    document.getElementById('auth-title').innerText = isSignUpMode ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập';
     document.getElementById('auth-submit-btn').innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
     document.getElementById('auth-toggle-btn').innerText = isSignUpMode ? 'Đã có tài khoản? Đăng nhập ngay' : 'Chưa có tài khoản? Đăng ký ngay';
 }
@@ -38,55 +36,57 @@ function handleAuth(e) {
     const usernameInput = document.getElementById('auth-user').value.trim();
     const password = document.getElementById('auth-pass').value.trim();
 
-    // Regex kiểm tra tên Roblox: Cho phép chữ, số và ký tự @!-_
-    const robloxUsernameRegex = /^[a-zA-1090-9@!\-_]{3,20}$/;
-    if (!robloxUsernameRegex.test(usernameInput)) {
-        alert("Tên tài khoản chỉ chứa từ 3-20 ký tự (bao gồm chữ, số, và các ký tự @ ! - _)");
+    // Cho phép kí tự đặc biệt @ ! - _
+    const validUserRegex = /^[a-zA-Z0-9@!\-_]{3,20}$/;
+    if (!validUserRegex.test(usernameInput)) {
+        alert("Tên tài khoản từ 3-20 ký tự (chữ, số và ký tự @ ! - _)");
         return;
     }
 
-    if (password.length < 6) {
-        alert("Mật khẩu phải từ 6 ký tự trở lên!");
+    if (!password) {
+        alert("Vui lòng nhập mật khẩu!");
         return;
     }
 
-    // Tạo email giả định từ Username để dùng Firebase Auth
-    const internalEmail = `${usernameInput.toLowerCase().replace(/[^a-z0-9]/g, '_')}@robloxapp.internal`;
+    // Chuyển username thành ID viết thường để tránh trùng lặp
+    const docId = usernameInput.toLowerCase();
+    const userDocRef = dbStore.collection("users").doc(docId);
 
     if (isSignUpMode) {
-        // Đăng ký mới
-        auth.createUserWithEmailAndPassword(internalEmail, password)
-            .then((userCredential) => {
-                // Lưu Profile lên Firestore (Kiểm tra trùng tên)
-                return dbStore.collection("users").doc(userCredential.user.uid).set({
+        // --- XỬ LÝ ĐĂNG KÝ ---
+        userDocRef.get().then((doc) => {
+            if (doc.exists) {
+                alert("Tên tài khoản này đã tồn tại! Vui lòng chọn tên khác.");
+            } else {
+                userDocRef.set({
                     username: usernameInput,
+                    password: password, // Lưu mật khẩu
                     tests: 0,
                     totalScoreConverted: 0,
                     avgScore: 0
-                });
-            })
-            .then(() => {
-                alert("Đăng ký thành công! Hãy đăng nhập.");
-                toggleAuthMode();
-            })
-            .catch((error) => {
-                if(error.code === 'auth/email-already-in-use') alert("Tên tài khoản này đã được sử dụng trên hệ thống!");
-                else alert("Lỗi: " + error.message);
-            });
+                }).then(() => {
+                    alert("Đăng ký thành công! Hãy bấm Đăng nhập.");
+                    toggleAuthMode();
+                }).catch(err => alert("Lỗi khi đăng ký: " + err.message));
+            }
+        }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
+
     } else {
-        // Đăng nhập
-        auth.signInWithEmailAndPassword(internalEmail, password)
-            .then((userCredential) => {
-                return dbStore.collection("users").doc(userCredential.user.uid).get();
-            })
-            .then((doc) => {
-                if (doc.exists) {
-                    currentUser = doc.data();
-                    currentUser.uid = doc.id;
+        // --- XỬ LÝ ĐĂNG NHẬP ---
+        userDocRef.get().then((doc) => {
+            if (!doc.exists) {
+                alert("Tài khoản không tồn tại!");
+            } else {
+                const userData = doc.data();
+                if (userData.password === password) {
+                    currentUser = userData;
+                    currentUser.docId = docId;
                     loginSuccess();
+                } else {
+                    alert("Mật khẩu không chính xác!");
                 }
-            })
-            .catch(() => alert("Sai tài khoản hoặc mật khẩu!"));
+            }
+        }).catch(err => alert("Lỗi kết nối Firebase: " + err.message));
     }
 }
 
@@ -98,7 +98,6 @@ function loginSuccess() {
 }
 
 function logout() {
-    auth.signOut();
     currentUser = null;
     document.getElementById('main-screen').classList.add('hidden');
     document.getElementById('quiz-screen').classList.add('hidden');
@@ -107,7 +106,7 @@ function logout() {
 }
 
 // ==========================================
-// 3. LUYỆN TẬP & THI TRẮC NGHIỆM
+// 3. ĐIỀU HƯỚNG & THI TRẮC NGHIỆM
 // ==========================================
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -143,7 +142,6 @@ function startQuiz(grade, subjectKey) {
     const allQ = db[grade][subjectKey] || [];
     const countOption = parseInt(document.getElementById('question-count-select').value);
     
-    // Trộn ngẫu nhiên câu hỏi để làm không trùng lặp
     let shuffled = [...allQ].sort(() => 0.5 - Math.random());
     currentQuestions = shuffled.slice(0, Math.min(countOption, allQ.length));
     
@@ -190,7 +188,7 @@ function renderQuestion() {
     } else if (q.type === 'essay') {
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = 'Nhập kết quả giải mã / đáp án ngắn...';
+        input.placeholder = 'Nhập kết quả giải mã / đáp án...';
         input.value = userAnswers[currentQuestionIndex] || '';
         input.oninput = (e) => { userAnswers[currentQuestionIndex] = e.target.value; };
         box.appendChild(input);
@@ -211,7 +209,7 @@ function submitAnswer() {
 }
 
 // ==========================================
-// 4. CHẤM ĐIỂM & ĐỒNG BỘ BẢNG XẾP HẠNG GLOBAL
+// 4. CHẤM ĐIỂM & ĐỒNG BỘ BẢNG XẾP HẠNG
 // ==========================================
 function finishQuiz() {
     clearInterval(timerInterval);
@@ -226,11 +224,10 @@ function finishQuiz() {
         }
     });
 
-    // Quy đổi về Thang 10 chuẩn
     const score10 = parseFloat(((correctCount / currentQuestions.length) * 10).toFixed(1));
 
-    // Cập nhật Database Cloud Firestore
-    const userRef = dbStore.collection("users").doc(currentUser.uid);
+    // Cập nhật điểm lên Firestore
+    const userRef = dbStore.collection("users").doc(currentUser.docId);
     dbStore.runTransaction((transaction) => {
         return transaction.get(userRef).then((sfDoc) => {
             if (!sfDoc.exists) return;
@@ -246,7 +243,7 @@ function finishQuiz() {
         });
     }).then(() => {
         showReviewScreen(correctCount, score10);
-    });
+    }).catch(err => alert("Lỗi khi lưu điểm: " + err.message));
 }
 
 function showReviewScreen(correctCount, score10) {
@@ -299,5 +296,5 @@ function renderGlobalLeaderboard() {
                 `;
                 tbody.appendChild(tr);
             });
-        });
+        }).catch(err => console.log("Lỗi tải BXH: ", err));
 }
