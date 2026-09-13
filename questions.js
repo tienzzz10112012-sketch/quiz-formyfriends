@@ -1,86 +1,579 @@
-/**
- * Danh sách tên các môn học (Bao gồm môn đặc biệt)
- */
+// ==========================================
+// 1. TÊN HIỂN THỊ CÁC MÔN HỌC & CHỦ ĐỀ
+// ==========================================
 const subjectNames = {
-    "math": "Môn Toán",
-    "physics": "Vật Lý",
-    "chemistry": "Hóa Học",
-    "biology": "Sinh Học",
-    "literature": "Ngữ Văn",
-    "english": "Tiếng Anh",
-    "gddp_soctrang": "GDĐP Sóc Trăng",
-    "technology": "Công Nghệ",
-    "informatics": "Tin Học",
-    "arg_cipher": "🔑 Giải Mã & ARG (Cơ Bản -> Chuyên Gia)"
+    math: "Toán Học",
+    physics: "Vật Lý",
+    chemistry: "Hóa Học",
+    biology: "Sinh Học",
+    literature: "Ngữ Văn",
+    english: "Tiếng Anh",
+    gddp: "GDĐP Sóc Trăng",
+    informatics: "Tin Học",
+    arg: "Giải Mã ARG (Thử Thách)"
 };
 
-// Hàm hỗ trợ tự động sinh từ 50 đến 100 câu hỏi cho mỗi môn
-function buildQuestionDatabase() {
-    const database = {};
-    const grades = ["6", "7", "8", "9"];
-    const subKeys = Object.keys(subjectNames);
-
-    grades.forEach(grade => {
-        database[grade] = {};
-        subKeys.forEach(sub => {
-            database[grade][sub] = [];
-            
-            // 1. Nếu là Môn GIẢI MÃ ARG (Cấu trúc phân tầng từ Cơ bản tới Chuyên gia)
-            if (sub === 'arg_cipher') {
-                for (let i = 1; i <= 50; i++) {
-                    if (i <= 15) { // CƠ BẢN
-                        database[grade][sub].push({
-                            type: 'essay',
-                            q: `[ARG Cơ Bản #${i}] Giải mã Caeser (Shift +1): Từ "${String.fromCharCode(65+i)}" dịch sang phải 1 bước là chữ gì?`,
-                            correct: String.fromCharCode(66+i),
-                            hint: "Dịch chuyển bảng chữ cái tiếng Anh sang phải 1 đơn vị."
-                        });
-                    } else if (i <= 35) { // TRUNG CẤP
-                        database[grade][sub].push({
-                            type: 'mc',
-                            q: `[ARG Trung Cấp #${i}] Hệ nhị phân 8-bit (Binary) nào biểu diễn số ${i}?`,
-                            options: [(i).toString(2).padStart(8, '0'), (i+1).toString(2).padStart(8, '0'), (i+2).toString(2).padStart(8, '0'), (i+3).toString(2).padStart(8, '0')],
-                            correct: (i).toString(2).padStart(8, '0'),
-                            hint: "Chuyển đổi số thập phân sang nhị phân 8 bit."
-                        });
-                    } else { // CHUYÊN GIA
-                        database[grade][sub].push({
-                            type: 'essay',
-                            q: `[ARG Chuyên Gia #${i}] Giải mã Hexadecimal: Giá trị thập phân của số Hex 0x${i.toString(16).toUpperCase()} là bao nhiêu?`,
-                            correct: i.toString(),
-                            hint: "Chuyển đổi từ hệ cơ số 16 (Hex) về hệ 10."
-                        });
-                    }
-                }
-            }
-            // 2. Môn GDĐP SÓC TRĂNG
-            else if (sub === 'gddp_soctrang') {
-                for (let i = 1; i <= 50; i++) {
-                    database[grade][sub].push({
-                        type: 'mc',
-                        q: `[Sóc Trăng #${i}] Lễ hội đặc trưng nào của người Khmer ở Sóc Trăng thường tổ chức đua ghe Ngo?`,
-                        options: ["Lễ hội Ôk Om Bók", "Lễ Chôl Chnăm Thmây", "Lễ Sen Đôn-ta", "Lễ Kỳ Yên"],
-                        correct: "Lễ hội Ôk Om Bók",
-                        hint: "Lễ hội cúng mặt trăng diễn ra vào rằm tháng 10 Âm lịch."
-                    });
-                }
-            }
-            // 3. Các môn học tiêu chuẩn còn lại
-            else {
-                for (let i = 1; i <= 50; i++) {
-                    database[grade][sub].push({
-                        type: 'mc',
-                        q: `[${subjectNames[sub]} Lớp ${grade} - Câu ${i}] Câu hỏi luyện tập tự động số ${i}?`,
-                        options: [`Đáp án đúng A${i}`, `Đáp án B${i}`, `Đáp án C${i}`, `Đáp án D${i}`],
-                        correct: `Đáp án đúng A${i}`,
-                        hint: `Gợi ý lý thuyết ôn tập cho câu ${i}.`
-                    });
-                }
-            }
-        });
-    });
-
-    return database;
-}
-
-const db = buildQuestionDatabase();
+// ==========================================
+// 2. NGÂN HÀNG CÂU HỎI (LỚP 6 - 9)
+// ==========================================
+const db = {
+    "6": {
+        math: [
+            { q: "Kết quả của phép tính 15 + 25 là bao nhiêu?", options: ["30", "35", "40", "45"], correct: "40", type: "mc" },
+            { q: "Số đối của số 7 là bao nhiêu?", options: ["-7", "7", "1/7", "0"], correct: "-7", type: "mc" }
+        ],
+        physics: [
+            { q: "Đơn vị đo lực trong hệ SI là gì?", options: ["Newton (N)", "Kilogram (kg)", "Joule (J)", "Watt (W)"], correct: "Newton (N)", type: "mc" },
+            { q: "Nhiệt kế y tế thường dùng chất lỏng nào?", options: ["Nước", "Thủy ngân", "Cồn", "Dầu"], correct: "Thủy ngân", type: "mc" }
+        ],
+        chemistry: [
+            { q: "Nước có công thức hóa học là gì?", options: ["H2O", "CO2", "O2", "NaCl"], correct: "H2O", type: "mc" }
+        ],
+        biology: [
+            { q: "Tế bào thực vật có thành phần nào mà tế bào động vật không có?", options: ["Nhân tế bào", "Thành tế bào", "Màng tế bào", "Tế bào chất"], correct: "Thành tế bào", type: "mc" }
+        ],
+        literature: [
+            { q: "Truyền thuyết 'Con Rồng cháu Tiên' giải thích điều gì?", options: ["Nguồn gốc của loài người", "Nguồn gốc dân tộc Việt Nam", "Sự hình thành trái đất", "Nguồn gốc các loài vật"], correct: "Nguồn gốc dân tộc Việt Nam", type: "mc" }
+        ],
+        english: [
+            { q: "What is the capital of Vietnam?", options: ["Da Nang", "Ha Noi", "Hue", "Ho Chi Minh"], correct: "Ha Noi", type: "mc" }
+        ],
+        gddp: [
+            { q: "Tỉnh Sóc Trăng nằm ở khu vực nào của Việt Nam?", options: ["Đồng bằng sông Hồng", "Đồng bằng sông Cửu Long", "Đông Nam Bộ", "Tây Nguyên"], correct: "Đồng bằng sông Cửu Long", type: "mc" }
+        ],
+        informatics: [
+            { q: "Bộ phận nào được coi là 'bộ não' của máy tính?", options: ["RAM", "Ổ cứng", "CPU", "Màn hình"], correct: "CPU", type: "mc" }
+        ],
+        arg: [
+            { q: "Giải mã Caesar Cipher (Shift +1): 'IFLMP'", correct: "HELLO", hint: "Mỗi chữ cái dịch sang phải 1 bước (I -> H).", type: "essay" }
+        ]
+    },
+    "7": {
+        math: [
+            { q: "Tổng ba góc trong một tam giác bằng bao nhiêu độ?", options: ["90°", "180°", "360°", "270°"], correct: "180°", type: "mc" }
+        ],
+        physics: [
+            { q: "Vật nhiễm điện tích âm khi nào?", options: ["Nhận thêm electron", "Mất bớt electron", "Nhận thêm proton", "Không thay đổi"], correct: "Nhận thêm electron", type: "mc" }
+        ],
+        chemistry: [
+            { q: "Chất nào sau đây là đơn chất?", options: ["Nước (H2O)", "Khí Oxygen (O2)", "Muối ăn (NaCl)", "Đá vôi (CaCO3)"], correct: "Khí Oxygen (O2)", type: "mc" }
+        ],
+        biology: [
+            { q: "Ngành động vật không xương sống nào có số lượng loài lớn nhất?", options: ["Ruột khoang", "Giun đất", "Chân khớp", "Thân mềm"], correct: "Chân khớp", type: "mc" }
+        ],
+        literature: [
+            { q: "Bài thơ 'Nam quốc sơn hà' được viết theo thể thơ nào?", options: ["Thất ngôn tứ tuyệt", "Lục bát", "Ngũ ngôn", "Song thất lục bát"], correct: "Thất ngôn tứ tuyệt", type: "mc" }
+        ],
+        english: [
+            { q: "Past tense of 'Go' is?", options: ["Goed", "Gone", "Went", "Going"], correct: "Went", type: "mc" }
+        ],
+        gddp: [
+            { q: "Lễ hội Oóc Om Bóc của đồng bào Khmer diễn ra vào dịp nào?", options: ["Rằm tháng 8", "Rằm tháng 10 (Âm lịch)", "Tết Nguyên Đán", "Lễ Thanh Minh"], correct: "Rằm tháng 10 (Âm lịch)", type: "mc" }
+        ],
+        informatics: [
+            { q: "Phần mềm bảng tính phổ biến nhất hiện nay là gì?", options: ["Microsoft Word", "Microsoft Excel", "Photoshop", "Paint"], correct: "Microsoft Excel", type: "mc" }
+        ],
+        arg: [
+            { q: "Giải mã Base64: 'RklSRUJBU0U='", correct: "FIREBASE", hint: "Dùng công cụ Decode Base64 trực tuyến.", type: "essay" }
+        ]
+    },
+    "8": {
+        math: [
+            { q: "Khai triển hằng đẳng thức (a + b)² thành?", options: ["a² + b²", "a² - 2ab + b²", "a² + 2ab + b²", "a² - b²"], correct: "a² + 2ab + b²", type: "mc" }
+        ],
+        physics: [
+            { q: "Công thức tính áp suất là gì?", options: ["p = F/S", "p = F.S", "p = S/F", "p = m.g"], correct: "p = F/S", type: "mc" }
+        ],
+        chemistry: [
+            { q: "Công thức hóa học của axit clohidric là gì?", options: ["H2SO4", "HCl", "HNO3", "NaOH"], correct: "HCl", type: "mc" }
+        ],
+        biology: [
+            { q: "Bộ phận nào giúp cơ thể người trao đổi khí với môi trường?", options: ["Tim", "Phổi", "Dạ dày", "Thận"], correct: "Phổi", type: "mc" }
+        ],
+        literature: [
+            { q: "Nhân vật Lão Hạc trong truyện ngắn cùng tên bán con vật gì?", options: ["Con mèo", "Con trâu", "Con chó vàng", "Con gà"], correct: "Con chó vàng", type: "mc" }
+        ],
+        english: [
+            { q: "He has lived here ___ 2010.", options: ["for", "since", "in", "from"], correct: "since", type: "mc" }
+        ],
+        gddp: [
+            { q: "Đặc sản bánh Pía nổi tiếng nhất ở huyện nào của Sóc Trăng?", options: ["Vũng Thơm (Châu Thành)", "Kế Sách", "Trần Đề", "Ngã Năm"], correct: "Vũng Thơm (Châu Thành)", type: "mc" }
+        ],
+        informatics: [
+            { q: "Ngôn ngữ lập trình nào thường được học trong chương trình Tin học lớp 8?", options: ["Python / Pascal", "Java", "C#", "Ruby"], correct: "Python / Pascal", type: "mc" }
+        ],
+        arg: [
+            { q: "Giải mã Morse: '.... . .-.. .-.. ---'", correct: "HELLO", hint: ". = ngắn, - = dài.", type: "essay" }
+        ]
+    },
+    "9": {
+        math: [
+           { q: "Căn bậc hai số học của 144 là bao nhiêu?", options: ["-12", "12", "144", "±12"], correct: "12", type: "mc" },
+            { q: "Điều kiện xác định của biểu thức √(x - 3) là?", options: ["x > 3", "x < 3", "x ≥ 3", "x ≤ 3"], correct: "x ≥ 3", type: "mc" },
+            { q: "Giá trị của biểu thức √((√2 - 1)²) là?", options: ["1 - √2", "√2 - 1", "1 + √2", "-1 - √2"], correct: "√2 - 1", type: "mc" },
+            { q: "Kết quả của phép tính √16 + √9 bằng bao nhiêu?", options: ["5", "7", "25", "12"], correct: "7", type: "mc" },
+            { q: "Kết quả của phép tính √(3² + 4²) là?", options: ["5", "7", "12", "25"], correct: "5", type: "mc" },
+            { q: "Rút gọn biểu thức √12 - 2√3 ta được kết quả là?", options: ["0", "√6", "2√3", "-√3"], correct: "0", type: "mc" },
+            { q: "Trục căn thức ở mẫu của biểu thức 2/√5 ta được?", options: ["√5/2", "2√5/5", "5√2/2", "√10"], correct: "2√5/5", type: "mc" },
+            { q: "Căn bậc ba của -27 là bao nhiêu?", options: ["3", "-3", "9", "-9"], correct: "-3", type: "mc" },
+            { q: "Giá trị của x để √x = 4 là?", options: ["2", "4", "8", "16"], correct: "16", type: "mc" },
+            { q: "Kết quả của phép nhân √2 . √18 là?", options: ["6", "36", "√20", "12"], correct: "6", type: "mc" },
+            { q: "Hàm số y = (m - 1)x + 3 đồng biến khi nào?", options: ["m < 1", "m > 1", "m = 1", "m ≠ 1"], correct: "m > 1", type: "mc" },
+            { q: "Đường thẳng y = 2x + 1 cắt trục tung tại điểm có tung độ bằng?", options: ["1", "2", "-1/2", "0"], correct: "1", type: "mc" },
+            { q: "Hệ số góc của đường thẳng y = -3x + 5 là?", options: ["5", "-3", "3", "1/3"], correct: "-3", type: "mc" },
+            { q: "Hai đường thẳng y = 2x - 1 và y = 2x + 3 có vị trí tương đối như thế nào?", options: ["Cắt nhau", "Trùng nhau", "Song song", "Vuông góc"], correct: "Song song", type: "mc" },
+            { q: "Điểm nào sau đây thuộc đồ thị hàm số y = 3x - 2?", options: ["A(1; 1)", "B(0; 2)", "C(2; 5)", "D(1; -1)"], correct: "A(1; 1)", type: "mc" },
+            { q: "Hàm số nào sau đây là hàm số bậc nhất?", options: ["y = 2/x", "y = 5x - 2", "y = x² + 1", "y = √x + 3"], correct: "y = 5x - 2", type: "mc" },
+            { q: "Đường thẳng y = ax + 3 đi qua điểm A(1; 5) thì a bằng?", options: ["1", "2", "3", "4"], correct: "2", type: "mc" },
+            { q: "Góc tạo bởi đường thẳng y = x + 1 và trục Ox là bao nhiêu độ?", options: ["30°", "45°", "60°", "90°"], correct: "45°", type: "mc" },
+            { q: "Cặp số nào sau đây là nghiệm của phương trình x - y = 2?", options: ["(1; 3)", "(3; 1)", "(2; 1)", "(0; 2)"], correct: "(3; 1)", type: "mc" },
+            { q: "Hệ phương trình {x + y = 5; x - y = 1} có nghiệm (x; y) là?", options: ["(2; 3)", "(3; 2)", "(4; 1)", "(1; 4)"], correct: "(3; 2)", type: "mc" },
+            { q: "Số nghiệm của hệ phương trình {2x - y = 3; 4x - 2y = 6} là?", options: ["Vô nghiệm", "1 nghiệm duy nhất", "2 nghiệm", "Vô số nghiệm"], correct: "Vô số nghiệm", type: "mc" },
+            { q: "Hệ phương trình {x + 2y = 3; x + 2y = 4} có bao nhiêu nghiệm?", options: ["Vô nghiệm", "1 nghiệm", "2 nghiệm", "Vô số nghiệm"], correct: "Vô nghiệm", type: "mc" },
+            { q: "Giải hệ phương trình {3x - y = 5; x + y = 3}, ta được giá trị của x bằng?", options: ["1", "2", "3", "4"], correct: "2", type: "mc" },
+            { q: "Nếu hai đường thẳng cắt nhau tại 1 điểm thì hệ phương trình bậc nhất hai ẩn tạo bởi chúng có?", options: ["Vô nghiệm", "1 nghiệm duy nhất", "Vô số nghiệm", "2 nghiệm"], correct: "1 nghiệm duy nhất", type: "mc" },
+            { q: "Cặp số (2; -1) là nghiệm của hệ phương trình nào sau đây?", options: ["{x + y = 1; x - y = 3}", "{x + y = 2; x - y = 1}", "{2x - y = 3; x + y = 0}", "{x - 2y = 4; 2x + y = 2}"], correct: "{x + y = 1; x - y = 3}", type: "mc" },
+            { q: "Đồ thị hàm số y = 2x² đi qua điểm nào sau đây?", options: ["A(1; -2)", "B(-1; 2)", "C(2; 4)", "D(0; 2)"], correct: "B(-1; 2)", type: "mc" },
+            { q: "Phương trình bậc hai ax² + bx + c = 0 (a ≠ 0) có nghiệm kép khi nào?", options: ["Δ > 0", "Δ < 0", "Δ = 0", "Δ ≥ 0"], correct: "Δ = 0", type: "mc" },
+            { q: "Công thức tính biệt thức Δ của phương trình bậc hai là?", options: ["Δ = b² + 4ac", "Δ = b² - 4ac", "Δ = b - 4ac", "Δ = 4ac - b²"], correct: "Δ = b² - 4ac", type: "mc" },
+            { q: "Phương trình x² - 5x + 6 = 0 có hai nghiệm là?", options: ["-2 và -3", "2 và 3", "-1 và -6", "1 và 6"], correct: "2 và 3", type: "mc" },
+            { q: "Theo định lý Vi-ét, tổng hai nghiệm của phương trình ax² + bx + c = 0 là?", options: ["c/a", "-c/a", "b/a", "-b/a"], correct: "-b/a", type: "mc" },
+            { q: "Tích hai nghiệm của phương trình 2x² - 7x + 3 = 0 là?", options: ["3/2", "-3/2", "7/2", "-7/2"], correct: "3/2", type: "mc" },
+            { q: "Phương trình x² - 4x + 4 = 0 có nghiệm là?", options: ["x = 4", "x = -2", "x = 2", "Vô nghiệm"], correct: "x = 2", type: "mc" },
+            { q: "Hàm số y = -3x² đồng biến khi nào?", options: ["x > 0", "x < 0", "x = 0", "Với mọi x"], correct: "x < 0", type: "mc" },
+            { q: "Phương trình nào sau đây vô nghiệm?", options: ["x² - 3x + 2 = 0", "x² + x - 1 = 0", "x² + x + 1 = 0", "x² - 4 = 0"], correct: "x² + x + 1 = 0", type: "mc" },
+            { q: "Hai số có tổng là S, tích là P là nghiệm của phương trình nào?", options: ["X² - SX + P = 0", "X² + SX + P = 0", "X² - PX + S = 0", "X² + PX + S = 0"], correct: "X² - SX + P = 0", type: "mc" },
+            { q: "Trong tam giác ABC vuông tại A, đường cao AH. Hệ thức nào sau đây đúng?", options: ["AH² = HB.HC", "AB² = HB.HC", "AC² = HB.HC", "AH² = AB.AC"], correct: "AH² = HB.HC", type: "mc" },
+            { q: "Sin của một góc nhọn trong tam giác vuông bằng tỉ số nào?", options: ["Cạnh kề / Cạnh huyền", "Cạnh đối / Cạnh kề", "Cạnh đối / Cạnh huyền", "Cạnh kề / Cạnh đối"], correct: "Cạnh đối / Cạnh huyền", type: "mc" },
+            { q: "Tam giác vuông có hai cạnh góc vuông là 3cm và 4cm. Cạnh huyền dài?", options: ["5cm", "6cm", "7cm", "25cm"], correct: "5cm", type: "mc" },
+            { q: "Giá trị của sin 30° là bao nhiêu?", options: ["1/2", "√2/2", "√3/2", "1"], correct: "1/2", type: "mc" },
+            { q: "Tính giá trị biểu thức: sin² 25° + cos² 25°?", options: ["0", "1", "25", "50"], correct: "1", type: "mc" },
+            { q: "Đường kính của đường tròn có bán kính R là?", options: ["R", "2R", "R/2", "πR"], correct: "2R", type: "mc" },
+            { q: "Trong một đường tròn, khoảng cách từ tâm đến dây cung càng lớn thì dây cung đó?", options: ["Càng lớn", "Càng nhỏ", "Không đổi", "Bằng đường kính"], correct: "Càng nhỏ", type: "mc" },
+            { q: "Số tiếp tuyến chung tối đa của hai đường tròn cắt nhau là?", options: ["1", "2", "3", "4"], correct: "2", type: "mc" },
+            { q: "Bán kính đường tròn ngoại tiếp tam giác vuông có độ dài cạnh huyền bằng 10 là?", options: ["2.5", "5", "10", "20"], correct: "5", type: "mc" },
+            { q: "Góc nội tiếp chắn nửa đường tròn là góc gì?", options: ["Góc nhọn", "Góc vuông", "Góc tù", "Góc bẹt"], correct: "Góc vuông", type: "mc" },
+            { q: "Số đo của góc ở tâm chắn cung 60° là bao nhiêu?", options: ["30°", "60°", "90°", "120°"], correct: "60°", type: "mc" },
+            { q: "Tứ giác ABCD nội tiếp đường tròn thì tổng hai góc đối diện bằng bao nhiêu?", options: ["90°", "180°", "270°", "360°"], correct: "180°", type: "mc" },
+            { q: "Diện tích mặt cầu có bán kính R được tính bằng công thức nào?", options: ["S = πR²", "S = 2πR", "S = 4πR²", "S = 4/3πR³"], correct: "S = 4πR²", type: "mc" },
+            { q: "Thể tích hình trụ có bán kính đáy R và chiều cao h là?", options: ["V = πRh", "V = 2πRh", "V = 1/3πR²h", "V = πR²h"], correct: "V = πR²h", type: "mc" },
+            { q: "Công thức tính độ dài cung tròn bán kính R, số đo n độ là?", options: ["l = πRn/180", "l = πRn/360", "l = πR²n/180", "l = πR²n/360"], correct: "l = πRn/180", type: "mc" }
+        ],
+        physics: [
+            { q: "Định luật Ôm cho biết cường độ dòng điện chạy qua dây dẫn tỉ lệ với điều gì?", options: ["Thuận với hiệu điện thế, nghịch với điện trở", "Nghịch với hiệu điện thế, thuận với điện trở", "Thuận với cả hiệu điện thế và điện trở", "Nghịch với cả hiệu điện thế và điện trở"], correct: "Thuận với hiệu điện thế, nghịch với điện trở", type: "mc" },
+            { q: "Công thức của Định luật Ôm là gì?", options: ["I = U/R", "I = U.R", "U = I/R", "R = I/U"], correct: "I = U/R", type: "mc" },
+            { q: "Đơn vị đo của điện trở là gì?", options: ["Ampe (A)", "Vôn (V)", "Ôm (Ω)", "Oát (W)"], correct: "Ôm (Ω)", type: "mc" },
+            { q: "Công thức tính điện trở của dây dẫn đồng chất, tiết diện đều là?", options: ["R = ρ.l/S", "R = ρ.S/l", "R = l.S/ρ", "R = ρ.l.S"], correct: "R = ρ.l/S", type: "mc" },
+            { q: "Trong đoạn mạch gồm hai điện trở R1 và R2 mắc nối tiếp, công thức nào sau đây ĐÚNG?", options: ["R = R1 + R2", "1/R = 1/R1 + 1/R2", "R = R1 . R2", "R = R1 - R2"], correct: "R = R1 + R2", type: "mc" },
+            { q: "Trong đoạn mạch gồm hai điện trở mắc song song, hiệu điện thế giữa hai đầu mỗi điện trở có mối quan hệ như thế nào?", options: ["U = U1 = U2", "U = U1 + U2", "U = U1 - U2", "U = U1 . U2"], correct: "U = U1 = U2", type: "mc" },
+            { q: "Công thức tính công suất điện P của một đoạn mạch là?", options: ["P = U.I", "P = U/I", "P = I/U", "P = U + I"], correct: "P = U.I", type: "mc" },
+            { q: "Đơn vị đo công suất điện là gì?", options: ["Joule (J)", "Watt (W)", "Volt (V)", "Ampere (A)"], correct: "Watt (W)", type: "mc" },
+            { q: "Một kí-lô-oát giờ (1 kWh) bằng bao nhiêu Joule (J)?", options: ["3.600 J", "360.000 J", "3.600.000 J", "36.000 J"], correct: "3.600.000 J", type: "mc" },
+            { q: "Theo định luật Giun - Len-xơ, nhiệt lượng tỏa ra trên dây dẫn tỉ lệ thuận với?", options: ["Bình phương cường độ dòng điện", "Cường độ dòng điện", "Căn bậc hai cường độ dòng điện", "Hiệu điện thế"], correct: "Bình phương cường độ dòng điện", type: "mc" },
+            { q: "Công thức của định luật Giun - Len-xơ là?", options: ["Q = I².R.t", "Q = I.R.t", "Q = I.R².t", "Q = I².R/t"], correct: "Q = I².R.t", type: "mc" },
+            { q: "Dụng cụ nào dùng để điều chỉnh cường độ dòng điện trong mạch?", options: ["Biến trở", "Vôn kế", "Ampe kế", "Cầu chì"], correct: "Biến trở", type: "mc" },
+            { q: "Số ghi (220V - 75W) trên một bóng đèn cho biết điều gì?", options: ["Hiệu điện thế định mức và công suất định mức của đèn", "Hiệu điện thế tối thiểu và công suất tối đa", "Cường độ dòng điện và điện trở của đèn", "Điện năng tiêu thụ trong 1 giờ"], correct: "Hiệu điện thế định mức và công suất định mức của đèn", type: "mc" },
+            { q: "Đoạn mạch ngắn mạch xảy ra khi nào?", options: ["Điện trở của mạch giảm về gần bằng 0", "Điện trở của mạch tăng lên rất lớn", "Hiệu điện thế giảm về 0", "Công suất điện giảm về 0"], correct: "Điện trở của mạch giảm về gần bằng 0", type: "mc" },
+            { q: "Để đo cường độ dòng điện qua một bóng đèn, ta mắc Ampe kế như thế nào?", options: ["Nối tiếp với bóng đèn", "Song song với bóng đèn", "Tùy ý", "Mắc song song với nguồn điện"], correct: "Nối tiếp với bóng đèn", type: "mc" },
+            { q: "Để đo hiệu điện thế giữa hai đầu bóng đèn, ta mắc Vôn kế như thế nào?", options: ["Song song với bóng đèn", "Nối tiếp với bóng đèn", "Mắc nối tiếp với cầu chì", "Mắc vào bất kỳ đâu"], correct: "Song song với bóng đèn", type: "mc" },
+            { q: "Dây đốt nóng của các dụng cụ điện như bàn nát, lò sưởi thường được làm bằng chất liệu gì?", options: ["Đồng", "Nhôm", "Hợp kim Nikelin hoặc Nicrom", "Sắt"], correct: "Hợp kim Nikelin hoặc Nicrom", type: "mc" },
+            { q: "Đơn vị đo của điện trở suất (ρ) là gì?", options: ["Ω.m", "Ω/m", "Ω.m²", "m/Ω"], correct: "Ω.m", type: "mc" },
+            { q: "Nam châm vĩnh cửu KHÔNG hút được vật làm bằng chất liệu nào sau đây?", options: ["Sắt", "Thép", "Đồng", "Niken"], correct: "Đồng", type: "mc" },
+            { q: "Hai cực của hai nam châm đặt gần nhau sẽ đẩy nhau khi nào?", options: ["Hai cực cùng tên", "Hai cực khác tên", "Một cực Bắc và một cực Nam", "Khi không có dòng điện"], correct: "Hai cực cùng tên", type: "mc" },
+            { q: "Kim nam châm ở trạng thái tự do luôn chỉ theo hướng nào?", options: ["Bắc - Nam", "Đông - Tây", "Đông Bắc - Tây Nam", "Tây Bắc - Đông Nam"], correct: "Bắc - Nam", type: "mc" },
+            { q: "Quy tắc nắm tay phải dùng để xác định điều gì?", options: ["Chiều đường sức từ trong lòng ống dây có dòng điện", "Chiều của lực từ tác dụng lên dây dẫn", "Chiều của dòng điện cảm ứng", "Chiều quay của động cơ điện"], correct: "Chiều đường sức từ trong lòng ống dây có dòng điện", type: "mc" },
+            { q: "Quy tắc bàn tay trái dùng để xác định chiều của đại lượng nào?", options: ["Lực từ", "Dòng điện", "Đường sức từ", "Điện trường"], correct: "Lực từ", type: "mc" },
+            { q: "Chiều đường sức từ bên ngoài nam châm đi ra từ cực nào và đi vào cực nào?", options: ["Ra cực Bắc, vào cực Nam", "Ra cực Nam, vào cực Bắc", "Ra từ cả hai cực", "Vào ở cả hai cực"], correct: "Ra cực Bắc, vào cực Nam", type: "mc" },
+            { q: "Nam châm điện có cấu tạo gồm?", options: ["Một ống dây dẫn có lõi sắt mềm bên trong", "Một thanh thép vĩnh cửu", "Một cuộn dây bằng nhựa", "Một lõi đồng quấn dây nhôm"], correct: "Một ống dây dẫn có lõi sắt mềm bên trong", type: "mc" },
+            { q: "Điều kiện để xuất hiện dòng điện cảm ứng trong cuộn dây dẫn kín là gì?", options: ["Số đường sức từ xuyên qua tiết diện cuộn dây biến thiên", "Đặt cuộn dây đứng yên trong từ trường đều", "Cho dòng điện một chiều đi qua cuộn dây", "Nối cuộn dây với một quả pin"], correct: "Số đường sức từ xuyên qua tiết diện cuộn dây biến thiên", type: "mc" },
+            { q: "Dòng điện xoay chiều là dòng điện có tính chất gì?", options: ["Chiều luân phiên thay đổi theo thời gian", "Chiều không đổi nhưng cường độ thay đổi", "Cường độ và chiều luôn giữ cố định", "Chỉ chạy theo một chiều duy nhất"], correct: "Chiều luân phiên thay đổi theo thời gian", type: "mc" },
+            { q: "Thiết bị nào sau đây dùng để biến đổi hiệu điện thế xoay chiều?", options: ["Máy biến thế", "Động cơ điện", "Biến trở", "Máy phát điện"], correct: "Máy biến thế", type: "mc" },
+            { q: "Công thức mối quan hệ giữa hiệu điện thế và số vòng dây của máy biến thế là?", options: ["U1/U2 = n1/n2", "U1/U2 = n2/n1", "U1.U2 = n1.n2", "U1 + U2 = n1 + n2"], correct: "U1/U2 = n1/n2", type: "mc" },
+            { q: "Để giảm hao phí do tỏa nhiệt trên đường dây tải điện, biện pháp hiệu quả nhất là gì?", options: ["Tăng hiệu điện thế ở hai đầu đường dây", "Giảm điện trở của dây dẫn", "Dùng dây dẫn có tiết diện lớn hơn", "Giảm công suất cần truyền tải"], correct: "Tăng hiệu điện thế ở hai đầu đường dây", type: "mc" },
+            { q: "Khi tăng hiệu điện thế ở hai đầu đường dây truyền tải lên 10 lần thì công suất hao phí giảm đi bao nhiêu lần?", options: ["100 lần", "10 lần", "20 lần", "1000 lần"], correct: "100 lần", type: "mc" },
+            { q: "Rotor của máy phát điện xoay chiều trong thực tế thường là bộ phận nào?", options: ["Nam châm (hoặc nam châm điện)", "Cuộn dây dẫn", "Bộ góp điện", "Thang than"], correct: "Nam châm (hoặc nam châm điện)", type: "mc" },
+            { q: "Hiện tượng khúc xạ ánh sáng là hiện tượng tia sáng truyền từ môi trường trong suốt này sang môi trường trong suốt khác bị?", options: ["Bị gãy khúc tại mặt phân cách giữa hai môi trường", "Phản xạ hoàn toàn trở lại môi trường cũ", "Truyền thẳng không thay đổi hướng", "Bị dán đoạn và mất đi"], correct: "Bị gãy khúc tại mặt phân cách giữa hai môi trường", type: "mc" },
+            { q: "Thấu kính hội tụ là loại thấu kính có đặc điểm gì?", options: ["Phần rìa mỏng hơn phần giữa", "Phần rìa dày hơn phần giữa", "Phần rìa và phần giữa bằng nhau", "Bề mặt đục không cho ánh sáng đi qua"], correct: "Phần rìa mỏng hơn phần giữa", type: "mc" },
+            { q: "Thấu kính phân kỳ có đặc điểm nhận biết nào?", options: ["Phần rìa dày hơn phần giữa", "Phần rìa mỏng hơn phần giữa", "Có hai mặt phẳng song song", "Luôn làm bằng kim loại"], correct: "Phần rìa dày hơn phần giữa", type: "mc" },
+            { q: "Tia sáng đi qua quang tâm O của thấu kính sẽ như thế nào?", options: ["Tiếp tục truyền thẳng không đổi hướng", "Bị phản xạ ngược lại", "Đi qua tiêu điểm F", "Song song với trục chính"], correct: "Tiếp tục truyền thẳng không đổi hướng", type: "mc" },
+            { q: "Tia sáng song song với trục chính của thấu kính hội tụ cho tia ló như thế nào?", options: ["Đi qua tiêu điểm của thấu kính", "Truyền thẳng", "Đi qua quang tâm", "Song song với trục chính"], correct: "Đi qua tiêu điểm của thấu kính", type: "mc" },
+            { q: "Ảnh của một vật thật tạo bởi thấu kính phân kỳ luôn có tính chất gì?", options: ["Ảnh ảo, cùng chiều và nhỏ hơn vật", "Ảnh thật, ngược chiều và lớn hơn vật", "Ảnh ảo, ngược chiều và bằng vật", "Ảnh thật, cùng chiều và nhỏ hơn vật"], correct: "Ảnh ảo, cùng chiều và nhỏ hơn vật", type: "mc" },
+            { q: "Khi vật thật nằm ngoài khoảng tiêu cự của thấu kính hội tụ, ảnh thu được là?", options: ["Ảnh thật, ngược chiều với vật", "Ảnh ảo, cùng chiều với vật", "Ảnh ảo, ngược chiều với vật", "Không tạo ra ảnh"], correct: "Ảnh thật, ngược chiều với vật", type: "mc" },
+            { q: "Kính lúp là một thấu kính hội tụ có đặc điểm gì?", options: ["Tiêu cự ngắn, dùng để quan sát các vật nhỏ", "Tiêu cự rất dài, dùng quan sát vật ở xa", "Là thấu kính phân kỳ", "Làm phóng đại các vật lên hàng triệu lần"], correct: "Tiêu cự ngắn, dùng để quan sát các vật nhỏ", type: "mc" },
+            { q: "Về mặt quang học, hai bộ phận quan trọng nhất của mắt tương tự như thấu kính và màn ảnh của máy ảnh là?", options: ["Thể thủy tinh và màng lưới (võng mạc)", "Lòng đen và con ngươi", "Màng chõng và giác mạc", "Lông mi và mí mắt"], correct: "Thể thủy tinh và màng lưới (võng mạc)", type: "mc" },
+            { q: "Mắt cận thị là mắt có đặc điểm gì?", options: ["Nhìn rõ các vật ở gần, không nhìn rõ các vật ở xa", "Nhìn rõ các vật ở xa, không nhìn rõ các vật ở gần", "Không nhìn rõ cả vật ở gần lẫn ở xa", "Nhìn rõ mọi vật ở mọi khoảng cách"], correct: "Nhìn rõ các vật ở gần, không nhìn rõ các vật ở xa", type: "mc" },
+            { q: "Để khắc phục tật cận thị, người ta phải đeo kính là loại thấu kính gì?", options: ["Thấu kính phân kỳ", "Thấu kính hội tụ", "Kính phẳng", "Kính lúp"], correct: "Thấu kính phân kỳ", type: "mc" },
+            { q: "Mắt lão (thường gặp ở người già) cần đeo loại kính nào để nhìn rõ vật ở gần?", options: ["Thấu kính hội tụ", "Thấu kính phân kỳ", "Kính râm", "Kính cận"], correct: "Thấu kính hội tụ", type: "mc" },
+            { q: "Khi chiếu ánh sáng trắng qua một lăng kính, ta thu được dải màu gọi là hiện tượng gì?", options: ["Tán sắc ánh sáng", "Phản xạ ánh sáng", "Khúc xạ đơn sắc", "Giao thoa ánh sáng"], correct: "Tán sắc ánh sáng", type: "mc" },
+            { q: "Trộn ba ánh sáng màu nào với nhau theo tỷ lệ thích hợp sẽ tạo ra ánh sáng trắng?", options: ["Đỏ, lục, lam", "Đỏ, vàng, xanh", "Tím, hồng, cam", "Đen, trắng, xám"], correct: "Đỏ, lục, lam", type: "mc" },
+            { q: "Vật màu đỏ có tính chất phản xạ ánh sáng như thế nào?", options: ["Phản xạ tốt ánh sáng đỏ và tán xạ kém các màu khác", "Hấp thụ hoàn toàn ánh sáng đỏ", "Phản xạ tốt tất cả các màu ánh sáng", "Không phản xạ ánh sáng nào"], correct: "Phản xạ tốt ánh sáng đỏ và tán xạ kém các màu khác", type: "mc" },
+            { q: "Trong nhà máy thủy điện, dạng năng lượng nào của nước được chuyển hóa thành điện năng?", options: ["Cơ năng (Thế năng và động năng)", "Nhiệt năng", "Hóa năng", "Năng lượng hạt nhân"], correct: "Cơ năng (Thế năng và động năng)", type: "mc" },
+            { q: "Trong nhà máy nhiệt điện, năng lượng của nhiên liệu (than, dầu) được chuyển hóa như thế nào?", options: ["Hóa năng -> Nhiệt năng -> Cơ năng -> Điện năng", "Điện năng -> Nhiệt năng -> Cơ năng", "Cơ năng -> Hóa năng -> Điện năng", "Quang năng -> Điện năng"], correct: "Hóa năng -> Nhiệt năng -> Cơ năng -> Điện năng", type: "mc" },
+            { q: "Định luật bảo toàn và chuyển hóa năng lượng phát biểu như thế nào?", options: ["Năng lượng không tự sinh ra hoặc tự mất đi, chỉ chuyển từ dạng này sang dạng khác", "Năng lượng tự sinh ra khi thực hiện công", "Năng lượng mất đi khi tỏa nhiệt", "Tổng năng lượng trong vũ trụ luôn tăng lên"], correct: "Năng lượng không tự sinh ra hoặc tự mất đi, chỉ chuyển từ dạng này sang dạng khác", type: "mc" }
+        ],
+        chemistry: [
+            { q: "Dãy oxit nào sau đây đều tác dụng với nước ở nhiệt độ thường tạo thành dung dịch bazơ?", options: ["CaO, Na2O, BaO, K2O", "CuO, Fe2O3, CaO, MgO", "SO2, CO2, P2O5, N2O5", "ZnO, Al2O3, FeO, K2O"], correct: "CaO, Na2O, BaO, K2O", type: "mc" },
+            { q: "Oxit nào sau đây là oxit axit?", options: ["SO2", "CuO", "Na2O", "CaO"], correct: "SO2", type: "mc" },
+            { q: "Dung dịch axit nào sau đây làm quỳ tím chuyển sang màu đỏ?", options: ["HCl", "NaOH", "NaCl", "Ca(OH)2"], correct: "HCl", type: "mc" },
+            { q: "Chất nào sau đây làm dung dịch phenolphthalein không màu chuyển sang màu hồng?", options: ["NaOH", "HCl", "H2SO4", "NaCl"], correct: "NaOH", type: "mc" },
+            { q: "Dùng chất nào sau đây để nhận biết khí CO2 làm đục nước vôi trong?", options: ["Ca(OH)2", "HCl", "NaCl", "H2SO4"], correct: "Ca(OH)2", type: "mc" },
+            { q: "Axit nào có sẵn trong dạ dày người giúp tiêu hóa thức ăn?", options: ["HCl", "H2SO4", "HNO3", "CH3COOH"], correct: "HCl", type: "mc" },
+            { q: "Axit H2SO4 đặc có tính chất đặc trưng nổi bật nào sau đây?", options: ["Tính háo nước mạnh", "Tính bay hơi nhanh", "Tính làm lạnh dung dịch", "Không màu không mùi"], correct: "Tính háo nước mạnh", type: "mc" },
+            { q: "Công thức hóa học của vôi sống là gì?", options: ["CaO", "Ca(OH)2", "CaCO3", "CaSO4"], correct: "CaO", type: "mc" },
+            { q: "Thuốc thử phổ biến dùng để nhận biết dung dịch H2SO4 và muối sunfat là?", options: ["Dung dịch BaCl2", "Dung dịch NaCl", "Dung dịch NaOH", "Quỳ tím"], correct: "Dung dịch BaCl2", type: "mc" },
+            { q: "Thành phần chính của đá vôi, vỏ sò, vỏ trứng là hợp chất nào?", options: ["CaCO3", "CaO", "Ca(OH)2", "CaCl2"], correct: "CaCO3", type: "mc" },
+            { q: "Cho kim loại Sắt (Fe) tác dụng với dung dịch HCl thu được muối sắt(II) clorua và khí gì?", options: ["H2", "O2", "Cl2", "CO2"], correct: "H2", type: "mc" },
+            { q: "Phản ứng giữa axit và bazơ tạo thành muối và nước được gọi là phản ứng gì?", options: ["Phản ứng trung hòa", "Phản ứng thế", "Phản ứng phân hủy", "Phản ứng hóa hợp"], correct: "Phản ứng trung hòa", type: "mc" },
+            { q: "Muối ăn dùng trong sinh hoạt hằng ngày có công thức hóa học là?", options: ["NaCl", "KCl", "NaHCO3", "Na2CO3"], correct: "NaCl", type: "mc" },
+            { q: "Phân bón hóa học nhóm 'Phân đạm' cung cấp nguyên tố dinh dưỡng nào cho cây trồng?", options: ["Nitơ (N)", "Photpho (P)", "Kali (K)", "Canxi (Ca)"], correct: "Nitơ (N)", type: "mc" },
+            { q: "Dãy kim loại nào được xếp theo chiều độ hoạt động hóa học giảm dần?", options: ["K, Na, Mg, Al, Zn, Fe, Cu, Ag", "Ag, Cu, Fe, Zn, Al, Mg, Na, K", "Fe, Cu, K, Na, Mg, Al, Ag, Zn", "Na, K, Al, Mg, Fe, Zn, Cu, Ag"], correct: "K, Na, Mg, Al, Zn, Fe, Cu, Ag", type: "mc" },
+            { q: "Kim loại nào sau đây phản ứng mãnh liệt với nước ở nhiệt độ thường?", options: ["Natri (Na)", "Đồng (Cu)", "Sắt (Fe)", "Bạc (Ag)"], correct: "Natri (Na)", type: "mc" },
+            { q: "Kim loại nào dẫn điện và dẫn nhiệt tốt nhất trong tất cả các kim loại?", options: ["Bạc (Ag)", "Đồng (Cu)", "Vàng (Au)", "Nhôm (Al)"], correct: "Bạc (Ag)", type: "mc" },
+            { q: "Nhôm (Al) là kim loại nhẹ, bền trong không khí do có lớp màng bảo vệ là gì?", options: ["Al2O3", "Al(OH)3", "AlCl3", "Al2(SO4)3"], correct: "Al2O3", type: "mc" },
+            { q: "Kim loại Nhôm (Al) và Sắt (Fe) bị 'thụ động hóa' (không phản ứng) trong dung dịch nào?", options: ["H2SO4 đặc, nguội và HNO3 đặc, nguội", "HCl loãng", "H2SO4 loãng", "NaOH loãng"], correct: "H2SO4 đặc, nguội và HNO3 đặc, nguội", type: "mc" },
+            { q: "Quặng sắt Hematit có thành phần chính là hợp chất nào?", options: ["Fe2O3", "Fe3O4", "FeS2", "FeCO3"], correct: "Fe2O3", type: "mc" },
+            { q: "Gang là hợp kim của Sắt với Cacbon, trong đó hàm lượng Cacbon chiếm bao nhiêu %?", options: ["Từ 2% đến 5%", "Dưới 2%", "Trên 10%", "Từ 5% đến 15%"], correct: "Từ 2% đến 5%", type: "mc" },
+            { q: "Thép là hợp kim của Sắt với Cacbon và một số nguyên tố khác, trong đó hàm lượng Cacbon chiếm?", options: ["Dưới 2%", "Từ 2% đến 5%", "Trên 5%", "Từ 5% đến 10%"], correct: "Dưới 2%", type: "mc" },
+            { q: "Khí Clo (Cl2) có màu và mùi như thế nào?", options: ["Màu vàng lục, mùi hắc, rất độc", "Không màu, không mùi", "Màu nâu đỏ, mùi thơm", "Màu xanh lam, không độc"], correct: "Màu vàng lục, mùi hắc, rất độc", type: "mc" },
+            { q: "Dung dịch nước Clo có tính tẩy màu là do có chứa axit kém bền nào?", options: ["HClO (Axit hipoclorơ)", "HCl", "HClO3", "HClO4"], correct: "HClO (Axit hipoclorơ)", type: "mc" },
+            { q: "Khí Cacbon monooxit (CO) cực kỳ nguy hiểm và gây ngộ độc do tính chất nào?", options: ["Liên kết chặt với Hemoglobin trong máu làm mất khả năng vận chuyển Oxi", "Gây bỏng da nặng", "Phá hủy màng tế bào phổi", "Tạo ra dung dịch axit cực mạnh trong máu"], correct: "Liên kết chặt với Hemoglobin trong máu làm mất khả năng vận chuyển Oxi", type: "mc" },
+            { q: "Dạng thù hình nào của Cacbon có độ cứng cao nhất trong tự nhiên?", options: ["Kim cương", "Than chì", "Than gỗ", "Cacbon vô định hình"], correct: "Kim cương", type: "mc" },
+            { q: "Than hoạt tính có khả năng hấp phụ cao các chất màu và chất độc là do?", options: ["Có bề mặt xốp rất lớn", "Có độ cứng cao", "Có khả năng dẫn điện", "Chứa nhiều tạp chất"], correct: "Có bề mặt xốp rất lớn", type: "mc" },
+            { q: "Trong Bảng tuần hoàn các nguyên tố hóa học, các nguyên tố nằm trong cùng một 'Chu kỳ' có đặc điểm gì?", options: ["Có cùng số lớp electron", "Có cùng số electron lớp ngoài cùng", "Có cùng tính chất hóa học", "Có cùng khối lượng nguyên tử"], correct: "Có cùng số lớp electron", type: "mc" },
+            { q: "Trong Bảng tuần hoàn các nguyên tố hóa học, các nguyên tố được sắp xếp theo chiều tăng dần của?", options: ["Điện tích hạt nhân nguyên tử", "Khối lượng nguyên tử", "Số nơtron", "Bán kính nguyên tử"], correct: "Điện tích hạt nhân nguyên tử", type: "mc" },
+            { q: "Hợp chất hữu cơ là hợp chất của nguyên tố nào (trừ CO, CO2, H2CO3, muối cacbonat...)?", options: ["Cacbon (C)", "Oxi (O)", "Nitơ (N)", "Hydro (H)"], correct: "Cacbon (C)", type: "mc" },
+            { q: "Hợp chất hữu cơ chỉ gồm 2 nguyên tố Cacbon và Hydro được gọi là gì?", options: ["Hiđrocacbon", "Dẫn xuất hiđrocacbon", "Polime", "Gluxit"], correct: "Hiđrocacbon", type: "mc" },
+            { q: "Công thức phân tử của khí Mêtan - thành phần chính của khí thiên nhiên, khí biogas - là?", options: ["CH4", "C2H4", "C2H2", "C6H6"], correct: "CH4", type: "mc" },
+            { q: "Phản ứng đặc trưng của Mêtan (CH4) với khí Clo khi có ánh sáng chiếu vào là phản ứng gì?", options: ["Phản ứng thế", "Phản ứng cộng", "Phản ứng trùng hợp", "Phản ứng phân hủy"], correct: "Phản ứng thế", type: "mc" },
+            { q: "Công thức phân tử của Etilen là?", options: ["C2H4", "CH4", "C2H2", "C6H6"], correct: "C2H4", type: "mc" },
+            { q: "Trong phân tử Etilen (C2H4) có chứa loại liên kết nào đặc trưng?", options: ["Một liên kết đôi (C=C), trong đó có 1 liên kết kém bền dễ bị đứt ra", "Một liên kết ba (C≡C)", "Chỉ toàn liên kết đơn", "Liên kết vòng 6 cạnh"], correct: "Một liên kết đôi (C=C), trong đó có 1 liên kết kém bền dễ bị đứt ra", type: "mc" },
+            { q: "Khí Etilen (C2H4) có khả năng làm mất màu dung dịch nào ở nhiệt độ thường?", options: ["Dung dịch Brom (Br2)", "Dung dịch NaCl", "Dung dịch NaOH", "Dung dịch HCl"], correct: "Dung dịch Brom (Br2)", type: "mc" },
+            { q: "Phản ứng trùng hợp các phân tử Etilen ở nhiệt độ và áp suất thích hợp tạo ra nhựa gì?", options: ["Polietilen (PE)", "PVC", "Cao su bun-a", "Nhựa tơ tằm"], correct: "Polietilen (PE)", type: "mc" },
+            { q: "Công thức phân tử của Axetilen là?", options: ["C2H2", "C2H4", "CH4", "C2H6"], correct: "C2H2", type: "mc" },
+            { q: "Đèn xì axetilen - oxi được dùng để hàn cắt kim loại là do phản ứng cháy của C2H2?", options: ["Tỏa nhiệt rất cao (lên tới 3000°C)", "Tạo ra nhiều khói đen", "Không tốn khí oxi", "Tạo ra kim loại mới"], correct: "Tỏa nhiệt rất cao (lên tới 3000°C)", type: "mc" },
+            { q: "Benzen là một hiđrocacbon thơm có công thức phân tử là?", options: ["C6H6", "C2H2", "C6H12", "C2H4"], correct: "C6H6", type: "mc" },
+            { q: "Công thức cấu tạo của Rượu etylic (Ancol etylic) chứa nhóm chức đặc trưng nào?", options: ["Nhóm -OH (hydroxyl)", "Nhóm -COOH (carboxyl)", "Nhóm -CHO (anđehit)", "Nhóm -NH2 (amino)"], correct: "Nhóm -OH (hydroxyl)", type: "mc" },
+            { q: "Độ rượu (ví dụ: rượu 45°) được định nghĩa là gì?", options: ["Số ml rượu etylic nguyên chất có trong 100 ml hỗn hợp rượu với nước", "Số gam rượu etylic trong 100g nước", "Số ml nước có trong 100 ml rượu", "Khối lượng riêng của rượu"], correct: "Số ml rượu etylic nguyên chất có trong 100 ml hỗn hợp rượu với nước", type: "mc" },
+            { q: "Khi lên men giấm dung dịch rượu etylic loãng ở nhiệt độ phòng, ta thu được hợp chất nào?", options: ["Axit axetic (CH3COOH)", "Mêtan", "Etilen", "Glixerol"], correct: "Axit axetic (CH3COOH)", type: "mc" },
+            { q: "Phản ứng giữa Axit axetic (CH3COOH) và Rượu etylic (C2H5OH) xúc tác H2SO4 đặc tạo thành este có tên là?", options: ["Etyl axetat", "Mêtyl axetat", "Axetang", "Glycerol"], correct: "Etyl axetat", type: "mc" },
+            { q: "Nhóm chức đặc trưng gây nên tính axit của Axit axetic là nhóm nào?", options: ["-COOH (carboxyl)", "-OH (hydroxyl)", "-CHO", "-CO-"], correct: "-COOH (carboxyl)", type: "mc" },
+            { q: "Phản ứng thủy phân chất béo trong môi trường kiềm (đun nóng) tạo ra glixerol và xà phòng được gọi là?", options: ["Phản ứng xà phòng hóa", "Phản ứng tráng bạc", "Phản ứng trung hòa", "Phản ứng este hóa"], correct: "Phản ứng xà phòng hóa", type: "mc" },
+            { q: "Glucozơ - chất đường có nhiều trong quả chín (đặc biệt là quả nho) - có công thức phân tử là?", options: ["C6H12O6", "C12H22O11", "(C6H10O5)n", "C2H4O2"], correct: "C6H12O6", type: "mc" },
+            { q: "Để nhận biết dung dịch Glucozơ, người ta dùng phản ứng đặc trưng nào sau đây?", options: ["Phản ứng tráng bạc (tác dụng với AgNO3 trong dung dịch NH3)", "Phản ứng làm mất màu nước vôi trong", "Phản ứng đun sôi với axit", "Phản ứng sủi bọt khí với NaCl"], correct: "Phản ứng tráng bạc (tác dụng với AgNO3 trong dung dịch NH3)", type: "mc" },
+            { q: "Tinh bột và Xenlulozơ đều thuộc loại hợp chất hữu cơ nào?", options: ["Polisaccarit (Polime thiên nhiên)", "Monosaccarit", "Chất béo", "Protein"], correct: "Polisaccarit (Polime thiên nhiên)", type: "mc" },
+            { q: "Protein (Đạm) có đặc điểm tính chất nào sau đây khi bị đun nóng hoặc cho thêm axit/kiềm vào?", options: ["Bị đông tụ", "Bị hòa tan thành khí", "Biến thành đường glucozơ", "Không có thay đổi gì"], correct: "Bị đông tụ", type: "mc" }
+        ],
+       biology: [
+            { q: "Đối tượng thí nghiệm chủ yếu được Menđen sử dụng để phát hiện ra các quy luật di truyền là gì?", options: ["Ruồi giấm", "Đậu Hà Lan", "Chuột bạch", "Cây ngô"], correct: "Đậu Hà Lan", type: "mc" },
+            { q: "Phép lai phân tích là phép lai giữa cơ thể mang tính trạng trội cần xác định kiểu gen với?", options: ["Cơ thể mang tính trạng trội thuần chủng", "Cơ thể mang tính trạng lặn", "Cơ thể có kiểu gen dị hợp", "Chính cơ thể đó"], correct: "Cơ thể mang tính trạng lặn", type: "mc" },
+            { q: "Kiểu gen nào sau đây biểu hiện kiểu hình đồng hợp trội về 2 cặp gen?", options: ["AaBb", "AABB", "AAbb", "aaBB"], correct: "AABB", type: "mc" },
+            { q: "Cơ thể có kiểu gen AaBb khi giảm phân bình thường tạo ra bao nhiêu loại giao tử?", options: ["1 loại", "2 loại", "4 loại", "8 loại"], correct: "4 loại", type: "mc" },
+            { q: "Khi lai hai bố mẹ thuần chủng khác nhau về 1 cặp tính trạng tương phản, tỉ lệ kiểu hình thu được ở F2 theo Menđen là?", options: ["3 trội : 1 lặn", "1 trội : 1 lặn", "100% trội", "9 : 3 : 3 : 1"], correct: "3 trội : 1 lặn", type: "mc" },
+            { q: "Tỉ lệ phân phân li kiểu hình 9 : 3 : 3 : 1 xuất hiện trong phép lai nào của Menđen?", options: ["Lai 1 cặp tính trạng", "Lai 2 cặp tính trạng phân li độc lập", "Phép lai phân tích 1 cặp tính trạng", "Lai phân tích 2 cặp tính trạng"], correct: "Lai 2 cặp tính trạng phân li độc lập", type: "mc" },
+            { q: "Kết quả của phép lai Aa x aa thu được tỉ lệ kiểu hình ở thế hệ con là?", options: ["100% trội", "3 trội : 1 lặn", "1 trội : 1 lặn", "1 trội : 3 lặn"], correct: "1 trội : 1 lặn", type: "mc" },
+            { q: "Ruồi giấm được Moocgan sử dụng làm đối tượng nghiên cứu để phát hiện ra quy luật di truyền nào?", options: ["Quy luật phân li", "Quy luật phân li độc lập", "Di truyền liên kết", "Di truyền hoán vị"], correct: "Di truyền liên kết", type: "mc" },
+            { q: "Bộ nhiễm sắc thể (NST) lưỡng bội của loài người là bao nhiêu?", options: ["2n = 46", "2n = 48", "2n = 78", "2n = 8"], correct: "2n = 46", type: "mc" },
+            { q: "Ở người, cặp NST giới tính của nữ giới được kí hiệu là?", options: ["XY", "XX", "XO", "XXY"], correct: "XX", type: "mc" },
+            { q: "Sự tự nhân đôi của NST diễn ra ở kỳ nào trong quá trình phân bào?", options: ["Kỳ đầu", "Kỳ giữa", "Kỳ sau", "Kỳ trung gian"], correct: "Kỳ trung gian", type: "mc" },
+            { q: "Trong quá trình nguyên phân, các NST co xoắn cực đại và xếp thành 1 hàng trên mặt phẳng đạo xích ở kỳ nào?", options: ["Kỳ đầu", "Kỳ giữa", "Kỳ sau", "Kỳ cuối"], correct: "Kỳ giữa", type: "mc" },
+            { q: "Kết quả của quá trình giảm phân từ 1 tế bào mẹ (2n) tạo ra bao nhiêu tế bào con có bộ NST (n)?", options: ["2 tế bào con", "4 tế bào con", "8 tế bào con", "1 tế bào con"], correct: "4 tế bào con", type: "mc" },
+            { q: "Sự tiếp hợp và trao đổi chéo giữa các NST tương đồng xảy ra ở kỳ nào của giảm phân?", options: ["Kỳ đầu I", "Kỳ giữa I", "Kỳ đầu II", "Kỳ giữa II"], correct: "Kỳ đầu I", type: "mc" },
+            { q: "Loại tế bào nào trong cơ thể thực hiện quá trình giảm phân?", options: ["Tế bào sinh dưỡng", "Tế bào xôma", "Tế bào sinh dục thời kỳ chín", "Tế bào hợp tử"], correct: "Tế bào sinh dục thời kỳ chín", type: "mc" },
+            { q: "Phân tử ADN được cấu tạo từ các đơn phân là?", options: ["Axit amin", "Nuclêôtit", "Glucose", "Axit béo"], correct: "Nuclêôtit", type: "mc" },
+            { q: "Bốn loại nuclêôtit tham gia cấu tạo nên phân tử ADN là?", options: ["A, U, G, X", "A, T, G, X", "A, T, U, X", "T, U, G, X"], correct: "A, T, G, X", type: "mc" },
+            { q: "Theo nguyên tắc bổ sung trong cấu trúc ADN, nuclêôtit loại A liên kết với loại nào?", options: ["G", "X", "T", "U"], correct: "T", type: "mc" },
+            { q: "Điểm khác biệt về thành phần nuclêôtit của ARN so với ADN là ARN có chứa loại nuleotit nào?", options: ["Timin (T) thay cho Uraxin (U)", "Uraxin (U) thay cho Timin (T)", "Guanin (G) thay cho Xitôzin (X)", "Adenin (A) thay cho Timin (T)"], correct: "Uraxin (U) thay cho Timin (T)", type: "mc" },
+            { q: "Loại ARN nào đóng vai trò làm khuôn cho quá trình tổng hợp prôtêin?", options: ["mARN (ARN thông tin)", "tARN (ARN vận chuyển)", "rARN (ARN ribôxôm)", "cARN"], correct: "mARN (ARN thông tin)", type: "mc" },
+            { q: "Chức năng chính của tARN trong tế bào là gì?", options: ["Lưu trữ thông tin di truyền", "Vận chuyển axit amin đến ribôxôm", "Cấu tạo nên màng tế bào", "Xúc tác cho phản ứng hóa học"], correct: "Vận chuyển axit amin đến ribôxôm", type: "mc" },
+            { q: "Đơn phân cấu tạo nên phân tử prôtêin là gì?", options: ["Nuclêôtit", "Axit amin", "Axit béo", "Đường đơn"], correct: "Axit amin", type: "mc" },
+            { q: "Đột biến gen là những biến đổi xảy ra trong cấu trúc của?", options: ["Nhiễm sắc thể", "Phân tử ADN / Gen", "Tế bào chất", "Màng tế bào"], correct: "Phân tử ADN / Gen", type: "mc" },
+            { q: "Dạng đột biến gen nào sau đây KHÔNG làm thay đổi số lượng nuclêôtit của gen?", options: ["Mất một cặp nuclêôtit", "Thêm một cặp nuclêôtit", "Thay thế một cặp nuclêôtit", "Mất hai cặp nuclêôtit"], correct: "Thay thế một cặp nuclêôtit", type: "mc" },
+            { q: "Dạng đột biến cấu trúc NST nào làm giảm số lượng gen trên một NST?", options: ["Lặp đoạn", "Mất đoạn", "Đảo đoạn", "Chuyển đoạn"], correct: "Mất đoạn", type: "mc" },
+            { q: "Bệnh hoặc hội chứng nào ở người do biến đổi thừa 1 NST ở cặp số 21 (thể ba) gây ra?", options: ["Hội chứng Đao (Down)", "Hội chứng Tơcnơ (Turner)", "Bệnh bạch tạng", "Bệnh máu khó đông"], correct: "Hội chứng Đao (Down)", type: "mc" },
+            { q: "Hội chứng Tơcnơ ở nữ giới có bộ NST giới tính được ký hiệu là?", options: ["XXY", "XO", "XXX", "XYY"], correct: "XO", type: "mc" },
+            { q: "Thể đa bội là cơ thể có tế bào sinh dưỡng chứa bộ NST như thế nào?", options: ["Bội số của bộ đơn bội n (lớn hơn 2n như 3n, 4n,...)", "Thiếu 1 NST (2n - 1)", "Thừa 1 NST (2n + 1)", "Không thay đổi số lượng NST"], correct: "Bội số của bộ đơn bội n (lớn hơn 2n như 3n, 4n,...)", type: "mc" },
+            { q: "Thường biến là những biến đổi về?", options: ["Kiểu gen do tác động của môi trường", "Kiểu hình của cùng một kiểu gen trước môi trường thay đổi", "Cấu trúc nhiễm sắc thể", "Số lượng nhiễm sắc thể"], correct: "Kiểu hình của cùng một kiểu gen trước môi trường thay đổi", type: "mc" },
+            { q: "Đặc điểm nào sau đây là của thường biến?", options: ["Di truyền được cho thế hệ sau", "Xuất hiện riêng lẻ, không định hướng", "Không di truyền được", "Do biến đổi trong ADN"], correct: "Không di truyền được", type: "mc" },
+            { q: "Bệnh máu khó đông ở người di truyền do gen lặn nằm trên loại NST nào?", options: ["NST thường", "NST giới tính X", "NST giới tính Y", "Cả NST X và Y"], correct: "NST giới tính X", type: "mc" },
+            { q: "Phương pháp nghiên cứu di truyền nào giúp theo dõi sự di truyền của một tính trạng qua các thế hệ dòng họ ở người?", options: ["Nghiên cứu tế bào", "Nghiên cứu phả hệ", "Nghiên cứu trẻ đồng sinh", "Lai phân tích"], correct: "Nghiên cứu phả hệ", type: "mc" },
+            { q: "Hiện tượng con lai F1 có sức sống cao hơn, phát triển nhanh hơn bố mẹ thuần chủng gọi là gì?", options: ["Ưu thế lai", "Đột biến gen", "Thường biến", "Di truyền liên kết"], correct: "Ưu thế lai", type: "mc" },
+            { q: "Kỹ thuật gen là thao tác chủ động tác động vào ADN nhằm?", options: ["Thay đổi hình dạng tế bào", "Chuyển một đoạn ADN/gen từ tế bào cho sang tế bào nhận", "Tạo ra biến dị tổ hợp", "Tăng số lượng NST"], correct: "Chuyển một đoạn ADN/gen từ tế bào cho sang tế bào nhận", type: "mc" },
+            { q: "Sinh vật biến đổi gen (GMO) là sinh vật mà hệ gen của nó?", options: ["Bị thay đổi do thường biến", "Đã được làm biến đổi bằng công nghệ gen", "Có số lượng NST tăng gấp đôi", "Chỉ chứa gen của vi khuẩn"], correct: "Đã được làm biến đổi bằng công nghệ gen", type: "mc" },
+            { q: "Các nhân tố sinh thái được chia thành 2 nhóm chính là?", options: ["Nhân tố ánh sáng và nhiệt độ", "Nhân tố vô sinh và nhân tố hữu sinh", "Nhân tố con người và động vật", "Nhân tố đất và nước"], correct: "Nhân tố vô sinh và nhân tố hữu sinh", type: "mc" },
+            { q: "Nhân tố sinh thái nào sau đây được tách ra thành một nhóm nhân tố đặc biệt do có tác động mạnh mẽ đến môi trường?", options: ["Nhân tố thực vật", "Nhân tố khí hậu", "Nhân tố con người", "Nhân tố vi sinh vật"], correct: "Nhân tố con người", type: "mc" },
+            { q: "Giới hạn sinh thái là khoảng giá trị của một nhân tố sinh thái mà trong đó sinh vật?", options: ["Chết ngay lập tức", "Có thể tồn tại và phát triển theo thời gian", "Không bị ảnh hưởng bởi môi trường", "Sinh sản vô tính"], correct: "Có thể tồn tại và phát triển theo thời gian", type: "mc" },
+            { q: "Mối quan hệ giữa hai loài sinh vật cùng sống chung và cả hai loài đều có lợi gọi là quan hệ?", options: ["Cạnh tranh", "Ký sinh", "Cộng sinh", "Hội sinh"], correct: "Cộng sinh", type: "mc" },
+            { q: "Mối quan hệ giữa cây tầm gửi sống trên thân cây gỗ lớn là quan hệ?", options: ["Cộng sinh", "Ký sinh / Bán ký sinh", "Hội sinh", "Sinh vật này ăn sinh vật khác"], correct: "Ký sinh / Bán ký sinh", type: "mc" },
+            { q: "Tập hợp các cá thể cùng loài, cùng sống trong một khoảng không gian và thời gian nhất định gọi là?", options: ["Quần thể sinh vật", "Quần xã sinh vật", "Hệ sinh thái", "Biển sinh thái"], correct: "Quần thể sinh vật", type: "mc" },
+            { q: "Tập hợp nhiều quần thể thuộc các loài khác nhau cùng sống trong một không gian xác định tạo thành?", options: ["Quần thể sinh vật", "Quần xã sinh vật", "Dòng sinh học", "Nhóm cá thể"], correct: "Quần xã sinh vật", type: "mc" },
+            { q: "Một hệ sinh thái hoàn chỉnh bao gồm các thành phần chủ yếu nào?", options: ["Thành phần vô sinh và thành phần hữu sinh (Sinh vật sản xuất, tiêu thụ, phân giải)", "Chỉ gồm các loài thực vật và động vật", "Đất, nước, không khí và ánh sáng", "Sinh vật sản xuất và con người"], correct: "Thành phần vô sinh và thành phần hữu sinh (Sinh vật sản xuất, tiêu thụ, phân giải)", type: "mc" },
+            { q: "Trong một hệ sinh thái, sinh vật nào giữ vai trò là 'Sinh vật sản xuất'?", options: ["Động vật ăn cỏ", "Thực vật tự dưỡng (có diệp lục)", "Vi khuẩn phân giải", "Nấm"], correct: "Thực vật tự dưỡng (có diệp lục)", type: "mc" },
+            { q: "Sinh vật nào sau đây đóng vai trò là 'Sinh vật phân giải' trong hệ sinh thái?", options: ["Cây lúa", "Thỏ", "Vi khuẩn và nấm", "Hổ"], correct: "Vi khuẩn và nấm", type: "mc" },
+            { q: "Chuỗi thức ăn là một dãy gồm nhiều loài sinh vật có mối quan hệ với nhau về?", options: ["Nơi ở", "Dinh dưỡng (loài trước là thức ăn của loài sau)", "Sinh sản", "Hợp tác bảo vệ"], correct: "Dinh dưỡng (loài trước là thức ăn của loài sau)", type: "mc" },
+            { q: "Tháp sinh thái phản ánh điều gì trong chuỗi và lưới thức ăn?", options: ["Mức độ dinh dưỡng và năng lượng qua các bậc dinh dưỡng", "Số lượng cá thể chết đi", "Chiều cao của các loài thực vật", "Tốc độ di chuyển của động vật"], correct: "Mức độ dinh dưỡng và năng lượng qua các bậc dinh dưỡng", type: "mc" },
+            { q: "Hiện tượng hiệu ứng nhà kính gia tăng chủ yếu do sự tích tụ quá mức của khí nào trong khí quyển?", options: ["O2", "CO2 (Cacbon dioxit)", "N2", "H2"], correct: "CO2 (Cacbon dioxit)", type: "mc" },
+            { q: "Khí SO2 và NO2 xả ra từ các nhà máy hóa chất gặp nước mưa tạo ra hiện tượng gì nguy hại cho cây trồng?", options: ["Mưa axit", "Tuyết rơi", "Sương muối", "Triều cường"], correct: "Mưa axit", type: "mc" },
+            { q: "Biện pháp nào sau đây giúp bảo vệ tài nguyên rừng và đa dạng sinh học hiệu quả nhất?", options: ["Tăng cường đốt rừng làm nương rẫy", "Thành lập các khu bảo tồn thiên nhiên, vườn quốc gia", "Sử dụng nhiều thuốc trừ sâu hóa học", "Chặt phá cây rừng già"], correct: "Thành lập các khu bảo tồn thiên nhiên, vườn quốc gia", type: "mc" }
+        ],
+        literature: [
+            { q: "Tác giả của tác phẩm 'Chuyện người con gái Nam Xương' là ai?", options: ["Nguyễn Dữ", "Nguyễn Du", "Phạm Đình Hổ", "Ngô Gia Văn Phái"], correct: "Nguyễn Dữ", type: "mc" },
+            { q: "Nhân vật chính Vũ Nương trong 'Chuyện người con gái Nam Xương' có tên thật là gì?", options: ["Vũ Thị Thiết", "Vũ Thị Trinh", "Vũ Thị Dung", "Vũ Thị Mai"], correct: "Vũ Thị Thiết", type: "mc" },
+            { q: "Đoạn trích 'Chị em Thúy Kiều' nằm ở phần nào của tác phẩm 'Truyện Kiều'?", options: ["Gặp gỡ và đính ước", "Gia biến và lưu lạc", "Đoàn tụ", "Khởi đầu bi kịch"], correct: "Gặp gỡ và đính ước", type: "mc" },
+            { q: "Câu thơ 'Làn thu thủy nét xuân sơn' mô tả vẻ đẹp của nhân vật nào trong Truyện Kiều?", options: ["Thúy Kiều", "Thúy Vân", "Hoạn Thư", "Tú Bà"], correct: "Thúy Kiều", type: "mc" },
+            { q: "Đại danh nhân văn hóa thế giới, tác giả của 'Truyện Kiều' là ai?", options: ["Nguyễn Trãi", "Nguyễn Du", "Nguyễn Đình Chiểu", "Hồ Xuân Hương"], correct: "Nguyễn Du", type: "mc" },
+            { q: "Tác phẩm 'Hoàng Lê nhất thống chí' được viết bởi tập thể tác giả nào?", options: ["Ngô gia văn phái", "Nam hà văn phái", "Trịnh gia văn phái", "Nguyễn gia văn phái"], correct: "Ngô gia văn phái", type: "mc" },
+            { q: "Hình ảnh người anh hùng áo vải Quang Trung - Nguyễn Huệ được khắc họa lẫm liệt nhất trong tác phẩm nào?", options: ["Hoàng Lê nhất thống chí", "Chuyện cũ trong phủ chúa Trịnh", "Truyện Kiều", "Lục Vân Tiên"], correct: "Hoàng Lê nhất thống chí", type: "mc" },
+            { q: "Đoạn trích 'Lục Vân Tiên cứu Kiều Nguyệt Nga' thể hiện phẩm chất nổi bật nào của Lục Vân Tiên?", options: ["Trọng nghĩa khinh tài, dũng cảm", "Hiếu thảo với cha mẹ", "Yêu thiên nhiên sông nước", "Thích chu du thiên hạ"], correct: "Trọng nghĩa khinh tài, dũng cảm", type: "mc" },
+            { q: "Bài thơ 'Đồng chí' của nhà thơ Chính Hữu được sáng tác vào thời kỳ kháng chiến nào?", options: ["Kháng chiến chống Pháp", "Kháng chiến chống Mỹ", "Thời kỳ bao cấp", "Thời kỳ đổi mới"], correct: "Kháng chiến chống Pháp", type: "mc" },
+            { q: "Hình ảnh biểu tượng tuyệt đẹp 'Đầu súng trăng treo' xuất hiện trong bài thơ nào?", options: ["Đồng chí", "Bài thơ về tiểu đội xe không kính", "Bếp lửa", "Ánh trăng"], correct: "Đồng chí", type: "mc" },
+            { q: "Tác giả của bài thơ 'Bài thơ về tiểu đội xe không kính' là ai?", options: ["Phạm Tiến Duật", "Chính Hữu", "Bằng Việt", "Nguyễn Duy"], correct: "Phạm Tiến Duật", type: "mc" },
+            { q: "Hình ảnh những chiếc xe không kính trong thơ Phạm Tiến Duật tượng trưng cho điều gì?", options: ["Sự khốc liệt của chiến tranh và tinh thần hiên ngang của bộ đội", "Sự thiếu thốn vật chất thời bao cấp", "Tài năng lái xe lãng mạn của người lính", "Sự tàn phá của thiên nhiên miền Trung"], correct: "Sự khốc liệt của chiến tranh và tinh thần hiên ngang của bộ đội", type: "mc" },
+            { q: "Bài thơ 'Bếp lửa' của Bằng Việt gợi lại kỷ niệm ấm áp giữa tác giả và người nào?", options: ["Người bà", "Người mẹ", "Người cha", "Người chị"], correct: "Người bà", type: "mc" },
+            { q: "Hình ảnh bếp lửa trong bài thơ cùng tên mang ý nghĩa biểu tượng cho điều gì?", options: ["Tình cảm gia đình sâu nặng và tình yêu quê hương đất nước", "Cuộc sống gian khổ nghèo khó", "Hình ảnh bếp ăn tập thể thời chiến", "Lửa trại thời niên thiếu"], correct: "Tình cảm gia đình sâu nặng và tình yêu quê hương đất nước", type: "mc" },
+            { q: "Bài thơ 'Ánh trăng' của Nguyễn Duy nhắc nhở con người bài học đạo lý nào?", options: ["Uống nước nhớ nguồn, không quên quá khứ tình nghĩa", "Tình yêu thương động vật", "Kính trọng thầy cô giáo", "Lao động là vinh quang"], correct: "Uống nước nhớ nguồn, không quên quá khứ tình nghĩa", type: "mc" },
+            { q: "Tác giả của truyện ngắn 'Làng' là ai?", options: ["Kim Lân", "Nguyễn Thành Long", "Nguyễn Quang Sáng", "Lê Minh Khuê"], correct: "Kim Lân", type: "mc" },
+            { q: "Tình cảm nổi bật nhất của nhân vật ông Hai trong truyện ngắn 'Làng' là gì?", options: ["Tình yêu làng hòa quyện với tình yêu nước và kháng chiến", "Tình yêu thương con cái sâu sắc", "Lòng tự trọng của người nông dân", "Tình làng nghĩa xóm gắn bó"], correct: "Tình yêu làng hòa quyện với tình yêu nước và kháng chiến", type: "mc" },
+            { q: "Tác phẩm 'Lặng lẽ Sa Pa' của Nguyễn Thành Long được viết sau chuyến đi thực tế nào?", options: ["Chuyến đi Lào Cai năm 1970", "Chuyến đi Quảng Ninh năm 1965", "Chuyến đi Tây Nguyên năm 1975", "Chuyến đi Điện Biên năm 1954"], correct: "Chuyến đi Lào Cai năm 1970", type: "mc" },
+            { q: "Nhân vật anh thanh niên trong 'Lặng lẽ Sa Pa' làm công việc gì trên đỉnh Yên Sơn?", options: ["Công tác khí tượng kiêm vật lý địa cầu", "Trồng hoa và nuôi gà", "Đào mỏ khoáng sản", "Bảo vệ rừng quốc gia"], correct: "Công tác khí tượng kiêm vật lý địa cầu", type: "mc" },
+            { q: "Tác giả của truyện ngắn 'Chiếc lược ngà' là ai?", options: ["Nguyễn Quang Sáng", "Nguyễn Minh Châu", "Kim Lân", "Lê Minh Khuê"], correct: "Nguyễn Quang Sáng", type: "mc" },
+            { q: "Kỉ vật thiêng liêng mà ông Sáu làm tặng bé Thu trước khi hy sinh là gì?", options: ["Chiếc lược làm bằng ngà voi", "Chiếc khăn thêu hoa", "Chiếc dây chuyền bằng bạc", "Bức tranh vẽ hình bé Thu"], correct: "Chiếc lược làm bằng ngà voi", type: "mc" },
+            { q: "Bài thơ 'Mùa xuân nho nhỏ' được nhà thơ Thanh Hải sáng tác trong hoàn cảnh nào?", options: ["Khi đang nằm trên giường bệnh trước khi qua đời", "Khi đất nước vừa giải phóng năm 1975", "Trong chiến khu Việt Bắc", "Khi đi thăm miền Bắc năm 1969"], correct: "Khi đang nằm trên giường bệnh trước khi qua đời", type: "mc" },
+            { q: "Nhà thơ Viễn Phương là tác giả của bài thơ nổi tiếng nào?", options: ["Viếng lăng Bác", "Sang thu", "Mùa xuân nho nhỏ", "Nói với con"], correct: "Viếng lăng Bác", type: "mc" },
+            { q: "Câu thơ 'Ngày ngày mặt trời đi qua trên lăng / Thấy một mặt trời trong lăng rất đỏ' sử dụng biện pháp nghệ thuật gì?", options: ["Ẩn dụ", "So sánh", "Hoán dụ", "Nói giảm nói tránh"], correct: "Ẩn dụ", type: "mc" },
+            { q: "Tác giả của bài thơ 'Sang thu' là ai?", options: ["Hữu Thỉnh", "Thanh Hải", "Y Phương", "Viễn Phương"], correct: "Hữu Thỉnh", type: "mc" },
+            { q: "Tín hiệu đầu tiên báo mùa thu về được nhà thơ Hữu Thỉnh nhận ra là gì?", options: ["Hương ổi chín phả vào trong gió heo mây", "Lá vàng rơi ngập sân", "Tiếng ve ve kêu rộn rã", "Hoa cúc nở vàng rực"], correct: "Hương ổi chín phả vào trong gió heo mây", type: "mc" },
+            { q: "Bài thơ 'Nói với con' của Y Phương thể hiện điều gì sâu sắc?", options: ["Tình cha con tha thiết và lời dặn dò giữ gìn bản sắc truyền thống người đồng mình", "Tình mẫu tử thiêng liêng", "Tình thầy trò gắn bó", "Tình đồng đội sâu nặng"], correct: "Tình cha con tha thiết và lời dặn dò giữ gìn bản sắc truyền thống người đồng mình", type: "mc" },
+            { q: "Nhà thơ Y Phương - tác giả bài thơ 'Nói với con' - thuộc dân tộc nào?", options: ["Tày", "Nùng", "Mường", "Thái"], correct: "Tày", type: "mc" },
+            { q: "Bài thơ 'Mây và sóng' là tác phẩm của nhà thơ đoạt giải Nobel nào?", options: ["R. Tagore (Ấn Độ)", "Đê-phô (Anh)", "Mo-pa-xăng (Pháp)", "Giắc Lân-đơn (Mỹ)"], correct: "R. Tagore (Ấn Độ)", type: "mc" },
+            { q: "Tác giả của truyện ngắn 'Những ngôi sao xa xôi' là ai?", options: ["Lê Minh Khuê", "Nguyễn Thi", "Anh Đức", "Lê Anh Xuân"], correct: "Lê Minh Khuê", type: "mc" },
+            { q: "Nhiệm vụ của 3 nữ thanh niên xung phong trong 'Những ngôi sao xa xôi' trên cao điểm là gì?", options: ["Trinh sát mặt đường và phá bom", "Nấu ăn cho trung đoàn", "Tải đạn và cứu thương", "Lái xe tải trên đường Trường Sơn"], correct: "Trinh sát mặt đường và phá bom", type: "mc" },
+            { q: "Nhân vật xưng 'tôi' kể lại câu chuyện trong 'Những ngôi sao xa xôi' là ai?", options: ["Phương Định", "Nịnh", "Thao", "Chị Thao"], correct: "Phương Định", type: "mc" },
+            { q: "Thành phần đứng trước chủ ngữ để nêu lên đề tài được nói đến trong câu gọi là gì?", options: ["Khởi ngữ", "Trạng ngữ", "Thành phần phụ chú", "Thành phần biệt lập"], correct: "Khởi ngữ", type: "mc" },
+            { q: "Thành phần biệt lập nào được dùng để thể hiện cách nhìn của người nói đối với sự việc được nói đến trong câu?", options: ["Thành phần tình thái", "Thành phần cảm thán", "Thành phần gọi - đáp", "Thành phần phụ chú"], correct: "Thành phần tình thái", type: "mc" },
+            { q: "Trong câu 'Chao ôi, bắt đầu mưa rồi!', từ 'Chao ôi' thuộc thành phần biệt lập nào?", options: ["Thành phần cảm thán", "Thành phần tình thái", "Thành phần gọi - đáp", "Thành phần phụ chú"], correct: "Thành phần cảm thán", type: "mc" },
+            { q: "Thành phần biệt lập dùng để tạo lập hoặc duy trì quan hệ giao tiếp gọi là gì?", options: ["Thành phần gọi - đáp", "Thành phần tình thái", "Thành phần phụ chú", "Thành phần cảm thán"], correct: "Thành phần gọi - đáp", type: "mc" },
+            { q: "Thành phần biệt lập dùng để bổ sung một số chi tiết cho nội dung chính của câu gọi là gì?", options: ["Thành phần phụ chú", "Thành phần tình thái", "Thành phần cảm thán", "Khởi ngữ"], correct: "Thành phần phụ chú", type: "mc" },
+            { q: "Phép liên kết lặp lại ở câu sau những từ ngữ đã có ở câu trước gọi là phép liên kết gì?", options: ["Phép lặp từ ngữ", "Phép thế", "Phép nối", "Phép liên tưởng"], correct: "Phép lặp từ ngữ", type: "mc" },
+            { q: "Phép liên kết sử dụng các từ ngữ có tác dụng thay thế từ ngữ ở câu trước gọi là gì?", options: ["Phép thế", "Phép lặp", "Phép nối", "Phép trái nghĩa"], correct: "Phép thế", type: "mc" },
+            { q: "Khi giao tiếp, cần nói đúng vào đề tài giao tiếp, tránh nói lạc đề là tuân thủ phương châm nào?", options: ["Phương châm quan hệ", "Phương châm lượng", "Phương châm chất", "Phương châm cách thức"], correct: "Phương châm quan hệ", type: "mc" },
+            { q: "Phương châm giao tiếp yêu cầu 'không nói những điều mà mình tin là không đúng hoặc không có căn cứ xác thực' là?", options: ["Phương châm về chất", "Phương châm về lượng", "Phương châm lịch sự", "Phương châm cách thức"], correct: "Phương châm về chất", type: "mc" },
+            { q: "Phương châm giao tiếp yêu cầu 'nói ngắn gọn, rành mạch, tránh nói mơ hồ' là?", options: ["Phương châm cách thức", "Phương châm quan hệ", "Phương châm về lượng", "Phương châm về chất"], correct: "Phương châm cách thức", type: "mc" },
+            { q: "Phương châm lịch sự trong giao tiếp đòi hỏi người giao tiếp phải?", options: ["Tế nhị và tôn trọng người khác", "Nói thật nhiều thông tin", "Chỉ dùng từ ngữ Hán Việt", "Nói thật ngắn gọn"], correct: "Tế nhị và tôn trọng người khác", type: "mc" },
+            { q: "Tác phẩm 'Bến quê' là sáng tác của nhà văn nào?", options: ["Nguyễn Minh Châu", "Nguyễn Thành Long", "Lê Minh Khuê", "Nguyễn Quang Sáng"], correct: "Nguyễn Minh Châu", type: "mc" },
+            { q: "Nhân vật Nhĩ trong tác phẩm 'Bến quê' nhận ra điều gì ở cuối đời?", options: ["Vẻ đẹp bình dị của quê hương và những trớ trêu vòng vèo trong đời người", "Tầm quan trọng của tiền tài vật chất", "Sự bao la của biển cả", "Khao khát được đi du lịch nước ngoài"], correct: "Vẻ đẹp bình dị của quê hương và những trớ trêu vòng vèo trong đời người", type: "mc" },
+            { q: "Tác phẩm 'Truyện Kiều' nguyên bản được sáng tác bằng loại chữ nào?", options: ["Chữ Nôm", "Chữ Quốc ngữ", "Chữ Hán", "Chữ Phạn"], correct: "Chữ Nôm", type: "mc" },
+            { q: "Thể thơ dân tộc được Nguyễn Du sử dụng xuất sắc trong 'Truyện Kiều' là thể thơ gì?", options: ["Lục bát", "Song thất lục bát", "Thất ngôn bát cú", "Tự do"], correct: "Lục bát", type: "mc" },
+            { q: "Tác phẩm nghị luận 'Tiếng nói của văn nghệ' là của nhà văn/nhà lý luận nào?", options: ["Nguyễn Đình Thi", "Vũ Khoan", "Hoài Thanh", "Đặng Thai Mai"], correct: "Nguyễn Đình Thi", type: "mc" },
+            { q: "Đoạn trích 'Con chó Bấc' được trích từ tiểu thuyết nổi tiếng nào của Giắc Lân-đơn?", options: ["Tiếng gọi nơi hoang dã", "Nanh trắng", "Mặt trời mọc", "Người cừu"], correct: "Tiếng gọi nơi hoang dã", type: "mc" },
+            { q: "Tác phẩm 'Bố của Xi-mông' là của nhà văn nước nào?", options: ["Pháp (Ghi đơ Mô-pa-xăng)", "Mỹ (Giắc Lân-đơn)", "Nga (Lép Tôn-stôi)", "Anh (Đê-phô)"], correct: "Pháp (Ghi đơ Mô-pa-xăng)", type: "mc" }
+        ],
+        english: [
+            { q: "She turned ______ the new job offer because the salary was too low.", options: ["down", "up", "on", "off"], correct: "down", type: "mc" },
+            { q: "The artisanal craft of pottery has been passed ______ from generation to generation.", options: ["down", "on", "over", "up"], correct: "down", type: "mc" },
+            { q: "We should ______ the bus early tomorrow morning to avoid traffic jams.", options: ["set off", "get off", "take off", "turn off"], correct: "set off", type: "mc" },
+            { q: "My sister is responsible for looking ______ our elderly grandparents when my parents are away.", options: ["after", "for", "at", "up"], correct: "after", type: "mc" },
+            { q: "Ha Long Bay is one of the most famous natural ______ of Vietnam.", options: ["wonders", "features", "landscapes", "places"], correct: "wonders", type: "mc" },
+            { q: "It is important to maintain a healthy balance between work and ______.", options: ["leisure", "pressure", "stress", "task"], correct: "leisure", type: "mc" },
+            { q: "English is widely used as a global ______ of communication.", options: ["means", "method", "tool", "way"], correct: "means", type: "mc" },
+            { q: "The government is trying to find ways to ______ with urban pollution.", options: ["deal", "cope", "solve", "handle"], correct: "deal", type: "mc" },
+            { q: "I am not sure how to ______ this difficult math problem. Can you help me?", options: ["solve", "make", "do", "find"], correct: "solve", type: "mc" },
+            { q: "Bat Trang is a famous ______ village in Hanoi known for its ceramics.", options: ["craft", "art", "tradition", "culture"], correct: "craft", type: "mc" },
+            { q: "I wish I ______ more time to practice speaking English every day.", options: ["had", "have", "will have", "have had"], correct: "had", type: "mc" },
+            { q: "She wishes she ______ travel to Japan next summer.", options: ["could", "can", "will", "is able to"], correct: "could", type: "mc" },
+            { q: "If it ______ tomorrow, we will go on a picnic in the park.", options: ["doesn't rain", "didn't rain", "won't rain", "isn't raining"], correct: "doesn't rain", type: "mc" },
+            { q: "If I ______ you, I would take that training course immediately.", options: ["were", "am", "was", "will be"], correct: "were", type: "mc" },
+            { q: "If we plant more trees, the air in our city ______ much cleaner.", options: ["will become", "became", "would become", "becomes"], correct: "will become", type: "mc" },
+            { q: "He wishes he ______ enough money to buy a new laptop right now.", options: ["had", "has", "will have", "would have"], correct: "had", type: "mc" },
+            { q: "If she ______ harder, she would pass the entrance examination easily.", options: ["studied", "studies", "has studied", "will study"], correct: "studied", type: "mc" },
+            { q: "They wish they ______ live in a noisy and crowded city anymore.", options: ["didn't have to", "don't have to", "won't have to", "haven't to"], correct: "didn't have to", type: "mc" },
+            { q: "What would you do if you ______ a million dollars in a lottery?", options: ["won", "win", "will win", "have won"], correct: "won", type: "mc" },
+            { q: "If you don't hurry up, you ______ late for school.", options: ["will be", "would be", "were", "are"], correct: "will be", type: "mc" },
+            { q: "The new bridge ______ by the local government last year.", options: ["was built", "is built", "built", "has been built"], correct: "was built", type: "mc" },
+            { q: "A lot of trees ______ along the streets of our city every spring.", options: ["are planted", "were planted", "plant", "have planted"], correct: "are planted", type: "mc" },
+            { q: "This old house needs to ______ before we move in.", options: ["be painted", "paint", "painted", "painting"], correct: "be painted", type: "mc" },
+            { q: "He said that he ______ visiting the museum the following weekend.", options: ["was thinking of", "is thinking of", "thinks of", "thought of"], correct: "was thinking of", type: "mc" },
+            { q: "Nam asked me where I ______ from.", options: ["came", "come", "have come", "will come"], correct: "came", type: "mc" },
+            { q: "The teacher told us ______ noise in the reading room.", options: ["not to make", "don't make", "to not make", "not making"], correct: "not to make", type: "mc" },
+            { q: "She told me that she ______ French at that moment.", options: ["was learning", "is learning", "learnt", "has learnt"], correct: "was learning", type: "mc" },
+            { q: "English ______ as an official language in many countries around the world.", options: ["is spoken", "speaks", "was spoken", "is speaking"], correct: "is spoken", type: "mc" },
+            { q: "Peter said that he would finish his homework ______.", options: ["the following day", "tomorrow", "the previous day", "yesterday"], correct: "the following day", type: "mc" },
+            { q: "The historic monument ______ by thousands of tourists every month.", options: ["is visited", "was visited", "visits", "has visited"], correct: "is visited", type: "mc" },
+            { q: "The girl ______ won the first prize in the singing contest is my classmate.", options: ["who", "which", "whom", "whose"], correct: "who", type: "mc" },
+            { q: "The book ______ you lent me yesterday is very interesting.", options: ["which", "who", "whom", "where"], correct: "which", type: "mc" },
+            { q: "Do you know the reason ______ he was absent from school yesterday?", options: ["why", "where", "which", "when"], correct: "why", type: "mc" },
+            { q: "This is the peaceful town ______ I was born and grew up.", options: ["where", "which", "that", "whose"], correct: "where", type: "mc" },
+            { q: "I suggest ______ public transport to reduce air pollution.", options: ["using", "to use", "use", "used"], correct: "using", type: "mc" },
+            { q: "The doctor suggested that he ______ more fresh vegetables in his daily meals.", options: ["should eat", "eats", "ate", "eating"], correct: "should eat", type: "mc" },
+            { q: "It is important ______ young people to preserve traditional cultural values.", options: ["for", "to", "with", "of"], correct: "for", type: "mc" },
+            { q: "Although he was tired, he ______ to complete his assignment on time.", options: ["managed", "failed", "refused", "avoided"], correct: "managed", type: "mc" },
+            { q: "She studied very hard ______ she could pass the high school entrance exam.", options: ["so that", "because", "although", "in order to"], correct: "so that", type: "mc" },
+            { q: "______ having a severe headache, Minh went to school to take the test.", options: ["In spite of", "Because of", "Although", "Despite of"], correct: "In spite of", type: "mc" },
+            { q: "The student ______ bike was stolen yesterday reported it to the police.", options: ["whose", "who", "which", "whom"], correct: "whose", type: "mc" },
+            { q: "Life in the countryside is much ______ than life in a big city.", options: ["more peaceful", "peacefuler", "as peaceful", "most peaceful"], correct: "more peaceful", type: "mc" },
+            { q: "Lan enjoys ______ traditional handicrafts in her free time.", options: ["making", "to make", "make", "made"], correct: "making", type: "mc" },
+            { q: "You should ______ up early every morning to do physical exercise.", options: ["get", "getting", "got", "to get"], correct: "get", type: "mc" },
+            { q: "Tom: 'Thank you for helping me with my project.' - Mary: '______'", options: ["You're welcome.", "No, thanks.", "Yes, I agree.", "I'd love to."], correct: "You're welcome.", type: "mc" },
+            { q: "Mai: 'How about going to the cinema this weekend?' - Nam: '______'", options: ["That sounds great!", "Yes, I am.", "No, I don't.", "You are right."], correct: "That sounds great!", type: "mc" },
+            { q: "Which word has the underlined part pronounced differently?", options: ["chemist", "cheap", "child", "chair"], correct: "chemist", type: "mc" },
+            { q: "Which word has the underlined part ('ed') pronounced differently?", options: ["played", "wanted", "decided", "needed"], correct: "played", type: "mc" },
+            { q: "Which word has a different stress pattern from the others?", options: ["decide", "famous", "village", "culture"], correct: "decide", type: "mc" },
+            { q: "The artisan spent three months ______ this intricate wooden sculpture.", options: ["carving", "to carve", "carve", "carved"], correct: "carving", type: "mc" }
+        ],
+        gddp: [
+            { q: "Tỉnh Sóc Trăng thuộc vùng địa lý nào của Việt Nam?", options: ["Đồng bằng sông Cửu Long", "Đông Nam Bộ", "Tây Nguyên", "Duyên hải Nam Trung Bộ"], correct: "Đồng bằng sông Cửu Long", type: "mc" },
+            { q: "Sóc Trăng tiếp giáp với vùng biển nào sau đây?", options: ["Biển Đông", "Vịnh Thái Lan", "Biển Hoa Nam", "Vịnh Bắc Bộ"], correct: "Biển Đông", type: "mc" },
+            { q: "Đường bờ biển của tỉnh Sóc Trăng có chiều dài khoảng bao nhiêu km?", options: ["Khoảng 72 km", "Khoảng 100 km", "Khoảng 50 km", "Khoảng 120 km"], correct: "Khoảng 72 km", type: "mc" },
+            { q: "Tính đến nay, tỉnh Sóc Trăng có bao nhiêu đơn vị hành chính cấp huyện?", options: ["11 (1 thành phố, 2 thị xã, 8 huyện)", "9 (1 thành phố, 8 huyện)", "10 (2 thành phố, 8 huyện)", "12 (1 thành phố, 3 thị xã, 8 huyện)"], correct: "11 (1 thành phố, 2 thị xã, 8 huyện)", type: "mc" },
+            { q: "Huyện cù lao duy nhất nằm trọn trên sông Hậu của tỉnh Sóc Trăng là huyện nào?", options: ["Cù Lao Dung", "Kế Sách", "Long Phú", "Trần Đề"], correct: "Cù Lao Dung", type: "mc" },
+            { q: "Thị xã nào của tỉnh Sóc Trăng nổi tiếng là thủ phủ trồng 'hành tím' và nuôi tôm xuất khẩu?", options: ["Thị xã Vĩnh Châu", "Thị xã Ngã Năm", "Thành phố Sóc Trăng", "Huyện Mỹ Xuyên"], correct: "Thị xã Vĩnh Châu", type: "mc" },
+            { q: "Huyện nào ở Sóc Trăng nổi tiếng với các vườn cây ăn trái phong phú như bưởi Năm Roi, nhãn, vú sữa?", options: ["Kế Sách", "Thạnh Trị", "Mỹ Tú", "Châu Thành"], correct: "Kế Sách", type: "mc" },
+            { q: "Cảng biển nước sâu đang được định hướng quy hoạch phát triển thành cảng cửa ngõ vùng ĐBSCL tại Sóc Trăng là cảng nào?", options: ["Cảng Trần Đề", "Cảng Đại Ngãi", "Cảng Vĩnh Châu", "Cảng Ngã Năm"], correct: "Cảng Trần Đề", type: "mc" },
+            { q: "Hai cửa sông lớn của hệ thống sông Cửu Long đổ ra biển Đông nằm trên địa bàn tỉnh Sóc Trăng là?", options: ["Cửa Định An và cửa Trần Đề", "Cửa Cung Hầu và cửa Cổ Chiên", "Cửa Bát Xắc và cửa Tiền Giang", "Cửa Soài Ráp và cửa Tiểu"], correct: "Cửa Định An và cửa Trần Đề", type: "mc" },
+            { q: "Loại rừng đặc trưng ở khu vực ven biển Sóc Trăng có vai trò quan trọng trong việc phòng hộ và chống sạt lở là?", options: ["Rừng ngập mặn (mắm, đước)", "Rừng tràm phèn", "Rừng nguyên sinh", "Rừng rậm nhiệt đới"], correct: "Rừng ngập mặn (mắm, đước)", type: "mc" },
+            { q: "Khí hậu tỉnh Sóc Trăng mang đặc điểm chính nào sau đây?", options: ["Nhiệt đới gió mùa, có 2 mùa mưa và khô rõ rệt", "Ôn đới hải dương, mát mẻ quanh năm", "Nhiệt đới khô hạn quanh năm", "Cận nhiệt đới có mùa đông lạnh"], correct: "Nhiệt đới gió mùa, có 2 mùa mưa và khô rõ rệt", type: "mc" },
+            { q: "Giống lúa nổi tiếng của Sóc Trăng từng đạt giải 'Lúa ngon nhất thế giới' do kỹ sư Hồ Quang Cua cùng các cộng sự nghiên cứu là?", options: ["ST25", "ST5", "Nàng Hoa 9", "RVT"], correct: "ST25", type: "mc" },
+            { q: "Nguồn năng lượng sạch, năng lượng tái tạo đang được phát triển mạnh mẽ tại vùng duyên hải Sóc Trăng là?", options: ["Điện gió", "Điện hạt nhân", "Nhiệt điện than", "Thủy điện"], correct: "Điện gió", type: "mc" },
+            { q: "Ngành kinh tế mũi nhọn trong lĩnh vực thủy sản của tỉnh Sóc Trăng là?", options: ["Nuôi trồng và chế biến tôm xuất khẩu", "Đánh bắt cá ngừ đại dương", "Nuôi cá hồi nước lạnh", "Nuôi ngọc trai"], correct: "Nuôi trồng và chế biến tôm xuất khẩu", type: "mc" },
+            { q: "Chợ nổi nổi tiếng nào ở Sóc Trăng là nơi giao thương hàng hóa đường thủy sầm uất đi vào lịch sử và ca dao?", options: ["Chợ nổi Ngã Năm", "Chợ nổi Cái Răng", "Chợ nổi Phụng Hiệp", "Chợ nổi Ngã Bảy"], correct: "Chợ nổi Ngã Năm", type: "mc" },
+            { q: "Huyện Mỹ Xuyên của tỉnh Sóc Trăng rất nổi tiếng với mô hình sản xuất nông nghiệp thông minh, bền vững nào?", options: ["Mô hình sản xuất Lúa - Tôm", "Mô hình Trồng nho - Chăn nuôi bò", "Mô hình Cây ăn trái - Cá tầm", "Mô hình Trồng dâu - Nuôi tằm"], correct: "Mô hình sản xuất Lúa - Tôm", type: "mc" },
+            { q: "Tuyến giao thông đường thủy quan trọng kết nối đất liền Sóc Trăng với huyện đảo Côn Đảo khởi hành từ cảng nào?", options: ["Cảng Trần Đề", "Cảng Đại Ngãi", "Cảng Ngã Năm", "Cảng An Thạnh Nhất"], correct: "Cảng Trần Đề", type: "mc" },
+            { q: "Di tích lịch sử sinh thái Khu Căn cứ Tỉnh ủy Sóc Trăng thời kháng chiến chống Mỹ nằm ở địa danh nào?", options: ["Khu căn cứ Tràm Mỹ Phước (Mỹ Tú)", "Rừng tràm Mỹ Xuyên", "Cù Lao Dung", "Căn cứ Cái Trầu (Kế Sách)"], correct: "Khu căn cứ Tràm Mỹ Phước (Mỹ Tú)", type: "mc" },
+            { q: "Đền thờ Chủ tịch Hồ Chí Minh nổi tiếng tại Sóc Trăng do nhân dân tự dựng nên từ thời kháng chiến thuộc huyện nào?", options: ["Huyện Cù Lao Dung", "Huyện Thạnh Trị", "Huyện Châu Thành", "Huyện Long Phú"], correct: "Huyện Cù Lao Dung", type: "mc" },
+            { q: "Trong phong trào Khởi nghĩa Nam Kỳ (11/1940), cuộc khởi nghĩa nổ ra mạnh mẽ nhất tại Sóc Trăng ở địa phương nào?", options: ["Làng Hòa Tú (nay thuộc huyện Mỹ Xuyên)", "Thị xã Ngã Năm", "Xã An Thạnh Nhất", "Làng Phong Nẫm"], correct: "Làng Hòa Tú (nay thuộc huyện Mỹ Xuyên)", type: "mc" },
+            { q: "Chi bộ Đảng Cộng sản đầu tiên của tỉnh Sóc Trăng được thành lập vào năm 1930 tại đâu?", options: ["Làng Mỹ Xuyên (huyện Mỹ Xuyên)", "Thành phố Sóc Trăng", "Huyện Kế Sách", "Huyện Long Phú"], correct: "Làng Mỹ Xuyên (huyện Mỹ Xuyên)", type: "mc" },
+            { q: "Tên gọi địa danh 'Sóc Trăng' có nguồn gốc từ tiếng Khmer là 'Srok Kh'leang', mang ý nghĩa là gì?", options: ["Xứ có kho chứa bạc/kho lương thực của vua", "Vùng đất trồng nhiều lúa thơm", "Xứ sở của những ngôi chùa", "Vùng đất ven biển rợp bóng cây"], correct: "Xứ có kho chứa bạc/kho lương thực của vua", type: "mc" },
+            { q: "Sự kiện lịch sử đón đoàn tù chính trị từ Côn Đảo trở về đất liền năm 1945 tại Sóc Trăng diễn ra ở bến sông nào?", options: ["Bến Đại Ngãi (huyện Long Phú)", "Bến phà Kế Sách", "Cảng Trần Đề", "Bến đò Bãi Xào"], correct: "Bến Đại Ngãi (huyện Long Phú)", type: "mc" },
+            { q: "Giáo sư, Bác sĩ, Nhà nông học trứ danh quê ở Sóc Trăng - người có công lớn lai tạo nhiều giống lúa năng suất cao là ai?", options: ["Lương Định Của", "Sơn Nam", "Ngô Gia Hy", "Trương Vĩnh Ký"], correct: "Lương Định Của", type: "mc" },
+            { q: "Sóc Trăng là nơi hội tụ và giao thoa văn hóa đặc sắc của 3 dân tộc anh em chính nào?", options: ["Kinh, Khmer, Hoa", "Kinh, Tày, Nùng", "Kinh, Cham, Raglai", "Kinh, Hoa, Chăm"], correct: "Kinh, Khmer, Hoa", type: "mc" },
+            { q: "Lễ hội truyền thống lớn nhất của người Khmer Sóc Trăng được công nhận là Di sản văn hóa phi vật thể quốc gia là lễ hội nào?", options: ["Lễ hội Oóc Om Bóc - Đua ghe Ngo", "Lễ hội Chôl Chnăm Thmây", "Lễ Sene Đôl Ta", "Lễ Kỳ Yên"], correct: "Lễ hội Oóc Om Bóc - Đua ghe Ngo", type: "mc" },
+            { q: "Môn thể thao sông nước truyền thống sôi động và thu hút đông đảo du khách nhất trong lễ hội Oóc Om Bóc ở Sóc Trăng là gì?", options: ["Đua ghe Ngo", "Đua thuyền rồng", "Bơi thúng", "Đua thuyền kayak"], correct: "Đua ghe Ngo", type: "mc" },
+            { q: "Ngôi chùa nổi tiếng tại TP. Sóc Trăng có hàng ngàn con dơi tự nhiên sinh sống trú ngụ là chùa nào?", options: ["Chùa Dơi (Chùa Mã Tộc / Serêy Têchô Mahātup)", "Chùa Đất Sét", "Chùa Chén Kiểu", "Chùa Kh'leang"], correct: "Chùa Dơi (Chùa Mã Tộc / Serêy Têchô Mahātup)", type: "mc" },
+            { q: "Ngôi chùa ở TP. Sóc Trăng nổi tiếng với hàng ngàn pho tượng lớn nhỏ và các công trình được tạo tác hoàn toàn bằng đất sét là?", options: ["Chùa Đất Sét (Bửu Sơn Tự)", "Chùa Dơi", "Chùa La Hán", "Chùa Quan Âm Linh Ứng"], correct: "Chùa Đất Sét (Bửu Sơn Tự)", type: "mc" },
+            { q: "Ngôi chùa Khmer cổ nhất tại TP. Sóc Trăng, có kiến trúc độc đáo và từng lưu giữ nhiều kinh sách viết trên lá buông là?", options: ["Chùa Kh'leang", "Chùa Sà Lôn", "Chùa Som Rông", "Chùa Bốt Tum Vong"], correct: "Chùa Kh'leang", type: "mc" },
+            { q: "Chùa Sà Lôn tại huyện Mỹ Xuyên còn có tên gọi dân dã nổi tiếng khác dựa trên vật liệu trang trí chùa là gì?", options: ["Chùa Chén Kiểu", "Chùa Vàng", "Chùa Đất Sét", "Chùa Đá"], correct: "Chùa Chén Kiểu", type: "mc" },
+            { q: "Loại hình nghệ thuật sân khấu cổ truyền độc đáo của người Khmer Sóc Trăng được công nhận là Di sản văn hóa phi vật thể quốc gia là?", options: ["Nghệ thuật sân khấu Dù-kê", "Hát Chầu văn", "Hát Tuồng", "Nghệ thuật Bài Chòi"], correct: "Nghệ thuật sân khấu Dù-kê", type: "mc" },
+            { q: "Điệu múa dân gian truyền thống tập thể vô cùng phổ biến của người Khmer Sóc Trăng trong các dịp lễ tết là?", options: ["Múa Lâm thôn (Lăm vông)", "Múa Xòe", "Múa Quạt", "Múa Sạp"], correct: "Múa Lâm thôn (Lăm vông)", type: "mc" },
+            { q: "Nghi thức dân gian thiêng liêng và quan trọng nhất trong đêm rằm tháng 10 âm lịch tại lễ hội Oóc Om Bóc là gì?", options: ["Lễ Cúng Trăng và Đút cốm dẹp", "Lễ Tắm Phật", "Lễ Rước đèn trung thu", "Lễ Thả hoa đăng cầu may"], correct: "Lễ Cúng Trăng và Đút cốm dẹp", type: "mc" },
+            { q: "Đặc sản bánh truyền thống trứ danh của Sóc Trăng có nguồn gốc từ người Hoa, nhân đậu xanh sầu riêng trứng muối là?", options: ["Bánh pía", "Bánh in", "Bánh dừa", "Bánh tét lá cẩm"], correct: "Bánh pía", type: "mc" },
+            { q: "Món ăn đặc sản sông nước nổi tiếng của Sóc Trăng có sự kết hợp đặc trưng giữa mắm cá, ngải bún và sả là?", options: ["Bún nước lèo Sóc Trăng", "Bún mắm Kiên Giang", "Bún cá Kiên Giang", "Bún suông"], correct: "Bún nước lèo Sóc Trăng", type: "mc" },
+            { q: "Món bánh chiên giòn đặc sản ăn kèm rau sống và nước mắm chua ngọt rất nổi tiếng ở xã Đại Tâm (Mỹ Xuyên) là?", options: ["Bánh cống", "Bánh xèo", "Bánh khọt", "Bánh tôm"], correct: "Bánh cống", type: "mc" },
+            { q: "Lễ hội tạ ơn biển cả của ngư dân vùng ven biển Trần Đề và Vĩnh Châu diễn ra hằng năm vào tháng 3 âm lịch là?", options: ["Lễ hội Nghinh Ông", "Lễ hội Cầu ngư", "Lễ hội Thủy thần", "Lễ hội Đua thuyền"], correct: "Lễ hội Nghinh Ông", type: "mc" },
+            { q: "Nhạc cụ truyền thống làm bằng gỗ có hình chiếc thuyền độc đáo trong dàn nhạc ngũ âm Khmer Sóc Trăng là?", options: ["Đàn Rơ-neât (Đàn thuyền)", "Đàn Cò", "Đàn Chà-pei", "Trống Krap"], correct: "Đàn Rơ-neât (Đàn thuyền)", type: "mc" },
+            { q: "Tục thả đèn gió và thả đèn nước (Lôi Protip) trong đêm rằm tháng 10 âm lịch ở Sóc Trăng mang ý nghĩa gì?", options: ["Tạ ơn Thần Trăng, Thần Đất, Thần Nước và cầu mong an lành, bội thu", "Xua đuổi tà ma", "Mừng năm mới Khmer", "Tưởng nhớ các vị anh hùng dân tộc"], correct: "Tạ ơn Thần Trăng, Thần Đất, Thần Nước và cầu mong an lành, bội thu", type: "mc" },
+            { q: "Huyện nào của tỉnh Sóc Trăng có diện tích trồng hành tím và làm muối lớn nhất?", options: ["Thị xã Vĩnh Châu", "Huyện Trần Đề", "Huyện Long Phú", "Huyện Thạnh Trị"], correct: "Thị xã Vĩnh Châu", type: "mc" },
+            { q: "Ngôi chùa Khmer nổi tiếng ở TP. Sóc Trăng sở hữu tượng Phật Thích Ca Nhập Niết Bàn ngoài trời lớn bậc nhất miền Tây là chùa nào?", options: ["Chùa Som Rông (Chùa Bôtum Vong Sa Som Rông)", "Chùa Kh'leang", "Chùa Dơi", "Chùa Chén Kiểu"], correct: "Chùa Som Rông (Chùa Bôtum Vong Sa Som Rông)", type: "mc" },
+            { q: "Tràm Mỹ Phước (Mỹ Tú) bên cạnh vai trò di tích lịch sử còn là môi trường sống của loại hình sinh thái nào?", options: ["Rừng tràm ngập nước chua phèn và khu bảo tồn động thực vật", "Rừng ngập mặn ven biển", "Rừng nguyên sinh núi cao", "Vườn cây ăn trái đồng bằng"], correct: "Rừng tràm ngập nước chua phèn và khu bảo tồn động thực vật", type: "mc" },
+            { q: "Đặc sản lạp xưởng nổi tiếng của Sóc Trăng thường làm từ nguyên liệu chính nào?", options: ["Thịt heo hoặc thịt mai cua, tôm", "Thịt bò khô", "Thịt trâu", "Thịt cá thát lát"], correct: "Thịt heo hoặc thịt mai cua, tôm", type: "mc" },
+            { q: "Vùng đất Sóc Trăng nằm ở vị trí nào của dòng sông Hậu trước khi đổ ra biển Đông?", options: ["Hạ lưu sông Hậu", "Thượng lưu sông Hậu", "Trung lưu sông Hậu", "Đầu nguồn sông Tiền"], correct: "Hạ lưu sông Hậu", type: "mc" },
+            { q: "Hai tỉnh tiếp giáp với Sóc Trăng ở phía Bắc và Tây Bắc là những tỉnh nào?", options: ["Hậu Giang và Trà Vinh", "Bạc Liêu và Cà Mau", "Kiên Giang và An Giang", "Bến Tre và Tiền Giang"], correct: "Hậu Giang và Trà Vinh", type: "mc" },
+            { q: "Tỉnh tiếp giáp với Sóc Trăng ở phía Tây Nam là tỉnh nào?", options: ["Bạc Liêu", "Cà Mau", "Hậu Giang", "Cần Thơ"], correct: "Bạc Liêu", type: "mc" },
+            { q: "Địa danh 'Bãi Xào' thời kỳ Pháp thuộc ở Sóc Trăng ngày nay thuộc địa bàn huyện nào?", options: ["Mỹ Xuyên", "Trần Đề", "Long Phú", "Cù Lao Dung"], correct: "Mỹ Xuyên", type: "mc" },
+            { q: "Công trình cầu giao thông lớn bắc qua sông Hậu nối liền Sóc Trăng và Trà Vinh đang được đầu tư xây dựng là cầu nào?", options: ["Cầu Đại Ngãi", "Cầu Cần Thơ", "Cầu Rạch Miễu", "Cầu Cổ Chiên"], correct: "Cầu Đại Ngãi", type: "mc" },
+            { q: "Mục tiêu trọng tâm trong chiến lược phát triển kinh tế của tỉnh Sóc Trăng giai đoạn hiện nay là gì?", options: ["Phát triển nông nghiệp công nghệ cao, kinh tế biển, năng lượng sạch và du lịch", "Chỉ tập trung khai thác khoáng sản", "Chỉ phát triển công nghiệp nặng", "Tập trung phát triển lâm nghiệp rừng núi"], correct: "Phát triển nông nghiệp công nghệ cao, kinh tế biển, năng lượng sạch và du lịch", type: "mc" }
+        ],
+        informatics: [
+            { q: "Mạng máy tính là gì?", options: ["Tập hợp các máy tính kết nối với nhau để chia sẻ tài nguyên và dữ liệu", "Máy tính có cấu hình cực mạnh", "Phần mềm dùng để lướt web", "Hệ thống các dây cáp điện thoại"], correct: "Tập hợp các máy tính kết nối với nhau để chia sẻ tài nguyên và dữ liệu", type: "mc" },
+            { q: "Mạng LAN (Local Area Network) là loại mạng nào sau đây?", options: ["Mạng cục bộ quy mô nhỏ (văn phòng, trường học)", "Mạng diện rộng toàn cầu", "Mạng không dây vệ tinh", "Mạng nội bộ quốc gia"], correct: "Mạng cục bộ quy mô nhỏ (văn phòng, trường học)", type: "mc" },
+            { q: "Mạng WAN (Wide Area Network) có đặc điểm gì?", options: ["Mạng diện rộng kết nối máy tính ở khoảng cách địa lý lớn", "Chỉ kết nối các máy tính trong một phòng", "Không thể kết nối Internet", "Chỉ truyền được tin nhắn văn bản"], correct: "Mạng diện rộng kết nối máy tính ở khoảng cách địa lý lớn", type: "mc" },
+            { q: "Thiết bị mạng nào dùng để kết nối các máy tính trong cùng một mạng LAN và chuyển tiếp dữ liệu?", options: ["Switch (Bộ chuyển mạch)", "Bàn phím", "Chuột không dây", "Màn hình"], correct: "Switch (Bộ chuyển mạch)", type: "mc" },
+            { q: "Địa chỉ IP trên mạng máy tính có vai trò gì?", options: ["Định danh duy nhất cho mỗi thiết bị tham gia kết nối mạng", "Tăng tốc độ xử lý của CPU", "Diệt virus tự động", "Lưu trữ dữ liệu vĩnh viễn"], correct: "Định danh duy nhất cho mỗi thiết bị tham gia kết nối mạng", type: "mc" },
+            { q: "Dịch vụ nào sau đây thuộc loại dịch vụ lưu trữ điện toán đám mây (Cloud Storage)?", options: ["Google Drive", "Unikey", "Paint", "Calculator"], correct: "Google Drive", type: "mc" },
+            { q: "Ưu điểm vượt trội của việc lưu trữ dữ liệu trên điện toán đám mây là gì?", options: ["Truy cập và chia sẻ dữ liệu dễ dàng từ bất kỳ đâu có Internet", "Không cần mật khẩu bảo mật", "Máy tính không bao giờ bị hỏng", "Tăng dung lượng RAM máy tính"], correct: "Truy cập và chia sẻ dữ liệu dễ dàng từ bất kỳ đâu có Internet", type: "mc" },
+            { q: "Cụm từ 'WWW' trên Internet là viết tắt của thuật ngữ nào?", options: ["World Wide Web", "World Wide Window", "World Web Wide", "Western Wide Web"], correct: "World Wide Web", type: "mc" },
+            { q: "Thiết bị định tuyến đóng vai trò kết nối các mạng khác nhau và hướng dẫn gói tin di chuyển là?", options: ["Router", "Webcam", "Lao ngoài", "Ổ cứng HDD"], correct: "Router", type: "mc" },
+            { q: "Giao thức truyền tải siêu văn bản an toàn có mã hóa dữ liệu trên website là gì?", options: ["HTTPS", "HTTP", "FTP", "SMTP"], correct: "HTTPS", type: "mc" },
+            { q: "Hành vi nào sau đây vi phạm luật bản quyền sản phẩm số?", options: ["Tải phần mềm có bản quyền thương mại về bẻ khóa (crack) để bán lại", "Sử dụng phần mềm mã nguồn mở miễn phí", "Tự viết phần mềm và chia sẻ miễn phí", "Trích dẫn tài liệu tham khảo có ghi rõ nguồn tác giả"], correct: "Tải phần mềm có bản quyền thương mại về bẻ khóa (crack) để bán lại", type: "mc" },
+            { q: "Tác hại nguy hiểm của phần mềm độc hại (Malware/Virus) đối với máy tính là gì?", options: ["Đánh cắp thông tin cá nhân và làm hư hỏng dữ liệu hệ thống", "Làm tăng độ phân giải màn hình", "Làm máy tính chạy nhanh hơn", "Tự động dọn dẹp rác máy tính"], correct: "Đánh cắp thông tin cá nhân và làm hư hỏng dữ liệu hệ thống", type: "mc" },
+            { q: "Biện pháp hiệu quả nhất để bảo vệ tài khoản trực tuyến của em là gì?", options: ["Đặt mật khẩu mạnh và bật xác thực 2 yếu tố (2FA)", "Dùng ngày sinh làm mật khẩu cho dễ nhớ", "Chia sẻ mật khẩu cho tất cả bạn bè", "Không bao giờ đăng xuất tài khoản ở máy tính công cộng"], correct: "Đặt mật khẩu mạnh và bật xác thực 2 yếu tố (2FA)", type: "mc" },
+            { q: "Đặc điểm nào sau đây mô tả một mật khẩu (password) có độ bảo mật cao?", options: ["Độ dài ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt", "Chỉ gồm các chữ số liên tiếp 12345678", "Là tên của chính mình", "Chỉ gồm 4 ký tự chữ cái thường"], correct: "Độ dài ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt", type: "mc" },
+            { q: "Thuật ngữ 'Cyberbullying' trong không gian mạng có nghĩa là gì?", options: ["Hành vi bắt nạt, đe dọa hoặc xúc phạm người khác trên mạng", "Học tập trực tuyến", "Kinh doanh trên mạng", "Trò chơi điện tử thể thao"], correct: "Hành vi bắt nạt, đe dọa hoặc xúc phạm người khác trên mạng", type: "mc" },
+            { q: "Khi nhận được tin nhắn từ người lạ gửi liên kết (link) lạ kèm thông báo trúng thưởng lớn, em nên xử lý thế nào?", options: ["Không bấm vào link và báo cáo/chặn tin nhắn rác", "Bấm ngay vào link để nhận thưởng", "Điền số căn cước và mật khẩu ngân hàng theo yêu cầu", "Gửi tiếp liên kết đó cho tất cả bạn bè"], correct: "Không bấm vào link và báo cáo/chặn tin nhắn rác", type: "mc" },
+            { q: "Hình thức lừa đảo 'Phishing' trên Internet thường được thực hiện như thế nào?", options: ["Giả mạo ngân hàng hoặc tổ chức uy tín để dụ người dùng cung cấp tài khoản, mật khẩu", "Gửi email quảng cáo sản phẩm thật", "Tặng quà miễn phí trực tiếp tại trường", "Tự động sửa lỗi hệ thống máy tính"], correct: "Giả mạo ngân hàng hoặc tổ chức uy tín để dụ người dùng cung cấp tài khoản, mật khẩu", type: "mc" },
+            { q: "Thông tin cá nhân nào sau đây KHÔNG nên công khai trên mạng xã hội?", options: ["Mật khẩu tài khoản, số Căn cước công dân, số thẻ ngân hàng", "Sở thích cá nhân", "Các môn học yêu thích", "Tên bài hát yêu thích"], correct: "Mật khẩu tài khoản, số Căn cước công dân, số thẻ ngân hàng", type: "mc" },
+            { q: "Quyền bản quyền tác giả đối với một tác phẩm số bao gồm các quyền cơ bản nào?", options: ["Quyền nhân thân và quyền tài sản", "Chỉ có quyền cho người khác xem", "Chỉ có quyền xóa tác phẩm", "Quyền mua bán thiết bị chứa tác phẩm"], correct: "Quyền nhân thân và quyền tài sản", type: "mc" },
+            { q: "Phần mềm mã nguồn mở (Open Source Software) có tính chất nổi bật nào?", options: ["Cho phép người dùng xem, chỉnh sửa và cải tiến mã nguồn tự do", "Tuyệt đối không cho ai xem mã nguồn", "Bắt buộc phải trả phí rất đắt mới được dùng", "Không thể chạy được trên máy tính"], correct: "Cho phép người dùng xem, chỉnh sửa và cải tiến mã nguồn tự do", type: "mc" },
+            { q: "Trong phần mềm PowerPoint, hiệu ứng chuyển từ slide này sang slide khác gọi là?", options: ["Transition", "Animation", "Hyperlink", "Design"], correct: "Transition", type: "mc" },
+            { q: "Trong PowerPoint, hiệu ứng làm xuất hiện hoặc di chuyển của từng đối tượng (chữ, hình ảnh) trên slide là?", options: ["Animation", "Transition", "Slide Master", "Layout"], correct: "Animation", type: "mc" },
+            { q: "Phím tắt nào dùng để bắt đầu trình chiếu bài thuyết trình PowerPoint từ slide đầu tiên?", options: ["F5", "Shift + F5", "Ctrl + P", "Esc"], correct: "F5", type: "mc" },
+            { q: "Tổ hợp phím nào dùng để trình chiếu bài thuyết trình ngay tại slide đang chọn?", options: ["Shift + F5", "F5", "Ctrl + F5", "Alt + F5"], correct: "Shift + F5", type: "mc" },
+            { q: "Phím nào trên bàn phím giúp thoát khỏi chế độ trình chiếu PowerPoint ngay lập tức?", options: ["Esc", "Enter", "Space", "Tab"], correct: "Esc", type: "mc" },
+            { q: "Một trong những nguyên tắc quan trọng để thiết kế bài trình chiếu đẹp và chuyên nghiệp là?", options: ["Màu chữ tương phản rõ với màu nền, không dùng quá nhiều chữ", "Chèn càng nhiều hiệu ứng nhấp nháy càng tốt", "Dùng tất cả các loại font chữ trên cùng một slide", "Đặt chữ màu vàng trên nền màu trắng"], correct: "Màu chữ tương phản rõ với màu nền, không dùng quá nhiều chữ", type: "mc" },
+            { q: "Trong PowerPoint, mẫu giao diện được thiết kế sẵn phối màu và font chữ thống nhất gọi là?", options: ["Theme", "Gridlines", "Notes", "Status Bar"], correct: "Theme", type: "mc" },
+            { q: "Chức năng 'Hyperlink' trong bài trình chiếu PowerPoint có tác dụng gì?", options: ["Tạo liên kết chuyển nhanh tới website, tệp tin hoặc slide khác", "Tự động sửa lỗi chính tả", "Tính tổng các số trong slide", "Đổi màu nền của màn hình"], correct: "Tạo liên kết chuyển nhanh tới website, tệp tin hoặc slide khác", type: "mc" },
+            { q: "PowerPoint cho phép xuất bài trình chiếu thành định dạng video nào phổ biến?", options: [".mp4", ".exe", ".txt", ".mp3"], correct: ".mp4", type: "mc" },
+            { q: "Công cụ 'Sơ đồ tư duy' (Mindmap) đem lại lợi ích gì trong việc chuẩn bị nội dung trình chiếu?", options: ["Hệ thống hóa ý tưởng trực quan và logic", "Tự động quay video thuyết trình", "Thay thế hoàn toàn phần mềm trình chiếu", "Tự động viết nội dung cho slide"], correct: "Hệ thống hóa ý tưởng trực quan và logic", type: "mc" },
+            { q: "Trong phần mềm bảng tính Excel, hàm nào dùng để tính tổng một vùng dữ liệu số?", options: ["SUM", "AVERAGE", "COUNT", "MAX"], correct: "SUM", type: "mc" },
+            { q: "Trong Excel, hàm nào dùng để tính giá trị trung bình cộng của các ô chứa dữ liệu số?", options: ["AVERAGE", "SUM", "MIN", "IF"], correct: "AVERAGE", type: "mc" },
+            { q: "Trong Excel, hàm nào giúp tìm ra giá trị lớn nhất trong danh sách các số?", options: ["MAX", "MIN", "COUNT", "SUM"], correct: "MAX", type: "mc" },
+            { q: "Hàm logic IF trong Excel được sử dụng để làm gì?", options: ["Kiểm tra điều kiện và trả về giá trị tùy thuộc điều kiện ĐÚNG hay SAI", "Tính tổng dãy số", "Đếm số ô chứa chữ", "Sắp xếp thứ tự tên"], correct: "Kiểm tra điều kiện và trả về giá trị tùy thuộc điều kiện ĐÚNG hay SAI", type: "mc" },
+            { q: "Địa chỉ ô tuyệt đối trong Excel được nhận biết bởi ký tự nào đứng trước tên cột và tên dòng (ví dụ: $A$1)?", options: ["Dấu $", "Dấu %", "Dấu #", "Dấu &"], correct: "Dấu $", type: "mc" },
+            { q: "Khi công thức trong ô Excel hiển thị thông báo lỗi `#DIV/0!`, điều đó có nghĩa là gì?", options: ["Lỗi thực hiện phép chia cho số 0", "Công thức bị sai tên hàm", "Dữ liệu quá dài không hiển thị hết", "Không tìm thấy ô tham chiếu"], correct: "Lỗi thực hiện phép chia cho số 0", type: "mc" },
+            { q: "Tính năng 'Sort' (Sắp xếp) trong Excel có công dụng gì?", options: ["Sắp xếp dữ liệu theo thứ tự tăng dần hoặc giảm dần", "Xóa bớt dòng trống", "Tính trung bình cộng tự động", "Đổi font chữ toàn bảng"], correct: "Sắp xếp dữ liệu theo thứ tự tăng dần hoặc giảm dần", type: "mc" },
+            { q: "Tính năng 'Filter' (Lọc dữ liệu) trong phần mềm bảng tính dùng để làm gì?", options: ["Chỉ hiển thị các dòng thỏa mãn điều kiện và tạm ẩn các dòng còn lại", "Xóa vĩnh viễn dữ liệu không đạt yêu cầu", "Tự động vẽ biểu đồ tròn", "Tạo mật khẩu cho file Excel"], correct: "Chỉ hiển thị các dòng thỏa mãn điều kiện và tạm ẩn các dòng còn lại", type: "mc" },
+            { q: "Loại biểu đồ nào trong Excel phù hợp nhất để thể hiện tỉ lệ phần trăm của từng phần so với tổng thể?", options: ["Biểu đồ hình tròn (Pie chart)", "Biểu đồ đường (Line chart)", "Biểu đồ cột (Column chart)", "Biểu đồ vùng (Area chart)"], correct: "Biểu đồ hình tròn (Pie chart)", type: "mc" },
+            { q: "Loại biểu đồ nào thích hợp nhất để diễn tả xu hướng tăng trưởng hoặc biến động của dữ liệu theo thời gian?", options: ["Biểu đồ đường (Line chart)", "Biểu đồ hình tròn (Pie chart)", "Biểu đồ thanh ngang (Bar chart)", "Biểu đồ phân tán (Scatter)"], correct: "Biểu đồ đường (Line chart)", type: "mc" },
+            { q: "Trong ngôn ngữ lập trình Python, câu lệnh nào dùng để xuất (in) kết quả ra màn hình?", options: ["print()", "input()", "import()", "type()"], correct: "print()", type: "mc" },
+            { q: "Trong Python, câu lệnh nào được dùng để nhập dữ liệu từ bàn phím?", options: ["input()", "print()", "read()", "scan()"], correct: "input()", type: "mc" },
+            { q: "Cấu trúc rẽ nhánh thiếu trong lập trình Python được bắt đầu bằng từ khóa nào?", options: ["if", "for", "while", "def"], correct: "if", type: "mc" },
+            { q: "Vòng lặp với số lần biết trước trong Python thường sử dụng cấu trúc câu lệnh nào?", options: ["for ... in range()", "while ... do", "repeat ... until", "loop ... end"], correct: "for ... in range()", type: "mc" },
+            { q: "Trong Python, kiểu dữ liệu số nguyên được ký hiệu là từ khóa nào?", options: ["int", "float", "str", "bool"], correct: "int", type: "mc" },
+            { q: "Trong Python, kiểu dữ liệu xâu ký tự (chuỗi văn bản) được ký hiệu là gì?", options: ["str", "int", "float", "list"], correct: "str", type: "mc" },
+            { q: "Ngôn ngữ đánh dấu siêu văn bản tiêu chuẩn dùng để xây dựng cấu trúc nội dung trang web là gì?", options: ["HTML", "Python", "Pascal", "C++"], correct: "HTML", type: "mc" },
+            { q: "Trong ngôn ngữ HTML, cặp thẻ nào sau đây được dùng để tạo đường dẫn liên kết (hyperlink)?", options: ["<a> ... </a>", "<p> ... </p>", "<h1> ... </h1>", "<img>"], correct: "<a> ... </a>", type: "mc" },
+            { q: "Trong tin học, khái niệm 'Thuật toán' (Algorithm) được hiểu là gì?", options: ["Dãy các chỉ dẫn từng bước rõ ràng, xác định để giải quyết một bài toán", "Một chiếc máy tính thế hệ mới", "Một phần mềm diệt virus", "Đoạn văn bản được gõ trên bàn phím"], correct: "Dãy các chỉ dẫn từng bước rõ ràng, xác định để giải quyết một bài toán", type: "mc" },
+            { q: "Hệ quản trị nội dung (CMS) phổ biến giúp thiết kế trang web mà không cần viết quá nhiều mã code là?", options: ["WordPress", "Excel", "Photoshop", "WinRAR"], correct: "WordPress", type: "mc" }
+        ],
+        arg: [
+            { q: "ARG là viết tắt của cụm từ tiếng Anh nào?", options: ["Alternate Reality Game", "Augmented Reality Graphics", "Advanced Reality Group", "Automated Real Game"], correct: "Alternate Reality Game", type: "mc" },
+            { q: "Đặc điểm nổi bật nhất của loại hình giải đố ARG (Alternate Reality Game) là gì?", options: ["Xóa mờ ranh giới giữa hư cấu và đời thực qua tương tác giải đố", "Chỉ chơi được trên máy chơi game PS5", "Là trò chơi thể thao điện tử nhập vai 3D", "Không cần sử dụng kết nối Internet"], correct: "Xóa mờ ranh giới giữa hư cấu và đời thực qua tương tác giải đố", type: "mc" },
+            { q: "Mật mã Caesar (Caesar Cipher) thuộc loại thuật toán mã hóa nào?", options: ["Mật mã thay thế đơn (Dịch chuyển bảng chữ cái)", "Mật mã bất đối xứng khóa RSA", "Mật mã phân tích âm thanh", "Mật mã mã hóa 3D"], correct: "Mật mã thay thế đơn (Dịch chuyển bảng chữ cái)", type: "mc" },
+            { q: "Với mật mã Caesar sử dụng khóa dịch chuyển k = 3, chữ cái 'A' sẽ được mã hóa thành chữ cái nào?", options: ["D", "C", "B", "E"], correct: "D", type: "mc" },
+            { q: "Với mật mã Caesar sử dụng khóa dịch chuyển k = 3, từ 'CAT' sẽ được mã hóa thành chuỗi nào?", options: ["FDW", "ECV", "GEX", "DBS"], correct: "FDW", type: "mc" },
+            { q: "Mật mã Atbash thay thế A thành Z, B thành Y. Chữ cái 'C' sẽ được mã hóa thành chữ nào?", options: ["X", "W", "V", "Y"], correct: "X", type: "mc" },
+            { q: "Trong mật mã Morse, hai thành phần tín hiệu cơ bản được sử dụng là gì?", options: ["Dấu chấm (Dot) và dấu gạch (Dash)", "Số 0 và số 1", "Chữ cái hoa và chữ cái thường", "Dấu cộng và dấu trừ"], correct: "Dấu chấm (Dot) và dấu gạch (Dash)", type: "mc" },
+            { q: "Ký hiệu mã Morse của chữ cái 'S' là gì?", options: ["... (ba dấu chấm)", "--- (ba dấu gạch)", ".-. (chấm gạch chấm)", "-.- (gạch chấm gạch)"], correct: "... (ba dấu chấm)", type: "mc" },
+            { q: "Ký hiệu mã Morse của chữ cái 'O' là gì?", options: ["--- (ba dấu gạch)", "... (ba dấu chấm)", ".-- (chấm gạch gạch)", "--. (gạch gạch chấm)"], correct: "--- (ba dấu gạch)", type: "mc" },
+            { q: "Tín hiệu cấp cứu quốc tế 'SOS' trong mã Morse được biểu diễn chính xác là:", options: ["... --- ...", "--- ... ---", "... ... ...", "--- --- ---"], correct: "... --- ...", type: "mc" },
+            { q: "Hệ thống mã hóa nhị phân (Binary Code) sử dụng hai ký tự nào để biểu diễn dữ liệu?", options: ["0 và 1", "1 và 2", "A và B", "X và Y"], correct: "0 và 1", type: "mc" },
+            { q: "Ký tự 'A' trong bảng mã ASCII tiêu chuẩn có giá trị mã nhị phân 8-bit là gì?", options: ["01000001", "01000010", "01100001", "00110001"], correct: "01000001", type: "mc" },
+            { q: "Dạng mã hóa Base64 thường xuất hiện ký tự bù độ dài nào ở cuối chuỗi mã?", options: ["Dấu bằng (=)", "Dấu thăng (#)", "Dấu phần trăm (%)", "Dấu đô la ($)"], correct: "Dấu bằng (=)", type: "mc" },
+            { q: "Kỹ thuật ẩn thông điệp hoặc tệp tin bí mật bên trong tệp tin khác (như ảnh, âm thanh) gọi là gì?", options: ["Steganography (Ẩn thư)", "Cryptography (Mật mã học)", "Phishing (Lừa đảo)", "Defragmentation (Chống phân mảnh)"], correct: "Steganography (Ẩn thư)", type: "mc" },
+            { q: "Công cụ phân tích đồ họa nào giúp phát hiện thông điệp ẩn được giấu trong tần số tệp âm thanh của ARG?", options: ["Biểu đồ phổ âm thanh (Spectrogram)", "Bảng tính Excel", "Trình duyệt Firefox", "Phần mềm diệt virus"], correct: "Biểu đồ phổ âm thanh (Spectrogram)", type: "mc" },
+            { q: "Mật mã Pigpen (Mật mã chuồng heo) mã hóa các chữ cái dựa trên hình ảnh nào?", options: ["Các ký hiệu tạo bởi khung lưới ô vuông, đường chéo và dấu chấm", "Các ký tự tiếng La Mã cổ", "Các nốt nhạc trên khung nhạc", "Hình ảnh các con số nguyên tố"], correct: "Các ký hiệu tạo bởi khung lưới ô vuông, đường chéo và dấu chấm", type: "mc" },
+            { q: "Mật mã Vigenère thuộc loại mật mã nào sau đây?", options: ["Mật mã thay thế đa bảng chữ cái dùng từ khóa", "Mật mã hoán vị cột đơn giản", "Mật mã hàm băm một chiều", "Mật mã nhị phân không khóa"], correct: "Mật mã thay thế đa bảng chữ cái dùng từ khóa", type: "mc" },
+            { q: "Kỹ thuật nào dùng để phá giải mật mã thay thế đơn khi không có từ khóa?", options: ["Phân tích tần suất xuất hiện ký tự (Frequency Analysis)", "Thử tất cả các địa chỉ IP", "Chạy chương trình diệt virus", "Đổi tên file thành .txt"], correct: "Phân tích tần suất xuất hiện ký tự (Frequency Analysis)", type: "mc" },
+            { q: "Trong văn bản tiếng Anh thông thường, chữ cái nào có tần suất xuất hiện cao nhất?", options: ["Chữ E", "Chữ A", "Chữ T", "Chữ Z"], correct: "Chữ E", type: "mc" },
+            { q: "Trong tiếng Việt, nguyên âm nào xuất hiện rất phổ biến giúp nhận diện từ khi giải mã?", options: ["Chữ A", "Chữ Y", "Chữ Ư", "Chữ O"], correct: "Chữ A", type: "mc" },
+            { q: "Mã Hexadecimal (Hệ cơ số 16) sử dụng tập ký tự nào để biểu diễn?", options: ["Từ 0-9 và từ A-F", "Từ 0-9 và từ A-Z", "Chỉ các ký tự từ A-F", "Các số từ 0 đến 15"], correct: "Từ 0-9 và từ A-F", type: "mc" },
+            { q: "Mã màu Hex `#FFFFFF` biểu diễn màu sắc nào trong máy tính?", options: ["Màu trắng", "Màu đen", "Màu đỏ", "Màu xanh dương"], correct: "Màu trắng", type: "mc" },
+            { q: "Mã màu Hex `#000000` biểu diễn màu sắc nào?", options: ["Màu đen", "Màu trắng", "Màu xám", "Màu vàng"], correct: "Màu đen", type: "mc" },
+            { q: "Chức năng nào trên trình duyệt web cho phép kiểm tra mã nguồn HTML để tìm manh mối bị giấu trong ARG?", options: ["Inspect / Kiểm tra phần tử (F12)", "Bookmark / Dấu trang", "Clear History / Xóa lịch sử", "Zoom in / Phóng to"], correct: "Inspect / Kiểm tra phần tử (F12)", type: "mc" },
+            { q: "Cú pháp tạo chú thích (ghi chú bị ẩn trên giao diện) trong mã HTML là gì?", options: ["<!-- Nội dung chú thích -->", "// Nội dung chú thích", "/* Nội dung chú thích */", "# Nội dung chú thích"], correct: "<!-- Nội dung chú thích -->", type: "mc" },
+            { q: "Dữ liệu EXIF (Metadata) đi kèm tệp ảnh trong trò chơi ARG thường cung cấp thông tin gì?", options: ["Tọa độ địa lý GPS, thời gian chụp, thiết bị chụp", "Tên mật khẩu tài khoản tác giả", "Giá tiền mua máy ảnh", "Danh sách ứng dụng cài trên điện thoại"], correct: "Tọa độ địa lý GPS, thời gian chụp, thiết bị chụp", type: "mc" },
+            { q: "Mã hóa đối xứng (Symmetric Encryption) có đặc điểm gì?", options: ["Sử dụng cùng một khóa để mã hóa và giải mã", "Sử dụng hai khóa hoàn toàn khác nhau", "Không thể giải mã được", "Chỉ hoạt động khi không có Internet"], correct: "Sử dụng cùng một khóa để mã hóa và giải mã", type: "mc" },
+            { q: "Mã hóa bất đối xứng (Asymmetric Encryption) sử dụng cặp khóa nào?", options: ["Khóa công khai (Public Key) và Khóa bí mật (Private Key)", "Khóa chính và Khóa phụ", "Khóa số và Khóa chữ", "Khóa mở và Khóa đóng"], correct: "Khóa công khai (Public Key) và Khóa bí mật (Private Key)", type: "mc" },
+            { q: "Đặc điểm quan trọng của Hàm băm (Hash Function) như SHA-256 hay MD5 là gì?", options: ["Là biến đổi một chiều (không thể đảo ngược trực tiếp về bản rõ)", "Có thể giải mã dễ dàng bằng phím F5", "Luôn tạo ra chuỗi dài gấp đôi bản rõ", "Tự thay đổi theo thời gian thực"], correct: "Là biến đổi một chiều (không thể đảo ngược trực tiếp về bản rõ)", type: "mc" },
+            { q: "Trong hệ thống mật mã Semaphore, thông tin được truyền đi bằng công cụ gì?", options: ["Vị trí và góc độ của hai lá cờ cầm trên tay", "Tiếng còi phát ra sóng ngắn", "Ánh sáng đèn pin chớp tắt", "Làn khói bốc lên cao"], correct: "Vị trí và góc độ của hai lá cờ cầm trên tay", type: "mc" },
+            { q: "Hệ thống chữ nổi Braille dành cho người khiếm thị sử dụng khung ô cơ bản gồm bao nhiêu chấm nổi?", options: ["6 chấm", "4 chấm", "8 chấm", "10 chấm"], correct: "6 chấm", type: "mc" },
+            { q: "Mật mã Hoán vị (Transposition Cipher) thực hiện việc mã hóa dữ liệu như thế nào?", options: ["Sắp xếp lại vị trí của các ký tự mà không thay đổi bản thân chữ cái", "Thay các chữ cái bằng chữ cái khác", "Đổi các chữ cái thành số nhị phân", "Xóa bớt các nguyên âm trong câu"], correct: "Sắp xếp lại vị trí của các ký tự mà không thay đổi bản thân chữ cái", type: "mc" },
+            { q: "Mật mã Rail Fence (mật mã hàng rào) thuộc dạng mật mã nào?", options: ["Mật mã hoán vị (Transposition Cipher)", "Mật mã thay thế (Substitution Cipher)", "Mật mã hàm băm", "Mật mã ẩn thư"], correct: "Mật mã hoán vị (Transposition Cipher)", type: "mc" },
+            { q: "Khi thấy chuỗi dữ liệu dạng `10.7756, 106.7019`, người giải đố ARG nên xác định đây là:", options: ["Tọa độ địa lý GPS (Vĩ độ, Kinh độ)", "Mã hóa nhị phân 8-bit", "Địa chỉ IP máy chủ", "Mã màu Hexadecimal"], correct: "Tọa độ địa lý GPS (Vĩ độ, Kinh độ)", type: "mc" },
+            { q: "Mã QR Code có khả năng chứa loại thông tin nào sau đây?", options: ["Văn bản, đường link URL, số điện thoại và tọa độ", "Chỉ lưu được các số nguyên từ 0-9", "Chỉ lưu trữ được tệp video MP4 lớn", "Chỉ mở được trên máy tính để bàn"], correct: "Văn bản, đường link URL, số điện thoại và tọa độ", type: "mc" },
+            { q: "Thuật ngữ 'Rabbit Hole' (Hố thỏ) trong thế giới ARG mang ý nghĩa gì?", options: ["Manh mối đầu tiên kéo người chơi vào thế giới câu chuyện ARG", "Một lỗi lập trình phần mềm", "Kết thúc của một trò chơi", "Trang web chứa phần mềm độc hại"], correct: "Manh mối đầu tiên kéo người chơi vào thế giới câu chuyện ARG", type: "mc" },
+            { q: "Thuật ngữ 'TINAG' (This Is Not A Game) phản ánh quy tắc cốt lõi nào của ARG?", options: ["Trò chơi diễn ra chân thực như thể mọi sự kiện đều có thật", "Cấm người chơi thảo luận trên mạng", "Yêu cầu phải mua bản quyền trước khi chơi", "Trò chơi không có lời giải"], correct: "Trò chơi diễn ra chân thực như thể mọi sự kiện đều có thật", type: "mc" },
+            { q: "Tên thuật toán mã hóa nổi tiếng RSA được đặt theo tên của:", options: ["Ba nhà khoa học Rivest, Shamir và Adleman", "Ba thành phố sáng tạo ra thuật toán", "Ba ngôn ngữ lập trình cổ điển", "Ba công ty công nghệ hàng đầu"], correct: "Ba nhà khoa học Rivest, Shamir và Adleman", type: "mc" },
+            { q: "Trong mật mã Caesar, nếu chọn độ dịch k = 26 (trong bảng chữ cái Tiếng Anh 26 chữ), kết quả sẽ là gì?", options: ["Văn bản mã hóa trùng khớp hoàn toàn với văn bản gốc", "Văn bản bị biến thành các dấu chấm", "Toàn bộ văn bản bị đảo ngược", "Văn bản biến thành dãy số 0 và 1"], correct: "Văn bản mã hóa trùng khớp hoàn toàn với văn bản gốc", type: "mc" },
+            { q: "Chuỗi mã Caesar 'KHOA' với độ dịch k = 1 có bản rõ gốc là gì?", options: ["JGNZ", "LIPB", "MINC", "HEMZ"], correct: "JGNZ", type: "mc" },
+            { q: "Trong mật mã Morse, khoảng nghỉ giữa hai từ liên tiếp tương đương với độ dài của bao nhiêu dấu chấm?", options: ["7 dấu chấm", "1 dấu chấm", "3 dấu chấm", "10 dấu chấm"], correct: "7 dấu chấm", type: "mc" },
+            { q: "Công cụ trực tuyến 'CyberChef' nổi tiếng trong việc giải mật mã ARG được gọi là gì?", options: ["Con dao Thụy Sĩ số (The Cyber Swiss Army Knife)", "Phần mềm dựng phim chuyên nghiệp", "Hệ điều hành cho hacker", "Công cụ vẽ sơ đồ tư duy"], correct: "Con dao Thụy Sĩ số (The Cyber Swiss Army Knife)", type: "mc" },
+            { q: "Việc kiểm tra lịch sử chỉnh sửa (Revision History) của trang web trong ARG nhằm mục đích gì?", options: ["Tìm kiếm manh mối cũ bị ẩn hoặc đã bị sửa đổi/xóa bỏ", "Tăng tốc độ tải trang", "Xóa tài khoản người dùng khác", "Đổi màu giao diện trang web"], correct: "Tìm kiếm manh mối cũ bị ẩn hoặc đã bị sửa đổi/xóa bỏ", type: "mc" },
+            { q: "Mã Rot13 là trường hợp đặc biệt của mật mã Caesar với độ dịch k bằng bao nhiêu?", options: ["13", "10", "15", "20"], correct: "13", type: "mc" },
+            { q: "Tính chất đặc biệt của mã Rot13 khi áp dụng hai lần liên tiếp trên đoạn văn bản là:", options: ["Giải mã và trả về lại chính văn bản ban đầu", "Làm mất hết dữ liệu văn bản", "Biến văn bản thành tiếng Pháp", "Mã hóa gấp đôi độ dài"], correct: "Giải mã và trả về lại chính văn bản ban đầu", type: "mc" },
+            { q: "Thao tác mở một tệp ảnh (.png/.jpg) bằng phần mềm Notepad/Text Editor trong ARG giúp làm gì?", options: ["Trích xuất chuỗi văn bản (strings) ẩn ở cuối tệp dữ liệu", "Chỉnh sửa màu sắc của bức ảnh", "Tăng độ nét của bức ảnh", "Chuyển ảnh sang dạng 3D"], correct: "Trích xuất chuỗi văn bản (strings) ẩn ở cuối tệp dữ liệu", type: "mc" },
+            { q: "Khái niệm 'Cryptanalysis' (Phân tích mật mã) nghĩa là gì?", options: ["Nghiên cứu các kỹ thuật phá giải mật mã mà không cần khóa", "Viết mã nguồn phần mềm ứng dụng", "Thiết kế đồ họa cho trò chơi", "Cài đặt mạng máy tính LAN"], correct: "Nghiên cứu các kỹ thuật phá giải mật mã mà không cần khóa", type: "mc" },
+            { q: "Trong các dự án ARG, thuật ngữ 'Puppet Master' chỉ đối tượng nào?", options: ["Người thiết kế và vận hành câu chuyện trò chơi", "Người chơi giải đố nhanh nhất", "Nhân vật phản diện trong phim", "Phần mềm diệt virus tự động"], correct: "Người thiết kế và vận hành câu chuyện trò chơi", type: "mc" },
+            { q: "Mã băm MD5 chuẩn luôn trả về một chuỗi ký tự Hexadecimal có độ dài bao nhiêu?", options: ["32 ký tự", "16 ký tự", "64 ký tự", "128 ký tự"], correct: "32 ký tự", type: "mc" },
+            { q: "Yếu tố quyết định giúp cộng đồng giải quyết thành công các trò chơi ARG phức tạp là gì?", options: ["Trí tuệ tập thể và sự phối hợp của cộng đồng (Collective Intelligence)", "Sử dụng máy tính đắt tiền nhất", "Chơi một mình không chia sẻ manh mối", "Tải tất cả phần mềm trên mạng về máy"], correct: "Trí tuệ tập thể và sự phối hợp của cộng đồng (Collective Intelligence)", type: "mc" }
+        ]
+    }
+};
